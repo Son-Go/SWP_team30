@@ -1,0 +1,5 @@
+Clean it for readability without changing meaning. Place each timestamp on a separate line. Remove PII and confidential business information while preserving enough context for evaluation. Use `[inaudible]` and `[redacted]` where appropriate.
+
+   PII includes real names (replace with GitHub/GitLab usernames or pseudonyms), email addresses, phone numbers, and other personally identifying details. The goal is to keep the transcript useful for assessment while protecting privacy.
+
+   During the meeting (before recording), ask the customer for a one-time decision on whether the sanitized transcript may be published in the repository. Record this decision in the meeting summary. If the customer agrees, publish the sanitized transcript without an additional review round. If the customer refuses, do not commit the transcript; include it only in the Moodle PDF and state this in `reports/week2/README.md`.

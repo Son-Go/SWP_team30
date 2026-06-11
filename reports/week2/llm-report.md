@@ -1,0 +1,1 @@
+LLMs were used to improve user stories in terms of grammar and styles in the user-stories.md file.
