@@ -22,6 +22,9 @@ During the interview with the client, we demonstrated the interactive prototype 
 
 ## Resulting changes and affected user-stories
 
+- Game tag "featured" was added
+- Rating system was changed to simple comments system
+
 These assumptions affected following user-stories:
 - **US-04:** Project information and collaborator page (inside project information we need to show comments and their counts)
 - **US-05:** Comprehensive user profile (now we also need to show last user comments in their profile)
