@@ -1,6 +1,6 @@
 import React from 'react';
 import cn from 'classnames';
-import Login_button from 'components/Login_button';
+import LoginButton from 'components/LoginButton';
 
 import styles from './index.module.scss';
 
@@ -66,7 +66,7 @@ function WelcomePage(props: IProps) {
                 </div>
               </div>
 
-              <Login_button className={styles.block24} />
+              <LoginButton className={styles.block24} />
             </div>
           </div>
         </div>

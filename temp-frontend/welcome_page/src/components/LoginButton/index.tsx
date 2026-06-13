@@ -7,7 +7,7 @@ interface IProps {
   className?: string;
 }
 
-function Login_button(props: IProps) {
+function LoginButton(props: IProps) {
   return (
     <div className={cn(styles.block24, props.className, 'login-button')}>
       <div className={styles.info12}>Login</div>
@@ -15,4 +15,4 @@ function Login_button(props: IProps) {
   );
 }
 
-export default Login_button;
+export default LoginButton;
