@@ -1,0 +1,22 @@
+@use "../utils" as *;
+@use "../global" as *;
+
+.block24 {
+  display: flex;
+  flex-direction: column;
+  background-color: rgb(220 184 255);
+  border-radius: 20px;
+  box-shadow: 0 0 20px 0 rgb(220 184 255 / 20%);
+}
+
+.info12 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 8px 31.5px;
+  width: 39px;
+  height: 24px;
+  font: 700 16px/1.5 "Hanken Grotesk", Helvetica, Arial, serif;
+  color: rgb(72 0 129);
+  text-align: center;
+}
