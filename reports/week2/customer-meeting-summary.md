@@ -3,7 +3,7 @@
 ---
 
 ### Meeting date: 11.06.2026
-
+**Note: ** customer agreed on recording
 ---
 ## Participants and their roles:
 - **Evgenii Savelev:** Moderator (e.savelev@innopolis.university)
