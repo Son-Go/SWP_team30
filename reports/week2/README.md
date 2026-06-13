@@ -49,6 +49,8 @@ Link to the Lychee configuration and latest successful protected-default-branch 
 - "https://localhost"
 - "http://localhost"
 
+We did mot found any additional links, which should be added to config, so we preserved default links
+
 ---
 
 ## Screenshots
