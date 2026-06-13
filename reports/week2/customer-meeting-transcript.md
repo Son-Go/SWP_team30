@@ -1,5 +1,7 @@
 > This meeting transcript is mostly hard to understand. Most important info from meeting displayed in customer-meeting-notes.md
 
+*Note*: link to the meeting transcript which is primary source
+https://github.com/Son-Go/SWP_team30/blob/e041ee9583e1cf413d6561e086546e956eeb62ad/reports/week2/customer-meeting-notes.md
 
 00:00:00 
  Это интервью, да?

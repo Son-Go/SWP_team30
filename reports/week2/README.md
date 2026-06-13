@@ -22,8 +22,8 @@ Link to the prototype: https://www.figma.com/proto/0Sz1FXBTcbhNLNBa4yhUKF/SWP_GD
 
 ### MVP v0 report
 
-Link to `reports/week2/mvp-v0-report.md`, the deployed MVP v0 or runnable artifact, run instructions, and public video demonstration: https://github.com/Son-Go/SWP_team30/blob/0f53ff1e18ba968bdb1a47d9a93787e763ab1cef/reports/week2/mvp-v0-report.md
-
+- Link to `reports/week2/mvp-v0-report.md`, the deployed MVP v0 or runnable artifact, run instructions, and public video demonstration: https://github.com/Son-Go/SWP_team30/blob/0f53ff1e18ba968bdb1a47d9a93787e763ab1cef/reports/week2/mvp-v0-report.md
+- Demonstration % PUT DEMO HERE%
 ---
 
 ### PR template and reviewed MRs
@@ -36,17 +36,18 @@ Link to the minimal PR/MR template and reviewed PRs/MRs created during Week 2:
 
 ---
 
-## Lychee configuration & latest protected-default-branch rum
+## Lychee configuration & latest protected-default-branch run
 
 Link to the Lychee configuration and latest successful protected-default-branch run: 
 
+- Configuration:  https://github.com/Son-Go/SWP_team30/blob/e041ee9583e1cf413d6561e086546e956eeb62ad/.github/workflows/lychee.yml
+- Latest successful run: https://github.com/Son-Go/SWP_team30/actions/runs/27467064007
 ---
 
 ## Excluded lychee links
 
 - "https://localhost"
 - "http://localhost"
-
 
 ---
 
@@ -75,13 +76,31 @@ Link to the Lychee configuration and latest successful protected-default-branch 
 
 ### Deployed MVP v0
 
----
-9. `Coverage` section that:
+![MVP-v0-deployed.jpg](images/MVP-v0-deployed.jpg)
 
-    * References the stable IDs covered by the prototype.
-    * Explains the selected prototype and interface artifacts and references the stable user-story IDs represented by them.
-    * Links to `reports/week2/mvp-v0-report.md`, which explains the MVP v0 foundation and documents the repeatable smoke-check scenario.
-    * References stable user-story IDs represented by MVP v0 where applicable. For example, if MVP v0 sets up authentication infrastructure, reference the related user story (e.g., US-02: User login) even if login is not yet functional. MVP v0 is a product foundation and does not need to implement a complete user story.
+---
+
+### Coverage
+
+#### User stories covered by the prototype
+**US-04: Project information and collaborator page**
+- Description: Page with information about the GDE project and resources for collaborators to understand our mission and partnership opportunities.
+- Prototype artifacts:
+  - Welcome page (`welcome_page.jpg`) — contains project overview and calls-to-action for collaborators
+- User story link: [US-04](https://github.com/Son-Go/SWP_team30/blob/main/reports/week2/user-stories.md#us-04-project-information-and-collaborator-page)
+
+Link to [mvp-v0-report.md](https://github.com/Son-Go/SWP_team30/blob/e041ee9583e1cf413d6561e086546e956eeb62ad/reports/week2/mvp-v0-report.md)
+
+The MVP v0 establishes the foundational infrastructure for the GDE website, including:
+- Basic project structure and routing
+- Initial page layouts that support US-04 (project information display)
+
+While MVP v0 does not implement complete user stories, it provides the technical foundation required for future feature development.
+
+#### Link to the mvp-v0-report.md
+Link to mvp-v0-report.md: https://github.com/Son-Go/SWP_team30/blob/e041ee9583e1cf413d6561e086546e956eeb62ad/reports/week2/mvp-v0-report.md
+
+--- 
 
 ## Customer meeting transcript
 
