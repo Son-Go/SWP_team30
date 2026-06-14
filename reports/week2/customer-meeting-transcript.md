@@ -1,4 +1,5 @@
 > This meeting transcript is mostly hard to understand. Most important info from meeting displayed in customer-meeting-notes.md
+> Also because of low quality of recognized text, transcript cannot be translated into english without transforming into text, which is impossible to understand
 
 *Note*: link to the meeting transcript which is primary source
 https://github.com/Son-Go/SWP_team30/blob/e041ee9583e1cf413d6561e086546e956eeb62ad/reports/week2/customer-meeting-notes.md
