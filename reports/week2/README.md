@@ -22,8 +22,8 @@ Link to the prototype: https://www.figma.com/proto/0Sz1FXBTcbhNLNBa4yhUKF/SWP_GD
 
 ### MVP v0 report
 
-- Link to `reports/week2/mvp-v0-report.md`, the deployed MVP v0 or runnable artifact, run instructions, and public video demonstration: https://github.com/Son-Go/SWP_team30/blob/0f53ff1e18ba968bdb1a47d9a93787e763ab1cef/reports/week2/mvp-v0-report.md
-- Demonstration % PUT DEMO HERE%
+- Link to [`reports/week2/mvp-v0-report.md`](https://github.com/Son-Go/SWP_team30/blob/853208680742a2691e5cf055e795fad7d335a45c/reports/week2/mvp-v0-report.md)
+The deployed MVP v0 or runnable artifact, run instructions, and public video demonstration are in [mvp-v0-report.md](https://github.com/Son-Go/SWP_team30/blob/853208680742a2691e5cf055e795fad7d335a45c/reports/week2/mvp-v0-report.md) file 
 ---
 
 ### PR template and reviewed MRs
