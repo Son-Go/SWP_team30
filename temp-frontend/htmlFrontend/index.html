@@ -1,0 +1,334 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>GD Evenings | Gaming Club</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700;800&amp;family=Hanken+Grotesk:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary": "#dcb8ff",
+                      "on-primary": "#480081",
+                      "secondary-fixed-dim": "#2ae500",
+                      "inverse-on-surface": "#303033",
+                      "surface-container-lowest": "#0e0e11",
+                      "surface-bright": "#39393c",
+                      "on-secondary-container": "#0f6d00",
+                      "on-error-container": "#ffdad6",
+                      "background": "#131316",
+                      "error-container": "#93000a",
+                      "on-secondary-fixed-variant": "#095300",
+                      "on-secondary-fixed": "#022100",
+                      "on-tertiary-container": "#75f4ff",
+                      "tertiary": "#00dbe9",
+                      "on-surface": "#e4e1e6",
+                      "tertiary-fixed": "#7df4ff",
+                      "primary-fixed": "#efdbff",
+                      "on-primary-fixed": "#2c0051",
+                      "surface-container-highest": "#353438",
+                      "tertiary-container": "#006f76",
+                      "on-tertiary": "#00363a",
+                      "on-primary-container": "#eed9ff",
+                      "surface-container": "#1f1f22",
+                      "on-background": "#e4e1e6",
+                      "surface-container-low": "#1b1b1e",
+                      "on-error": "#690005",
+                      "secondary-container": "#2ff801",
+                      "surface-variant": "#353438",
+                      "surface-dim": "#131316",
+                      "primary-container": "#8a2be2",
+                      "primary-fixed-dim": "#dcb8ff",
+                      "outline": "#988ca0",
+                      "error": "#ffb4ab",
+                      "surface-tint": "#dcb8ff",
+                      "inverse-surface": "#e4e1e6",
+                      "on-tertiary-fixed-variant": "#004f54",
+                      "inverse-primary": "#8422dc",
+                      "tertiary-fixed-dim": "#00dbe9",
+                      "on-secondary": "#053900",
+                      "on-primary-fixed-variant": "#6700b5",
+                      "secondary-fixed": "#79ff5b",
+                      "secondary": "#d7ffc5",
+                      "on-surface-variant": "#cfc2d7",
+                      "surface": "#131316",
+                      "outline-variant": "#4c4354",
+                      "surface-container-high": "#2a2a2d",
+                      "on-tertiary-fixed": "#002022"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-desktop": "48px",
+                      "base": "8px",
+                      "gutter": "24px",
+                      "margin-mobile": "16px",
+                      "container-max": "1280px"
+              },
+              "fontFamily": {
+                      "headline-xl": ["Sora"],
+                      "headline-lg": ["Sora"],
+                      "body-md": ["Hanken Grotesk"],
+                      "headline-lg-mobile": ["Sora"],
+                      "body-lg": ["Hanken Grotesk"],
+                      "label-sm": ["JetBrains Mono"]
+              },
+              "fontSize": {
+                      "headline-xl": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                      "headline-lg": ["40px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "label-sm": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "500"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body {
+            background-color: #050505;
+            color: #e4e1e6;
+            overflow-x: hidden;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .neon-glow-purple {
+            box-shadow: 0 0 20px rgba(220, 184, 255, 0.2);
+        }
+        .neon-glow-green {
+            box-shadow: 0 0 20px rgba(42, 229, 0, 0.2);
+        }
+        .neon-border-primary:hover {
+            border-color: #dcb8ff;
+            box-shadow: 0 0 15px rgba(220, 184, 255, 0.4);
+        }
+        .gradient-primary {
+            background: linear-gradient(135deg, #8a2be2 0%, #dcb8ff 100%);
+        }
+        .gradient-text-purple {
+            background: linear-gradient(135deg, #dcb8ff 0%, #8a2be2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .pulsing-dot {
+            box-shadow: 0 0 0 0 rgba(42, 229, 0, 0.7);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(42, 229, 0, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(42, 229, 0, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(42, 229, 0, 0); }
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #353438; border-radius: 10px; }
+    </style>
+</head>
+<body class="font-body-md text-body-md selection:bg-primary selection:text-on-primary" style="width: 1280px; height: 2008px; margin: 0px auto; position: relative; overflow: hidden auto;">
+<!-- TopNavBar -->
+<nav class="fixed top-0 z-50 w-full bg-background/80 backdrop-blur-xl border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.5)] max-w-[1280px] left-1/2 -translate-x-1/2">
+<div class="max-w-container-max mx-auto px-margin-desktop py-4 flex justify-between items-center">
+<div class="flex items-center gap-base">
+<div class="relative w-12 h-12 rounded-full overflow-hidden border-2 border-primary neon-glow-purple">
+<img alt="GD Evenings Club Logo" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZyUGzcrZvQ4W7euRMhEhWH4qSdCmiKSjGgIDY00aGDIsSKWHq74OXhv13YNN-U0jdduKFfgheoeuPIc6rgMU59DuXPDA0OtcYNd3gQOU6ayBforqZpdzfjuWSle9--ez1dMNJqvwoSsiDW4LnjhxJ67JcXIpxxxt06WJtPkamS4CKj_RHDzXxY7zwSHMEreLe1xveJkDecfcL8uW7jCQq6ijhnjB4vTw5SP0kTWFsS72cFgZHV_4Bcy_zINfsuJUHHR5apK70bpg">
+</div>
+<span class="font-headline-lg text-headline-lg font-black text-primary drop-shadow-[0_0_10px_rgba(220,184,255,0.5)] hidden md:block">GD Evenings</span>
+</div>
+<div class="hidden md:flex items-center gap-gutter">
+<a class="text-primary border-b-2 border-primary pb-1 px-3 py-1 bg-black/30 shadow-inner rounded-t-md font-bold font-body-md text-body-md" href="#">About Club</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="games_page.html">Games</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="event_page.html">Events</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">Forum</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="store_page.html">Store</a>
+</div>
+<div class="flex items-center gap-gutter">
+<div class="hidden lg:flex items-center gap-4 text-on-surface-variant">
+<span class="material-symbols-outlined hover:text-primary cursor-pointer transition-colors" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined hover:text-primary cursor-pointer transition-colors" data-icon="person_pin">person_pin</span>
+</div>
+<button class="bg-primary text-on-primary px-8 py-2 rounded-full font-bold hover:scale-105 active:scale-95 transition-all duration-300 neon-glow-purple">
+                    Login
+                </button>
+</div>
+</div>
+</nav>
+<!-- Hero Section -->
+<header class="relative pt-32 pb-24 px-margin-desktop overflow-hidden">
+<!-- Background Accents -->
+<div class="absolute top-0 right-0 -z-10 w-[600px] h-[600px] bg-primary/10 blur-[120px] rounded-full"></div>
+<div class="absolute bottom-0 left-0 -z-10 w-[400px] h-[400px] bg-tertiary/10 blur-[100px] rounded-full"></div>
+<div class="max-w-container-max mx-auto grid grid-cols-1 lg:grid-cols-12 gap-gutter items-center">
+<div class="lg:col-span-7 space-y-gutter">
+<div class="inline-flex items-center gap-2 px-4 py-1 rounded-full glass border border-white/10">
+<span class="w-2 h-2 rounded-full bg-secondary-fixed-dim pulsing-dot"></span>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-secondary-fixed-dim">Status: Online &amp; Ready</span>
+</div>
+<h1 class="font-headline-xl text-headline-xl text-on-background max-w-2xl">
+                    Experience Gaming <span class="gradient-text-purple">After Dark</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl">
+                    GD Evenings isn't just a club; it's a premium community hub where high-stakes competitive gaming meets a relaxed lounge atmosphere. Join the elite network of players in the heart of Tatarstan.
+                </p>
+<div class="flex flex-wrap gap-base pt-4">
+<button class="gradient-primary text-on-primary px-10 py-4 rounded-xl font-bold flex items-center gap-2 hover:shadow-[0_0_30px_rgba(138,43,226,0.5)] transition-all">
+                        Заказать ивент
+                        <span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+</button>
+<button class="px-10 py-4 rounded-xl border-2 border-primary/30 text-primary font-bold hover:bg-primary/5 transition-all">
+                        Contact Us
+                    </button>
+</div>
+<div class="flex items-center gap-8 pt-8 border-t border-white/5 max-w-lg">
+<div>
+<div class="text-headline-lg-mobile font-bold text-on-background">1.2k+</div>
+<div class="font-label-sm text-on-surface-variant">Active Members</div>
+</div>
+<div>
+<div class="text-headline-lg-mobile font-bold text-on-background">45+</div>
+<div class="font-label-sm text-on-surface-variant">Weekly Tournaments</div>
+</div>
+<div>
+<div class="text-headline-lg-mobile font-bold text-on-background">24/7</div>
+<div class="font-label-sm text-on-surface-variant">Lounge Access</div>
+</div>
+</div>
+</div>
+<div class="lg:col-span-5 relative">
+<div class="aspect-square glass rounded-3xl overflow-hidden p-2 rotate-3 hover:rotate-0 transition-transform duration-500 shadow-2xl">
+<img class="w-full h-full object-cover rounded-2xl grayscale hover:grayscale-0 transition-all duration-700" data-alt="A high-end cyberpunk gaming lounge at night, featuring multiple glowing computer stations with RGB lighting in vibrant purples and teals. Professional gamers are focused on their screens in a sleek, modern environment with glass partitions and soft atmospheric haze. The scene captures an exclusive, energetic community atmosphere with deep shadows and intense neon highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfkyhJGVHCkedIoPm8iATD65hPNBOA1Lvp2sU0IocXwUgZUUQg4gyWd1CRQiDwcVzajQayYsC1GOajdR5o1DTkwU2SbZtQHzN1Nv1HfLj7C73V-bjOQ26mAGvXlmD_JACXUB1yfJFm20Pj8UqFcXl52TDNLWGtKb1L-_JDzuvDZNXF8W9O30WeL4j_pwhRJDeb3ZuuduZN25_7ZqjQClB7QoTMmpbkwQBBSqWFUEFDgluEXzWLCy0GA4qAWBsDw1MrPl1LvW2mfQ0">
+</div>
+<!-- Floating Decorative Element -->
+<div class="absolute -bottom-8 -left-8 glass p-6 rounded-2xl shadow-xl animate-bounce" style="animation-duration: 4s;">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined" data-icon="rocket_launch">rocket_launch</span>
+</div>
+<div>
+<p class="font-bold">Next Event</p>
+<p class="text-label-sm text-on-surface-variant">Starts in 02:45:12</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- News Slider Section -->
+<section class="py-16 bg-surface-container-low/30">
+<div class="max-w-container-max mx-auto px-margin-desktop">
+<div class="flex justify-between items-end mb-12">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-background">Новинки Татарстана</h2>
+<p class="text-on-surface-variant mt-2">The latest gaming and tech breakthroughs from the local scene.</p>
+</div>
+<button class="w-14 h-14 rounded-full border border-primary/30 flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- News Card 1 -->
+<div class="glass rounded-[32px] overflow-hidden group hover:scale-[1.02] transition-all duration-500 p-4 border border-white/5 hover:border-primary/30 flex flex-col h-full"><div class="relative aspect-[16/10] rounded-2xl overflow-hidden mb-6"><img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEOlbNTRfyCO8D4AscdaJuOynSFarrdiq4RdJeGp5RLdHX23Dk041Ip62relrh7oV0CxFz2oJs3ds0ftZuIMhCVw2XSx4u6Eideq7WvnhZJcsLz0Q1P-pXXQeesnKMryAf_gVDT7ji2buF2sTrMSTe1EsKmK8lM-SWwpLrakW925fKSoN1ujp_dnS4p3Vfvj5uQG-oSF6Dx5EYvMHfO2msRze49D3auofgn93ecqu1CBrrqBCIs75Jaj4F81F9cjg0RgydOGGJey0"><div class="absolute top-4 right-4 glass px-3 py-1 rounded-full text-secondary-fixed-dim flex items-center gap-1 border border-secondary-fixed-dim/30"><span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="font-label-sm text-label-sm">4.9</span></div><div class="absolute bottom-4 left-4 flex gap-2"><span class="px-3 py-1 bg-background/60 backdrop-blur-md rounded-lg text-primary font-label-sm">RPG</span><span class="px-3 py-1 bg-background/60 backdrop-blur-md rounded-lg text-tertiary font-label-sm">TAT</span></div></div><div class="flex-1 space-y-4 px-2"><div class="flex justify-between items-start"><div><h3 class="font-headline-lg-mobile text-on-background group-hover:text-primary transition-colors">Shadow Strike</h3><p class="font-label-sm text-on-surface-variant mt-1">Author: Kazan Studio</p></div><div class="w-10 h-10 glass rounded-full flex items-center justify-center text-primary border border-primary/20"><span class="material-symbols-outlined">bookmark</span></div></div><div class="flex items-center gap-4 py-4 border-y border-white/5"><div class="flex -space-x-3"><div class="w-8 h-8 rounded-full border-2 border-background bg-surface-variant"></div><div class="w-8 h-8 rounded-full border-2 border-background bg-surface-container-high"></div><div class="w-8 h-8 rounded-full border-2 border-background bg-primary flex items-center justify-center text-[10px] text-on-primary font-bold">+12</div></div><p class="text-label-sm text-on-surface-variant">Playing now</p></div><div class="flex items-center justify-between pt-2"><div class="flex items-center gap-2"><div class="w-10 h-10 rounded-full border-2 border-secondary-fixed-dim flex items-center justify-center font-bold text-secondary-fixed-dim text-xs">92%</div><span class="text-label-sm text-on-surface-variant">Match Rate</span></div><button class="gradient-primary text-on-primary px-8 py-3 rounded-xl font-bold flex items-center gap-2 group-hover:shadow-lg transition-all">CLICK<span class="material-symbols-outlined text-[20px]">bolt</span></button></div></div></div>
+<!-- News Card 2 -->
+<div class="glass rounded-[32px] overflow-hidden group hover:scale-[1.02] transition-all duration-500 p-4 border border-white/5 hover:border-secondary-fixed-dim/30 flex flex-col h-full"><div class="relative aspect-[16/10] rounded-2xl overflow-hidden mb-6"><img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAM0ytbi66N18PRAivPpdxRho2Rq0AI4FIbFFLku5vgPdc8ustAXvbU4dCS6hTFHSdNS_fZaA1a2XIqYCSt-UC0OA3IV20-pQVMY3C-NJg-TPsl5STJrjt7NuS98LV7ccKl5XJ-g7yAo05-Ivf7QbtdSoVwanHOoXWAHqoVSJ57wH12unhys42f2sU6onc5Z0zwWQAviGmuFnNS5Tdv-PmJDkEo9O8vfxtGy975HGiOv3U3X1TVVQttDSCiXtYRLRULkCR6-_Yf4Qg"><div class="absolute top-4 right-4 glass px-3 py-1 rounded-full text-secondary-fixed-dim flex items-center gap-1 border border-secondary-fixed-dim/30"><span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span><span class="font-label-sm text-label-sm">5.0</span></div><div class="absolute bottom-4 left-4 flex gap-2"><span class="px-3 py-1 bg-background/60 backdrop-blur-md rounded-lg text-primary font-label-sm">Classic</span><span class="px-3 py-1 bg-background/60 backdrop-blur-md rounded-lg text-tertiary font-label-sm">TAT</span></div></div><div class="flex-1 space-y-4 px-2"><div class="flex justify-between items-start"><div><h3 class="font-headline-lg-mobile text-on-background group-hover:text-secondary-fixed-dim transition-colors">Retro Runner</h3><p class="font-label-sm text-on-surface-variant mt-1">Author: Pixel Tat</p></div><div class="w-10 h-10 glass rounded-full flex items-center justify-center text-on-surface-variant border border-white/10"><span class="material-symbols-outlined">bookmark</span></div></div><div class="flex items-center gap-4 py-4 border-y border-white/5"><div class="flex -space-x-3"><div class="w-8 h-8 rounded-full border-2 border-background bg-secondary-fixed-dim"></div><div class="w-8 h-8 rounded-full border-2 border-background bg-surface-container-high"></div><div class="w-8 h-8 rounded-full border-2 border-background bg-surface-variant flex items-center justify-center text-[10px] font-bold">+8</div></div><p class="text-label-sm text-on-surface-variant">Playing now</p></div><div class="flex items-center justify-between pt-2"><div class="flex items-center gap-2"><div class="w-10 h-10 rounded-full border-2 border-secondary-fixed-dim flex items-center justify-center font-bold text-secondary-fixed-dim text-xs">95%</div><span class="text-label-sm text-on-surface-variant">Match Rate</span></div><button class="bg-secondary-fixed-dim text-on-secondary px-8 py-3 rounded-xl font-bold flex items-center gap-2 transition-all">CLICK<span class="material-symbols-outlined text-[20px]">bolt</span></button></div></div></div>
+<!-- News Card 3 -->
+</div>
+</div>
+</section>
+<!-- Games Grid Section -->
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-white/5 pt-24 pb-12 min-h-[400px]">
+<div class="max-w-container-max mx-auto px-margin-desktop">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter mb-24">
+<div class="col-span-1 md:col-span-2 space-y-6">
+<div class="flex items-center gap-base">
+<div class="w-10 h-10 rounded-full border-2 border-primary overflow-hidden">
+<img alt="GD Evenings Logo" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZyUGzcrZvQ4W7euRMhEhWH4qSdCmiKSjGgIDY00aGDIsSKWHq74OXhv13YNN-U0jdduKFfgheoeuPIc6rgMU59DuXPDA0OtcYNd3gQOU6ayBforqZpdzfjuWSle9--ez1dMNJqvwoSsiDW4LnjhxJ67JcXIpxxxt06WJtPkamS4CKj_RHDzXxY7zwSHMEreLe1xveJkDecfcL8uW7jCQq6ijhnjB4vTw5SP0kTWFsS72cFgZHV_4Bcy_zINfsuJUHHR5apK70bpg">
+</div>
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-primary font-black">GD Evenings</span>
+</div>
+<p class="text-on-surface-variant max-w-sm">The premier gaming club in Tatarstan. Built by gamers, for gamers. Join the evening revolution and master your craft.</p>
+<div class="flex gap-4">
+<div class="w-12 h-12 glass rounded-xl flex items-center justify-center text-on-surface-variant hover:text-primary transition-all cursor-pointer"><span class="material-symbols-outlined" data-icon="public">public</span></div>
+<div class="w-12 h-12 glass rounded-xl flex items-center justify-center text-on-surface-variant hover:text-primary transition-all cursor-pointer"><span class="material-symbols-outlined" data-icon="forum">forum</span></div>
+<div class="w-12 h-12 glass rounded-xl flex items-center justify-center text-on-surface-variant hover:text-primary transition-all cursor-pointer"><span class="material-symbols-outlined" data-icon="smart_display">smart_display</span></div>
+</div>
+</div>
+<div class="space-y-6">
+<h4 class="font-bold text-on-background uppercase tracking-wider text-label-sm">Quick Links</h4>
+<ul class="space-y-4 text-on-surface-variant">
+<li class=""><a class="hover:text-primary transition-colors" href="#">Privacy Policy</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Terms of Service</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Community Guidelines</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Contact Us</a></li>
+</ul>
+</div>
+<div class="space-y-6">
+<h4 class="font-bold text-on-background uppercase tracking-wider text-label-sm">Club Info</h4>
+<div class="space-y-4 text-on-surface-variant">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="location_on">location_on</span>
+<span class="">IT Park Kazan, Tatarstan</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="mail">mail</span>
+<span class="">hello@gdevenings.ru</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="call">call</span>
+<span class="">+7 (843) 123-45-67</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/5 gap-base font-body-md text-body-md text-on-surface-variant">
+<p class="">© 2024 GD Evenings Gaming Club. All rights reserved.</p>
+<div class="flex items-center gap-gutter">
+<span class="material-symbols-outlined text-secondary-fixed-dim" data-icon="verified">verified</span>
+<span class="">Verified Official Community</span>
+</div>
+</div>
+</div>
+</footer>
+<!-- FAB for quick event booking (contextual) -->
+<div class="fixed bottom-8 right-8 z-[60] md:hidden">
+<button class="w-16 h-16 rounded-full gradient-primary text-on-primary shadow-2xl flex items-center justify-center neon-glow-purple active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+</div>
+<script>
+        // Micro-interactions and atmospheric effects
+        document.querySelectorAll('.glass').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+
+        // Simple smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+
+
+</body></html>

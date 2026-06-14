@@ -112,18 +112,18 @@
 <!-- TopNavBar Component -->
 <nav class="fixed top-0 z-50 w-full bg-background/80 backdrop-blur-xl border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.5)]" style="width: 1280px; left: 50%; transform: translateX(-50%);">
 <div class="max-w-container-max mx-auto px-margin-desktop py-4 flex justify-between items-center">
-<div class="flex items-center gap-base">
+<a href="../welcome_page/public/index.html" class="flex items-center gap-base hover:opacity-80 transition-opacity cursor-pointer">
 <div class="relative w-12 h-12 rounded-full overflow-hidden border-2 border-primary neon-glow-purple">
 <img alt="GD Evenings Club Logo" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZyUGzcrZvQ4W7euRMhEhWH4qSdCmiKSjGgIDY00aGDIsSKWHq74OXhv13YNN-U0jdduKFfgheoeuPIc6rgMU59DuXPDA0OtcYNd3gQOU6ayBforqZpdzfjuWSle9--ez1dMNJqvwoSsiDW4LnjhxJ67JcXIpxxxt06WJtPkamS4CKj_RHDzXxY7zwSHMEreLe1xveJkDecfcL8uW7jCQq6ijhnjB4vTw5SP0kTWFsS72cFgZHV_4Bcy_zINfsuJUHHR5apK70bpg"/>
 </div>
 <span class="font-headline-lg text-headline-lg font-black text-primary drop-shadow-[0_0_10px_rgba(220,184,255,0.5)]">GD Evenings</span>
-</div>
+</a>
 <div class="flex items-center gap-gutter">
-<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">About Club</a>
-<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="../GamesPage/games_page.html">Games</a>
-<a class="text-primary border-b-2 border-primary pb-1 px-3 py-1 bg-black/30 shadow-inner rounded-t-md font-bold font-body-md text-body-md" href="#">Events</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="index.html">About Club</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="games_page.html">Games</a>
+<a class="text-primary border-b-2 border-primary pb-1 px-3 py-1 bg-black/30 shadow-inner rounded-t-md font-bold font-body-md text-body-md" href="event_page.html">Events</a>
 <a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">Forum</a>
-<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="../StorePage/store_page.html">Store</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="store_page.html">Store</a>
 </div>
 <div class="flex items-center gap-gutter">
 <div class="flex items-center gap-4 text-on-surface-variant">
@@ -215,22 +215,22 @@
 <div class="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full blur-[60px] pointer-events-none"></div>
 <h2 class="font-headline-lg-mobile text-[28px] text-on-surface mb-1">Have an Idea?</h2>
 <p class="font-body-md text-body-md text-on-surface-variant mb-6">Propose a game or format for the community.</p>
-<form class="space-y-4 relative z-10">
+<form id="proposalForm" class="space-y-4 relative z-10">
 <div class="grid grid-cols-2 gap-4">
 <div>
 <label class="block font-label-sm text-[10px] text-on-surface-variant mb-1 uppercase tracking-wider">Event Designation</label>
-<input class="w-full bg-surface-variant/50 border-0 border-b-2 border-white/10 text-on-surface px-4 py-2 focus:ring-0 focus:border-primary transition-colors rounded-t" placeholder="e.g., Retro LAN Party" type="text"/>
+<input id="eventDesignation" class="w-full bg-surface-variant/50 border-0 border-b-2 border-white/10 text-on-surface px-4 py-2 focus:ring-0 focus:border-primary transition-colors rounded-t" placeholder="e.g., Retro LAN Party" type="text" required/>
 </div>
 <div>
 <label class="block font-label-sm text-[10px] text-on-surface-variant mb-1 uppercase tracking-wider">Game</label>
-<input class="w-full bg-surface-variant/50 border-0 border-b-2 border-white/10 text-on-surface px-4 py-2 focus:ring-0 focus:border-primary transition-colors rounded-t" placeholder="e.g., Mortal Kombat 1" type="text"/>
+<input id="game" class="w-full bg-surface-variant/50 border-0 border-b-2 border-white/10 text-on-surface px-4 py-2 focus:ring-0 focus:border-primary transition-colors rounded-t" placeholder="e.g., Mortal Kombat 1" type="text" required/>
 </div>
 </div>
 <div>
 <label class="block font-label-sm text-[10px] text-on-surface-variant mb-1 uppercase tracking-wider">Mission Brief</label>
-<textarea class="w-full bg-surface-variant/50 border-0 border-b-2 border-white/10 text-on-surface px-4 py-2 focus:ring-0 focus:border-primary transition-colors rounded-t resize-none" placeholder="What's the vibe?" rows="2"></textarea>
+<textarea id="missionBrief" class="w-full bg-surface-variant/50 border-0 border-b-2 border-white/10 text-on-surface px-4 py-2 focus:ring-0 focus:border-primary transition-colors rounded-t resize-none" placeholder="What's the vibe?" rows="2" required></textarea>
 </div>
-<button class="bg-gradient-to-r from-primary to-inverse-primary text-on-primary font-label-sm text-label-sm px-6 py-3 rounded-lg neon-glow-primary hover:shadow-[0_0_20px_rgba(220,184,255,0.4)] transition-all font-bold flex items-center gap-2" type="button">
+<button id="submitBtn" class="bg-gradient-to-r from-primary to-inverse-primary text-on-primary font-label-sm text-label-sm px-6 py-3 rounded-lg neon-glow-primary hover:shadow-[0_0_20px_rgba(220,184,255,0.4)] transition-all font-bold flex items-center gap-2" type="button">
     Submit Proposal <span class="material-symbols-outlined text-sm">send</span>
 </button>
 </form>
@@ -297,4 +297,89 @@
 </div>
 </div>
 </footer>
+<!-- Proposal Submitted Modal -->
+<div id="successModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+  <div class="bg-surface-container-low border border-primary/30 rounded-2xl p-8 text-center max-w-sm w-4/5 transform scale-50 opacity-0 transition-all duration-500 shadow-[0_0_40px_rgba(220,184,255,0.3)]">
+    <div class="mb-6">
+      <span class="material-symbols-outlined text-6xl text-primary animate-pulse">check_circle</span>
+    </div>
+    <h2 class="font-headline-lg-mobile text-2xl text-on-surface mb-2">Proposal Submitted!</h2>
+    <p class="font-body-md text-on-surface-variant mb-6">Thank you! Your event proposal has been received. We'll review it soon.</p>
+    <button onclick="closeSuccessModal()" class="w-full bg-gradient-to-r from-primary to-inverse-primary text-on-primary font-label-sm text-label-sm px-6 py-3 rounded-lg hover:shadow-[0_0_20px_rgba(220,184,255,0.4)] transition-all font-bold">
+      Awesome!
+    </button>
+  </div>
+</div>
+
+<script>
+  let autoCloseTimer;
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const submitBtn = document.getElementById('submitBtn');
+    const proposalForm = document.getElementById('proposalForm');
+    const eventDesignation = document.getElementById('eventDesignation');
+    const game = document.getElementById('game');
+    const missionBrief = document.getElementById('missionBrief');
+
+    submitBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+
+      // Validate all fields are filled
+      if (!eventDesignation.value.trim() || !game.value.trim() || !missionBrief.value.trim()) {
+        alert('Please fill in all fields before submitting your proposal.');
+        return;
+      }
+
+      // Show success modal with animation
+      showSuccessModal();
+
+      // Clear form
+      proposalForm.reset();
+    });
+  });
+
+  function showSuccessModal() {
+    const modal = document.getElementById('successModal');
+    const modalContent = modal.querySelector('div:first-child');
+
+    // Reset animations
+    modal.style.opacity = '0';
+    modal.style.pointerEvents = 'none';
+    modalContent.style.transform = 'scale(0.5)';
+    modalContent.style.opacity = '0';
+
+    // Trigger reflow to restart animation
+    void modal.offsetWidth;
+
+    // Show modal with animation
+    modal.style.opacity = '1';
+    modal.style.pointerEvents = 'auto';
+    setTimeout(() => {
+      modalContent.style.transform = 'scale(1)';
+      modalContent.style.opacity = '1';
+    }, 10);
+
+    // Auto-close after 3 seconds
+    clearTimeout(autoCloseTimer);
+    autoCloseTimer = setTimeout(() => {
+      closeSuccessModal();
+    }, 3000);
+  }
+
+  function closeSuccessModal() {
+    const modal = document.getElementById('successModal');
+    const modalContent = modal.querySelector('div:first-child');
+
+    modalContent.style.transform = 'scale(0.5)';
+    modalContent.style.opacity = '0';
+
+    setTimeout(() => {
+      modal.style.opacity = '0';
+      modal.style.pointerEvents = 'none';
+    }, 300);
+
+    clearTimeout(autoCloseTimer);
+  }
+</script>
+
 </body></html>
