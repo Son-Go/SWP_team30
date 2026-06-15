@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: GDE_website
+  datasource:
+    url: jdbc:postgresql://localhost:5432/твоя_бд
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update # auto table creation (debug mode only)
+    show-sql: true
