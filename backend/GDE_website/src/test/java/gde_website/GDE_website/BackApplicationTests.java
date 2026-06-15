@@ -1,4 +1,4 @@
-package gde_website.back;
+package gde_website.GDE_website;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
