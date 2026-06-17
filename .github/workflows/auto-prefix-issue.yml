@@ -6,6 +6,8 @@ on:
 
 jobs:
   prefix-title:
+    # Only run this job if the issue title starts with '[Story]:'
+    if: startsWith(github.event.issue.title, '[Story]:')
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -35,4 +37,6 @@ jobs:
               });
               
               console.log(`Renamed issue to: ${newTitle}`);
+            } else {
+              console.log(`Issue already has a US- prefix: ${cleanTitle}`);
             }
