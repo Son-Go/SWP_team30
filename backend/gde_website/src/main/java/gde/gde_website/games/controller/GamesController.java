@@ -1,9 +1,17 @@
 package gde.gde_website.games.controller;
 
+import gde.gde_website.games.entity.GamesEntity;
 import gde.gde_website.games.model.Games;
+import gde.gde_website.games.repository.GamesRepository;
 import gde.gde_website.games.service.GamesService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,20 +19,21 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/games")
+@RequiredArgsConstructor
 public class GamesController {
     private static final Logger gamesControllerLogger = LoggerFactory.getLogger(GamesController.class);
 
     private final GamesService gamesService;
 
-    public GamesController(GamesService gamesService) {
-        this.gamesService = gamesService;
-    }
+    private final GamesRepository gamesRepository;
 
-    // #TODO: implement this function
-    // This function must return list of all games
     @GetMapping
-    public ResponseEntity<List<Games>> getAllGames() {
-        return null;
+    public Page<GamesEntity> getAllGames(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "24") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt"));
+        return gamesRepository.findAllByOrderByCreatedAtDesc(pageable);
     }
 
     // #TODO: implement this function

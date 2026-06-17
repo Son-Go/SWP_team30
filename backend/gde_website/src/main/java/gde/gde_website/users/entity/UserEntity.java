@@ -28,16 +28,20 @@ public class UserEntity {
     @Column(length = 255, nullable = false)
     private String email;
 
+    @Column(name = "profile_image_url", length = 500)
+    private String profileImageUrl;
+
     @Column(length = 255, nullable = false)
     private String passwordHash;
 
     @Column(nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT now()")
     private Instant createdAt;
 
-    public UserEntity(String username, String email, String passwordHash) {
+    public UserEntity(String username, String email, String passwordHash, String profileImageUrl) {
         this.username = username;
         this.email = email;
         this.passwordHash = passwordHash;
+        this.profileImageUrl = profileImageUrl;
     }
 
     @PrePersist
