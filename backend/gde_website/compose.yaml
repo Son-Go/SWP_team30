@@ -6,27 +6,26 @@ services:
       - 'POSTGRES_PASSWORD=secret'
       - 'POSTGRES_USER=myuser'
     ports:
-      - '5433:5432'
-    networks:
-      - gde-network
-    volumes:
-      - postgres_data:/var/lib/postgresql
+      - '5432:5432'
 
-  pgadmin:
-    image: 'dpage/pgadmin4:latest'
-    environment:
-      - 'PGADMIN_DEFAULT_EMAIL=admin@example.com'
-      - 'PGADMIN_DEFAULT_PASSWORD=admin'
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - '5050:80'
-    networks:
-      - gde-network
+      - '8080:8080'
+    environment:
+      - 'SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/mydatabase'
+      - 'SPRING_DATASOURCE_USERNAME=myuser'
+      - 'SPRING_DATASOURCE_PASSWORD=secret'
     depends_on:
       - postgres
 
-networks:
-  gde-network:
-    driver: bridge
-
-volumes:
-  postgres_data:
+  frontend:
+    build:
+      context: ../../frontend
+      dockerfile: Dockerfile
+    ports:
+      - '80:80'
+    depends_on:
+      - backend
