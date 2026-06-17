@@ -1,7 +1,57 @@
 package gde.gde_website.games.controller;
 
-import org.springframework.web.bind.annotation.RestController;
+import gde.gde_website.games.model.Games;
+import gde.gde_website.games.service.GamesService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
+@RequestMapping("/games")
 public class GamesController {
+    private static final Logger gamesControllerLogger = LoggerFactory.getLogger(GamesController.class);
+
+    private final GamesService gamesService;
+
+    public GamesController(GamesService gamesService) {
+        this.gamesService = gamesService;
+    }
+
+    // #TODO: implement this function
+    // This function must return list of all games
+    @GetMapping
+    public ResponseEntity<List<Games>> getAllGames() {
+        return null;
+    }
+
+    // #TODO: implement this function
+    // This function must return one game with specific requested id
+    @GetMapping("/{id}")
+    public ResponseEntity<Games> getGameById(@PathVariable("id") Long id) {
+        return null;
+    }
+
+    // #TODO: implement this function
+    // This function must save new created game into DB
+    @PostMapping("/create")
+    public ResponseEntity<Games> createGame(@RequestBody Games gameToBeCreated) {
+        return null;
+    }
+
+    // #TODO: implement this function
+    // This function must update game info with specific requested id
+    @PatchMapping("/{id}")
+    public ResponseEntity<Games> updateGame(@PathVariable("id") Long id) {
+        return null;
+    }
+
+    // #TODO: implement this function
+    // This function must delete game with specific requested id
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Games> deleteGame(@PathVariable("id") Long id) {
+        return null;
+    }
 }

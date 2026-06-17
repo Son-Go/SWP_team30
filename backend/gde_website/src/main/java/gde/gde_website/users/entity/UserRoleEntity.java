@@ -1,14 +1,21 @@
 package gde.gde_website.users.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "user_role")
 @IdClass(UserRoleId.class)
+@Getter
+@Setter
+@NoArgsConstructor
 public class UserRoleEntity {
-
     @Id
     @Column(name = "user_id", nullable = false)
+    @Setter(AccessLevel.NONE)
     private Long userId;
 
     @Id
@@ -25,27 +32,8 @@ public class UserRoleEntity {
             foreignKey = @ForeignKey(name = "fk_userrole_role"))
     private RoleEntity role;
 
-    public UserRoleEntity() {
-    }
-
     public UserRoleEntity(Long userId, Integer roleId) {
         this.userId = userId;
         this.roleId = roleId;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public Integer getRoleId() {
-        return roleId;
-    }
-
-    public UserEntity getUser() {
-        return user;
-    }
-
-    public RoleEntity getRole() {
-        return role;
     }
 }

@@ -1,14 +1,21 @@
 package gde.gde_website.games.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "game_tag")
 @IdClass(GameTagId.class)
+@Getter
+@Setter
+@NoArgsConstructor
 public class GameTagEntity {
-
     @Id
     @Column(name = "game_id", nullable = false)
+    @Setter(AccessLevel.NONE)
     private Long gameId;
 
     @Id
@@ -25,27 +32,8 @@ public class GameTagEntity {
             foreignKey = @ForeignKey(name = "fk_gametag_tag"))
     private TagEntity tag;
 
-    public GameTagEntity() {
-    }
-
     public GameTagEntity(Long gameId, Integer tagId) {
         this.gameId = gameId;
         this.tagId = tagId;
-    }
-
-    public Long getGameId() {
-        return gameId;
-    }
-
-    public Integer getTagId() {
-        return tagId;
-    }
-
-    public GamesEntity getGame() {
-        return game;
-    }
-
-    public TagEntity getTag() {
-        return tag;
     }
 }

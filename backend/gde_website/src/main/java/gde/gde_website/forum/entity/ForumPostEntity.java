@@ -1,14 +1,22 @@
 package gde.gde_website.forum.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.Instant;
 
 @Entity
 @Table(name = "forum_post")
+@Getter
+@Setter
+@NoArgsConstructor
 public class ForumPostEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
     private Long id;
 
     @Column(name = "topic_id", nullable = false)
@@ -23,9 +31,6 @@ public class ForumPostEntity {
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT now()")
     private Instant createdAt;
 
-    public ForumPostEntity() {
-    }
-
     public ForumPostEntity(Long topicId, Long userId, String content) {
         this.topicId = topicId;
         this.userId = userId;
@@ -37,41 +42,5 @@ public class ForumPostEntity {
         if (createdAt == null) {
             createdAt = Instant.now();
         }
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Long getTopicId() {
-        return topicId;
-    }
-
-    public void setTopicId(Long topicId) {
-        this.topicId = topicId;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
     }
 }

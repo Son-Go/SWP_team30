@@ -1,6 +1,11 @@
 package gde.gde_website.users.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.Instant;
 
 @Entity
@@ -8,10 +13,13 @@ import java.time.Instant;
         @UniqueConstraint(columnNames = "username"),
         @UniqueConstraint(columnNames = "email")
 })
+@Getter
+@Setter
+@NoArgsConstructor
 public class UserEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
     private Long id;
 
     @Column(length = 50, nullable = false)
@@ -26,9 +34,6 @@ public class UserEntity {
     @Column(nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT now()")
     private Instant createdAt;
 
-    public UserEntity() {
-    }
-
     public UserEntity(String username, String email, String passwordHash) {
         this.username = username;
         this.email = email;
@@ -40,41 +45,5 @@ public class UserEntity {
         if (createdAt == null) {
             createdAt = Instant.now();
         }
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPasswordHash() {
-        return passwordHash;
-    }
-
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
     }
 }
