@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Objects;
+
 @Service
 public class GamesService {
 
@@ -42,6 +44,23 @@ public class GamesService {
         );
 
         GamesEntity savedGame = repository.save(game);
+        return mapper.entityToGames(savedGame);
+    }
+
+    public Games updateGame(Games entity, Long gameId) {
+        GamesEntity gameToUpdate = repository.findById(gameId).
+                orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (!Objects.equals(gameToUpdate.getAuthorId(), entity.authorId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
+        gameToUpdate.setTitle(entity.title());
+        gameToUpdate.setDescription(entity.description());
+        gameToUpdate.setBannerUrl(entity.bannerUrl());
+
+        GamesEntity savedGame = repository.save(gameToUpdate);
+
         return mapper.entityToGames(savedGame);
     }
 }

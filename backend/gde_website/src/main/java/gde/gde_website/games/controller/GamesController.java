@@ -71,15 +71,7 @@ public class GamesController {
 
         Long currentUserId = (Long) authentication.getPrincipal();
 
-        Games gameWithCurrentAuthor = new Games(
-                null,
-                currentUserId,
-                title,
-                description,
-                bannerUrl,
-                null,
-                null
-        );
+        Games gameWithCurrentAuthor = createNewRawGame(currentUserId, title, description, bannerUrl);
 
         Games createGame = gamesService.createGame(gameWithCurrentAuthor, currentUserId);
         return ResponseEntity.status(HttpStatus.CREATED).body(createGame);
@@ -88,8 +80,23 @@ public class GamesController {
     // #TODO: implement this function
     // This function must update game info with specific requested id
     @PatchMapping("/{id}")
-    public ResponseEntity<Games> updateGame(@PathVariable("id") Long id) {
-        return null;
+    public ResponseEntity<Games> updateGame(
+            @PathVariable("id") Long gameId,
+            @RequestParam String title,
+            @RequestParam String description,
+            @RequestParam String bannerUrl,
+            Authentication authentication) {
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
+        }
+
+        Long currentUserId = (Long) authentication.getPrincipal();
+
+        Games gameToUpdate = createNewRawGame(currentUserId, title, description, bannerUrl);
+
+        Games updatedGame = gamesService.updateGame(gameToUpdate, gameId);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedGame);
     }
 
     // #TODO: implement this function
@@ -104,5 +111,17 @@ public class GamesController {
     @GetMapping("/dev/token/{userId}")
     public String getTestToken(@PathVariable Long userId) {
         return jwtUtils.generateToken(userId);
+    }
+
+    private Games createNewRawGame(Long currentUserId, String title, String description, String bannerUrl) {
+        return new Games(
+                null,
+                currentUserId,
+                title,
+                description,
+                bannerUrl,
+                null,
+                null
+        );
     }
 }
