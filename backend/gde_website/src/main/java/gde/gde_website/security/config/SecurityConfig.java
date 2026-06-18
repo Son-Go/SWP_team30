@@ -25,12 +25,22 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        // Allow requests for /games endpoints without authentication
+                        // Registration and login are allowed for all users
+                        .requestMatchers("/auth/register", "/auth/login").permitAll()
+
+                        // Allow requests for GET /games endpoints without authentication
                         .requestMatchers(HttpMethod.GET, "/games").permitAll()
                         .requestMatchers(HttpMethod.GET, "/games/**").permitAll()
+
+                        // Endpoints which requires JWT token authentication
                         .requestMatchers(HttpMethod.POST, "/games/**").authenticated()
-                        // #TODO: debug mode
-                        .anyRequest().permitAll()
+                        .requestMatchers("/auth/me").authenticated()
+
+                        // Debug endpoints
+                        .requestMatchers("/games/dev/token/**").permitAll()
+
+                        // All other endpoints
+                        .anyRequest().denyAll()
                 )
                 .sessionManagement(s -> s
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
