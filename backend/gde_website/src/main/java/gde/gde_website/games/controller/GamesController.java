@@ -45,8 +45,10 @@ public class GamesController {
         Long currentUserId = null;
 
         if (authentication != null && authentication.isAuthenticated()) {
-
+            currentUserId = (Long) authentication.getPrincipal();
         }
+
+        return ResponseEntity.status(HttpStatus.OK).body(gamesService.getGameById(id, currentUserId));
     }
 
     // #TODO: implement this function
