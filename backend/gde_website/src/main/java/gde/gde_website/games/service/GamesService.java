@@ -30,7 +30,7 @@ public class GamesService {
         GamesEntity game = repository.findById(gameId).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        return mapper.entityToResponce(game, currentUserId);
+        return mapper.entityToResponse(game, currentUserId);
     }
 
     public Games createGame(Games entity, Long authorId) {

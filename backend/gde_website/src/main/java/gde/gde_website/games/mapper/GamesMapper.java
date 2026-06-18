@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class GamesMapper {
 
-    public GamesResponce entityToResponce(GamesEntity entity, Long currentUserId) {
+    public GamesResponce entityToResponse(GamesEntity entity, Long currentUserId) {
         boolean isOwner = currentUserId != null && currentUserId.equals(entity.getAuthorId());
 
         return new GamesResponce(
