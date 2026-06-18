@@ -38,6 +38,7 @@ public class GamesController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "24") int size
     ) {
+        gamesControllerLogger.info("Called getAllGames endpoint");
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt"));
         return ResponseEntity.status(HttpStatus.OK).body(gamesService.getAllGames(pageable));
     }
@@ -46,6 +47,7 @@ public class GamesController {
     public ResponseEntity<GamesResponce> getGameById(
             @PathVariable("id") Long id,
             Authentication authentication) {
+        gamesControllerLogger.info("Called getGameById endpoint");
         Long currentUserId = null;
 
         if (authentication != null && authentication.isAuthenticated()) {
@@ -55,8 +57,6 @@ public class GamesController {
         return ResponseEntity.status(HttpStatus.OK).body(gamesService.getGameById(id, currentUserId));
     }
 
-    // #TODO: implement this function
-    // This function must save new created game into DB
     @PostMapping
     public ResponseEntity<Games> createGame(
             @RequestParam String title,
@@ -64,8 +64,9 @@ public class GamesController {
             @RequestParam String bannerUrl,
             Authentication authentication
     ) {
-
+        gamesControllerLogger.info("Called createGame endpoint");
         if (authentication == null || !authentication.isAuthenticated()) {
+            gamesControllerLogger.error("User create game permissions error");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
         }
 
@@ -102,8 +103,20 @@ public class GamesController {
     // #TODO: implement this function
     // This function must delete game with specific requested id
     @DeleteMapping("/{id}")
-    public ResponseEntity<Games> deleteGame(@PathVariable("id") Long id) {
-        return null;
+    public ResponseEntity<Games> deleteGame(
+            @PathVariable("id") Long id,
+            Authentication authentication
+    ) {
+        gamesControllerLogger.info("Called deleteGame endpoint");
+        if (authentication == null || !authentication.isAuthenticated()) {
+            gamesControllerLogger.error("User delete game permissions error");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
+        }
+
+        Long currentUserId = (Long) authentication.getPrincipal();
+
+        Games deletedGame = gamesService.deleteGame(id, currentUserId);
+        return ResponseEntity.status(204).build();
     }
 
     // #TODO: debug
