@@ -10,7 +10,6 @@ assignees: ''
 
 &lt;!-- Select one and delete the others --&gt;
 - [ ] Feature
-- [ ] Bug
 - [ ] Technical Debt
 - [ ] Spike / Research
 - [ ] Refactor

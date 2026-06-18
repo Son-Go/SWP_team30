@@ -1,10 +1,15 @@
 ---
 name: Course Task
-about: Track a task or assignment within a course or learning module
-title: "[Course] "
+about: Track a task or assignment from the course assignment document
+title: "[Course] Task # - "
 labels: course, task
 assignees: ''
 ---
+
+## Task Number
+
+<!-- Enter the task number as listed in the assignment document -->
+**Task #:** 
 
 ## Description
 
