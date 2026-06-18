@@ -55,11 +55,13 @@ public class GamesService {
     }
 
     public Games updateGame(Games entity, Long gameId) {
+        gamesServiceLogger.info("Called updateGame method");
         GamesEntity gameToUpdate = repository.findById(gameId).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        if (!Objects.equals(gameToUpdate.getAuthorId(), entity.authorId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        if (!gameToUpdate.getAuthorId().equals(entity.authorId())) {
+            gamesServiceLogger.error("User permissions error");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not the owner of this game");
         }
 
         gameToUpdate.setTitle(entity.title());
@@ -67,13 +69,14 @@ public class GamesService {
         gameToUpdate.setBannerUrl(entity.bannerUrl());
 
         GamesEntity savedGame = repository.save(gameToUpdate);
+        gamesServiceLogger.info("Successfully updated game id={}", gameId);
 
         return mapper.entityToGames(savedGame);
     }
 
-    public Games deleteGame(Long id, Long currentUserId) {
+    public Games deleteGame(Long gameId, Long currentUserId) {
         gamesServiceLogger.info("Called deleteGame method");
-        GamesEntity entity = repository.findById(id)
+        GamesEntity entity = repository.findById(gameId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
 
         if (!entity.getAuthorId().equals(currentUserId)) {
@@ -82,7 +85,7 @@ public class GamesService {
         }
 
         repository.delete(entity);
-        gamesServiceLogger.info("Successfully deleted game");
+        gamesServiceLogger.info("Successfully deleted game id={}", gameId);
         return mapper.entityToGames(entity);
     }
 }
