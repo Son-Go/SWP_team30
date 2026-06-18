@@ -1,4 +1,5 @@
 const API_URL = import.meta.env.VITE_API_URL || "/api";
+const USE_MOCK_AUTH = true;
 
 async function request(path, options = {}) {
   const response = await fetch(`${API_URL}${path}`, options);
@@ -52,7 +53,19 @@ export function deleteGame(id) {
   });
 }
 
-export function loginUser(credentials) {
+export async function loginUser(credentials) {
+  if (USE_MOCK_AUTH) {
+    await new Promise((resolve) => setTimeout(resolve, 400));
+
+    return {
+      id: 1,
+      username:
+        credentials.username || credentials.email?.split("@")[0] || "demo_user",
+      email: credentials.email || "demo@example.com",
+      createdAt: new Date().toISOString(),
+    };
+  }
+
   return request("/auth/login", {
     method: "POST",
     headers: {
@@ -62,7 +75,18 @@ export function loginUser(credentials) {
   });
 }
 
-export function registerUser(userData) {
+export async function registerUser(userData) {
+  if (USE_MOCK_AUTH) {
+    await new Promise((resolve) => setTimeout(resolve, 400));
+
+    return {
+      id: 2,
+      username: userData.username || "new_user",
+      email: userData.email || "new@example.com",
+      createdAt: new Date().toISOString(),
+    };
+  }
+
   return request("/auth/register", {
     method: "POST",
     headers: {
@@ -72,6 +96,11 @@ export function registerUser(userData) {
   });
 }
 
-export function getCurrentUser() {
+export async function getCurrentUser() {
+  if (USE_MOCK_AUTH) {
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    throw new Error("No active session");
+  }
+
   return request("/auth/me");
 }
