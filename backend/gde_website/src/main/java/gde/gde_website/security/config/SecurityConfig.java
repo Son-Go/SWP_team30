@@ -39,7 +39,7 @@ public class SecurityConfig {
                         // Debug endpoints
 
                         // All other endpoints
-                        .anyRequest().denyAll()
+                        .anyRequest().permitAll()
                 )
                 .sessionManagement(s -> s
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
