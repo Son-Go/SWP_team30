@@ -2,6 +2,7 @@ package gde.gde_website.games.controller;
 
 import gde.gde_website.games.entity.GamesEntity;
 import gde.gde_website.games.model.Games;
+import gde.gde_website.games.model.GamesResponce;
 import gde.gde_website.games.repository.GamesRepository;
 import gde.gde_website.games.service.GamesService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,8 +39,14 @@ public class GamesController {
     // #TODO: implement this function
     // This function must return one game with specific requested id
     @GetMapping("/{id}")
-    public ResponseEntity<Games> getGameById(@PathVariable("id") Long id) {
-        return null;
+    public ResponseEntity<GamesResponce> getGameById(
+            @PathVariable("id") Long id,
+            Authentication authentication) {
+        Long currentUserId = null;
+
+        if (authentication != null && authentication.isAuthenticated()) {
+
+        }
     }
 
     // #TODO: implement this function
