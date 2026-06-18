@@ -26,7 +26,8 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         // Registration and login are allowed for all users
-                        .requestMatchers("/auth/register", "/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
 
                         // Allow requests for GET /games endpoints without authentication
                         .requestMatchers(HttpMethod.GET, "/games").permitAll()
