@@ -54,7 +54,9 @@ public class GamesController {
     // #TODO: implement this function
     // This function must save new created game into DB
     @PostMapping("/create")
-    public ResponseEntity<Games> createGame(@RequestBody Games gameToBeCreated) {
+    public ResponseEntity<Games> createGame(
+            @RequestBody Games gameToBeCreated
+    ) {
         return null;
     }
 
