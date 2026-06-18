@@ -2,6 +2,7 @@ package gde.gde_website.users.service;
 
 import gde.gde_website.security.JwtUtils;
 import gde.gde_website.users.entity.UserEntity;
+import gde.gde_website.users.model.LoginRequest;
 import gde.gde_website.users.model.LoginResponse;
 import gde.gde_website.users.model.RegisterRequest;
 import gde.gde_website.users.repository.UsersRepository;
@@ -40,4 +41,14 @@ public class UsersService {
         return new LoginResponse(token);
     }
 
+    public LoginResponse login(LoginRequest request) {
+        UserEntity user = userRepository.findByEmail(request.email())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No user with such email exists"));
+        if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Incorrect password");
+        }
+
+        String token = jwtUtils.generateToken(user.getId());
+        return new LoginResponse(token);
+    }
 }

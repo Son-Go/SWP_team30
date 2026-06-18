@@ -42,7 +42,7 @@ public class UsersController {
     public ResponseEntity<LoginResponse> login(
             @RequestBody LoginRequest request
             ) {
-        return null;
+        return ResponseEntity.status(HttpStatus.OK).body(userService.login(request));
     }
 
     @GetMapping("/me")
