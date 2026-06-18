@@ -1,0 +1,42 @@
+name: Auto-Prefix User Story Title
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  prefix-title:
+    # Only run this job if the issue title starts with '[Story]:'
+    if: startsWith(github.event.issue.title, '[Story]:')
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Rename issue to US-XX format
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const issueNumber = issue.number;
+            let currentTitle = issue.title;
+            
+            // 1. Clean up the static template prefix if it exists
+            // (Removes "[Story]: " so we don't end up with "US-12: [Story]: Title")
+            let cleanTitle = currentTitle.replace(/^\[Story\]:\s*/i, '').trim();
+            
+            // 2. Check if it already has a US- prefix to prevent double-renaming
+            if (!cleanTitle.match(/^US-\d+:/)) {
+              const newTitle = `US-${issueNumber}: ${cleanTitle}`;
+              
+              // 3. Update the issue title
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                title: newTitle
+              });
+              
+              console.log(`Renamed issue to: ${newTitle}`);
+            } else {
+              console.log(`Issue already has a US- prefix: ${cleanTitle}`);
+            }
