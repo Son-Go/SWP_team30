@@ -1,23 +1,43 @@
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
-
-import GamesPage from "./pages/GamesPage";
-import GamePage from "./pages/GamePage";
-import CreateGamePage from "./pages/CreateGamePage";
+import { createBrowserRouter, Navigate } from "react-router-dom";
+import Layout from "./components/Layout";
 import AuthPage from "./pages/AuthPage";
+import CreateGamePage from "./pages/CreateGamePage";
+import GamePage from "./pages/GamePage";
+import GamesPage from "./pages/GamesPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
-function AppRouter() {
-  return (
-    <Routes>
-      <Route path="/" element={<Navigate to="/games" replace />} />
-      <Route path="/games" element={<GamesPage />} />
-      <Route path="/games/create" element={<CreateGamePage />} />
-      <Route path="/games/:id" element={<GamePage />} />
-      <Route path="/auth" element={<AuthPage />} />
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
-  );
-}
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Layout />,
+    children: [
+      {
+        index: true,
+        element: <Navigate to="/games" replace />,
+      },
+      {
+        path: "games",
+        element: <GamesPage />,
+      },
+      {
+        path: "games/create",
+        element: <CreateGamePage />,
+      },
+      {
+        path: "games/:id",
+        element: <GamePage />,
+      },
+      {
+        path: "*",
+        element: <NotFoundPage />,
+      },
+    ],
+  },
+  {
+    path: "/auth",
+    element: <AuthPage />,
+  },
+]);
 
-export default AppRouter;
+export default router;

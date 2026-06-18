@@ -21,12 +21,14 @@ function Navbar() {
           Игры
         </NavLink>
 
-        <NavLink
-          to="/auth"
-          className={({ isActive }) => (isActive ? "active-link" : "")}
-        >
-          Войти
-        </NavLink>
+        {!user ? (
+          <NavLink
+            to="/auth"
+            className={({ isActive }) => (isActive ? "active-link" : "")}
+          >
+            Войти
+          </NavLink>
+        ) : null}
       </div>
 
       {user ? (
