@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -41,8 +42,6 @@ public class GamesController {
         return ResponseEntity.status(HttpStatus.OK).body(gamesService.getAllGames(pageable));
     }
 
-    // #TODO: implement this function
-    // This function must return one game with specific requested id
     @GetMapping("/{id}")
     public ResponseEntity<GamesResponce> getGameById(
             @PathVariable("id") Long id,
@@ -58,11 +57,29 @@ public class GamesController {
 
     // #TODO: implement this function
     // This function must save new created game into DB
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<Games> createGame(
-            @RequestBody Games gameToBeCreated
+            @RequestBody Games gameToBeCreated,
+            Authentication authentication
     ) {
-        return null;
+        Long currentUserId = null;
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
+        }
+
+        Games gameWithCurrentAuthor = new Games(
+                null,
+                currentUserId,
+                gameToBeCreated.title(),
+                gameToBeCreated.description(),
+                gameToBeCreated.bannerUrl(),
+                null,
+                null
+        );
+
+        Games createGame = gamesService.createGame(gameWithCurrentAuthor, currentUserId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createGame);
     }
 
     // #TODO: implement this function

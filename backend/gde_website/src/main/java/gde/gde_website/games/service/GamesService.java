@@ -2,6 +2,7 @@ package gde.gde_website.games.service;
 
 import gde.gde_website.games.entity.GamesEntity;
 import gde.gde_website.games.mapper.GamesMapper;
+import gde.gde_website.games.model.Games;
 import gde.gde_website.games.model.GamesResponce;
 import gde.gde_website.games.repository.GamesRepository;
 import org.springframework.data.domain.Page;
@@ -30,5 +31,17 @@ public class GamesService {
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         return mapper.entityToResponce(game, currentUserId);
+    }
+
+    public Games createGame(Games entity, Long authorId) {
+        GamesEntity game = new GamesEntity(
+                authorId,
+                entity.title(),
+                entity.description(),
+                entity.bannerUrl()
+        );
+
+        GamesEntity savedGame = repository.save(game);
+        return mapper.entityToGames(savedGame);
     }
 }
