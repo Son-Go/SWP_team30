@@ -1,6 +1,5 @@
 package gde.gde_website.games.service;
 
-import gde.gde_website.games.controller.GamesController;
 import gde.gde_website.games.entity.GamesEntity;
 import gde.gde_website.games.mapper.GamesMapper;
 import gde.gde_website.games.model.Games;
@@ -13,8 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Objects;
 
 @Service
 public class GamesService {

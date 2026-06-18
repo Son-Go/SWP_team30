@@ -3,11 +3,8 @@ package gde.gde_website.games.controller;
 import gde.gde_website.games.entity.GamesEntity;
 import gde.gde_website.games.model.Games;
 import gde.gde_website.games.model.GamesResponce;
-import gde.gde_website.games.repository.GamesRepository;
 import gde.gde_website.games.service.GamesService;
 import gde.gde_website.security.JwtUtils;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 @RestController
 @RequestMapping("/games")
