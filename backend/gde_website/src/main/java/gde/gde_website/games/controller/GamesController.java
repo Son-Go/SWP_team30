@@ -25,7 +25,6 @@ public class GamesController {
     private static final Logger gamesControllerLogger = LoggerFactory.getLogger(GamesController.class);
 
     private final GamesService gamesService;
-    private final JwtUtils jwtUtils; // #TODO: debug
 
     @GetMapping
     public ResponseEntity<Page<GamesEntity>> getAllGames(
@@ -72,8 +71,6 @@ public class GamesController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createGame);
     }
 
-    // #TODO: implement this function
-    // This function must update game info with specific requested id
     @PatchMapping("/{id}")
     public ResponseEntity<Games> updateGame(
             @PathVariable("id") Long gameId,
@@ -94,8 +91,6 @@ public class GamesController {
         return ResponseEntity.status(HttpStatus.OK).body(updatedGame);
     }
 
-    // #TODO: implement this function
-    // This function must delete game with specific requested id
     @DeleteMapping("/{id}")
     public ResponseEntity<Games> deleteGame(
             @PathVariable("id") Long id,
@@ -111,13 +106,6 @@ public class GamesController {
 
         Games deletedGame = gamesService.deleteGame(id, currentUserId);
         return ResponseEntity.status(204).build();
-    }
-
-    // #TODO: debug
-    // Testing Method
-    @GetMapping("/dev/token/{userId}")
-    public String getTestToken(@PathVariable Long userId) {
-        return jwtUtils.generateToken(userId);
     }
 
     private Games createNewRawGame(Long currentUserId, String title, String description, String bannerUrl) {

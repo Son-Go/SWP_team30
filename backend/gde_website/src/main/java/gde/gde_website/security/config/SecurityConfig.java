@@ -37,7 +37,6 @@ public class SecurityConfig {
                         .requestMatchers("/auth/me").authenticated()
 
                         // Debug endpoints
-                        .requestMatchers("/games/dev/token/**").permitAll()
 
                         // All other endpoints
                         .anyRequest().denyAll()
