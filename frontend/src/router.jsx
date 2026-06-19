@@ -1,6 +1,7 @@
 import React from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import Layout from "./components/Layout";
+import ProtectedRoute from "./components/ProtectedRoute";
 import AuthPage from "./pages/AuthPage";
 import CreateGamePage from "./pages/CreateGamePage";
 import GamePage from "./pages/GamePage";
@@ -21,8 +22,13 @@ const router = createBrowserRouter([
         element: <GamesPage />,
       },
       {
-        path: "games/create",
-        element: <CreateGamePage />,
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: "games/create",
+            element: <CreateGamePage />,
+          },
+        ],
       },
       {
         path: "games/:id",

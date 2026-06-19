@@ -1,17 +1,32 @@
 import React, { useEffect, useState } from "react";
 import { AuthContext } from "./auth-context";
-import { getCurrentUser, loginUser } from "../api/api";
+import {
+  clearStoredToken,
+  getCurrentUser,
+  getStoredToken,
+  loginUser,
+  setStoredToken,
+} from "../api/api";
 
 export function AuthProvider({ children }) {
+  const [token, setToken] = useState(() => getStoredToken() || "");
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
     async function loadUser() {
+      if (!token) {
+        setUser(null);
+        setAuthLoading(false);
+        return;
+      }
+
       try {
-        const data = await getCurrentUser();
+        const data = await getCurrentUser(token);
         setUser(data.user || data);
-      } catch {
+      } catch (error) {
+        clearStoredToken();
+        setToken("");
         setUser(null);
       } finally {
         setAuthLoading(false);
@@ -19,22 +34,36 @@ export function AuthProvider({ children }) {
     }
 
     loadUser();
-  }, []);
+  }, [token]);
 
   const login = async (credentials) => {
     const data = await loginUser(credentials);
-    const nextUser = data.user || data;
+    const nextToken = data.token || data.sessionToken || data.accessToken;
+
+    if (!nextToken) {
+      throw new Error("Токен не пришел с сервера");
+    }
+
+    setStoredToken(nextToken);
+    setToken(nextToken);
+
+    const currentUser = await getCurrentUser(nextToken);
+    const nextUser = currentUser.user || currentUser;
     setUser(nextUser);
-    return data;
+
+    return nextUser;
   };
 
   const logout = () => {
+    clearStoredToken();
+    setToken("");
     setUser(null);
   };
 
   const value = {
+    token,
     user,
-    isAuthenticated: Boolean(user),
+    isAuthenticated: Boolean(token && user),
     authLoading,
     login,
     logout,

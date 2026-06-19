@@ -26,14 +26,24 @@ function AuthPage() {
       setSuccessMessage("");
 
       if (mode === "login") {
-        await login({ username, password });
+        await login({ email, password });
         navigate("/games");
       } else {
-        await registerUser({ username, email, password });
+        await registerUser({
+          username,
+          email,
+          password,
+          profileImageUrl: null,
+        });
+        setSuccessMessage(
+          "Регистрация прошла успешно. Теперь войдите в аккаунт.",
+        );
         setSuccessMessage(
           "Регистрация прошла успешно. Теперь войдите в аккаунт.",
         );
         setMode("login");
+        setUsername("");
+        setEmail("");
         setPassword("");
       }
     } catch (err) {
@@ -138,6 +148,9 @@ function AuthPage() {
                 className="button button-ghost"
                 onClick={() => {
                   setMode(mode === "login" ? "register" : "login");
+                  setUsername("");
+                  setEmail("");
+                  setPassword("");
                   setError("");
                   setSuccessMessage("");
                 }}
