@@ -11,5 +11,8 @@
 ### VS Code ###
 .vscode/
 
+### Environment ###
+.env
+
 ### Generated backups ###
 backups/postgres/
