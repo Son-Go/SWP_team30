@@ -42,8 +42,10 @@ export function getGames(page = 0) {
   return request(`/games?page=${page}`);
 }
 
-export function getGameById(id) {
-  return request(`/games/${id}`);
+export function getGameById(id, token) {
+  return request(`/games/${id}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  });
 }
 
 export function createGame(formData, token) {

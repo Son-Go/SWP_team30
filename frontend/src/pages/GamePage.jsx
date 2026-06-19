@@ -3,10 +3,12 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { deleteGame, getGameById, updateGame } from "../api/api";
 import ErrorState from "../components/ErrorState";
 import Loader from "../components/Loader";
+import { useAuth } from "../context/auth-context";
 
 function GamePage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { token } = useAuth();
 
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -24,7 +26,7 @@ function GamePage() {
         setLoading(true);
         setError("");
 
-        const data = await getGameById(id);
+        const data = await getGameById(id, token);
         setGame(data);
         setTitle(data.title || "");
         setDescription(data.description || "");
@@ -53,7 +55,7 @@ function GamePage() {
         formData.append("banner", banner);
       }
 
-      const updatedGame = await updateGame(id, formData);
+      const updatedGame = await updateGame(id, formData, token);
       setGame(updatedGame);
       setTitle(updatedGame.title || "");
       setDescription(updatedGame.description || "");
@@ -77,7 +79,7 @@ function GamePage() {
       setIsSubmitting(true);
       setError("");
 
-      await deleteGame(id);
+      await deleteGame(id, token);
       navigate("/games");
     } catch (err) {
       setError(err.message || "Не удалось удалить игру(к сожалению)");
@@ -107,40 +109,42 @@ function GamePage() {
           <h1 className="page-title">{game.title}</h1>
         </div>
 
-        <div className="card-actions">
-          {!isEditing ? (
-            <button
-              type="button"
-              className="button"
-              onClick={() => setIsEditing(true)}
-            >
-              Редактировать игру
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="button button-ghost"
-              onClick={() => {
-                setIsEditing(false);
-                setTitle(game.title || "");
-                setDescription(game.description || "");
-                setBanner(null);
-                setError("");
-              }}
-            >
-              Отмена
-            </button>
-          )}
+        {game.isOwner && (
+          <div className="card-actions">
+            {!isEditing ? (
+              <button
+                type="button"
+                className="button"
+                onClick={() => setIsEditing(true)}
+              >
+                Редактировать игру
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="button button-ghost"
+                onClick={() => {
+                  setIsEditing(false);
+                  setTitle(game.title || "");
+                  setDescription(game.description || "");
+                  setBanner(null);
+                  setError("");
+                }}
+              >
+                Отмена
+              </button>
+            )}
 
-          <button
-            type="button"
-            className="button button-danger"
-            onClick={handleDelete}
-            disabled={isSubmitting}
-          >
-            Удалить игру к чертям
-          </button>
-        </div>
+            <button
+              type="button"
+              className="button button-danger"
+              onClick={handleDelete}
+              disabled={isSubmitting}
+            >
+              Удалить игру к чертям
+            </button>
+          </div>
+        )}
       </div>
 
       {error ? <ErrorState message={error} /> : null}

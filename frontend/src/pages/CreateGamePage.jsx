@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createGame } from "../api/api";
 import ErrorState from "../components/ErrorState";
+import { useAuth } from "../context/auth-context";
 
 function CreateGamePage() {
   const navigate = useNavigate();
+  const { token } = useAuth();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -27,7 +29,7 @@ function CreateGamePage() {
         formData.append("banner", banner);
       }
 
-      const createdGame = await createGame(formData);
+      const createdGame = await createGame(formData, token);
       navigate(`/games/${createdGame.id}`);
     } catch (err) {
       setError(err.message || "Не удалось создать игру(Фух...)");
