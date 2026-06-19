@@ -38,7 +38,7 @@ function GamePage() {
     }
 
     loadGame();
-  }, [id]);
+  }, [id, token]);
 
   async function handleUpdate(event) {
     event.preventDefault();
