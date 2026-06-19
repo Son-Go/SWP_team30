@@ -40,8 +40,6 @@ public class JwtUtils {
         }
     }
 
-    // #TODO: debug
-    // Testing Method
     public String generateToken(Long userId) {
         return Jwts.builder()
                 .claim("userId", userId)
