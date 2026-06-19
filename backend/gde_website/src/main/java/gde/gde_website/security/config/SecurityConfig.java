@@ -49,6 +49,8 @@ public class SecurityConfig {
                         // Endpoints which requires JWT token authentication
                         .requestMatchers(HttpMethod.POST, "/games").authenticated()
                         .requestMatchers(HttpMethod.GET, "/auth/me").authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/games/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/games/**").authenticated()
 
                         // Debug endpoints
 
