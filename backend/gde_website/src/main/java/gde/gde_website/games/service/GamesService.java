@@ -45,7 +45,7 @@ public class GamesService {
      * @Author: Egor Grishin
      */
     public GamesResponce getGameById(Long gameId, Long currentUserId) {
-        gamesServiceLogger.info("Called getGameById method");
+        gamesServiceLogger.info("Called GamesService getGameById method");
         GamesEntity game = repository.findById(gameId).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
@@ -60,7 +60,7 @@ public class GamesService {
      * @Author: Artemii Gorelov
      */
     public Games createGame(Games entity, Long authorId) {
-        gamesServiceLogger.info("Called createGame method");
+        gamesServiceLogger.info("Called GamesService createGame method");
         GamesEntity game = new GamesEntity(
                 authorId,
                 entity.title(),
@@ -83,7 +83,7 @@ public class GamesService {
      * @Author: Egor Grishin
      */
     public Games updateGame(Games entity, Long gameId) {
-        gamesServiceLogger.info("Called updateGame method");
+        gamesServiceLogger.info("Called GamesService updateGame method");
         GamesEntity gameToUpdate = repository.findById(gameId).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
@@ -113,7 +113,7 @@ public class GamesService {
      * @Author: Artemii Gorelov
      */
     public Games deleteGame(Long gameId, Long currentUserId) {
-        gamesServiceLogger.info("Called deleteGame method");
+        gamesServiceLogger.info("Called GamesService deleteGame method");
         GamesEntity entity = repository.findById(gameId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
 

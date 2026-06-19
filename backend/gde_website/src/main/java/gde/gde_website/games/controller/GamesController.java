@@ -4,7 +4,6 @@ import gde.gde_website.games.entity.GamesEntity;
 import gde.gde_website.games.model.Games;
 import gde.gde_website.games.model.GamesResponce;
 import gde.gde_website.games.service.GamesService;
-import gde.gde_website.security.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
- * This class is used for handling specific HTTP requests which includes "/games/ in their paths
+ * This class is used for handling specific HTTP requests which includes /games/ in their paths
  * @Author: Artemii Gorelov, Egor Grishin
  */
 @RestController
@@ -42,7 +41,8 @@ public class GamesController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "24") int size
     ) {
-        gamesControllerLogger.info("Called getAllGames endpoint");
+
+        gamesControllerLogger.info("Called GamesController /games method (get)");
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt"));
         return ResponseEntity.status(HttpStatus.OK).body(gamesService.getAllGames(pageable));
     }
@@ -58,7 +58,8 @@ public class GamesController {
     public ResponseEntity<GamesResponce> getGameById(
             @PathVariable("id") Long id,
             Authentication authentication) {
-        gamesControllerLogger.info("Called getGameById endpoint");
+
+        gamesControllerLogger.info("Called GamesController /games/id method (get)");
         Long currentUserId = null;
 
         if (authentication != null && authentication.isAuthenticated()) {
@@ -85,7 +86,8 @@ public class GamesController {
             @RequestParam String bannerUrl,
             Authentication authentication
     ) {
-        gamesControllerLogger.info("Called createGame endpoint");
+
+        gamesControllerLogger.info("Called GamesController /games (post)");
         if (authentication == null || !authentication.isAuthenticated()) {
             gamesControllerLogger.error("User create game permissions error");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
@@ -118,6 +120,7 @@ public class GamesController {
             @RequestParam String bannerUrl,
             Authentication authentication) {
 
+        gamesControllerLogger.info("Called GamesController /games/id (post)");
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
         }
@@ -143,7 +146,8 @@ public class GamesController {
             @PathVariable("id") Long id,
             Authentication authentication
     ) {
-        gamesControllerLogger.info("Called deleteGame endpoint");
+
+        gamesControllerLogger.info("Called GamesController /games/id (delete)");
         if (authentication == null || !authentication.isAuthenticated()) {
             gamesControllerLogger.error("User delete game permissions error");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
@@ -156,7 +160,7 @@ public class GamesController {
     }
 
     /**
-     * This function is used for creating new raw game
+     * This function is used for creating new raw game (without id and creation time for database)
      * @param currentUserId - id of user which creating game
      * @param title - title of the game
      * @param description - game description

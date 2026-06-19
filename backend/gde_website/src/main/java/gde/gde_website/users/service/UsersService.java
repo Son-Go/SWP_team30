@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
- * Class that implements business logic of functions which are called inside UsersController
+ * This class implements business logic of functions which are called inside UsersController
  * @Author: Artemii Gorelov, Egor Grishin
  */
 @Service
@@ -39,7 +39,7 @@ public class UsersService {
      * @Author: Egor Grishin
      */
     public LoginResponse register(RegisterRequest request) {
-        userServiceLogger.info("Called user service register method");
+        userServiceLogger.info("Called UsersService register method");
         if (userRepository.existsByEmail(request.email())) {
             userServiceLogger.error("Entered email is already used");
             throw new ResponseStatusException(HttpStatus.CONFLICT, "User with such email is already registered");
