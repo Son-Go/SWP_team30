@@ -4,6 +4,8 @@ This document serves as the authoritative index for all user stories, providing 
 
 > **Note:** The issue tracker is the authoritative source for live status. This file mirrors the current state for traceability.
 
+> **Important** We implemented GitHub Action to autommatically assign indexes to new User stories (and indexes can be based only on issue number (it is GitHub Actions limitation)). So after first 14 incrementally indexed stories, future stories have ascending sparse indexes
+
 ## Active User Stories
 
 Active stories are ordered by **MoSCoW priority** (Must Have → Should Have → Could Have), then by **Sprint** (unassigned `—` first), then by **stable ID**.
