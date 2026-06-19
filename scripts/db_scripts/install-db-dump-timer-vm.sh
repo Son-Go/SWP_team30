@@ -9,7 +9,7 @@ SERVICE_FILE="$SYSTEMD_DIR/swp-team30-db-dump.service"
 TIMER_FILE="$SYSTEMD_DIR/swp-team30-db-dump.timer"
 CHECK_SCRIPT="$REPO_ROOT/scripts/db_scripts/db-dump-on-change-vm.sh"
 BACKUP_DIR="$REPO_ROOT/backups/postgres"
-ON_CALENDAR="${ON_CALENDAR:-*:0/15}"
+ON_CALENDAR="${ON_CALENDAR:-*-*-* 00/3:00:00}"
 
 usage() {
   cat <<'EOF'
@@ -17,7 +17,7 @@ Usage:
   bash scripts/db_scripts/install-db-dump-timer-vm.sh [--schedule SYSTEMD_CALENDAR] [--backup-dir PATH]
 
 Defaults:
-  schedule   *:0/15  (every 15 minutes)
+  schedule   *-*-* 00/3:00:00  (every 3 hours)
   backup dir <repo>/backups/postgres
 EOF
 }
@@ -83,4 +83,3 @@ echo "Useful commands:"
 echo "  systemctl --user status swp-team30-db-dump.timer"
 echo "  systemctl --user list-timers swp-team30-db-dump.timer"
 echo "  systemctl --user start swp-team30-db-dump.service"
-

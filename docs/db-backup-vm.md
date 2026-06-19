@@ -74,7 +74,7 @@ When the Postgres container is not running:
 
 ## Install automatic periodic backups
 
-This installs a user-level systemd timer that runs every 15 minutes by default.
+This installs a user-level systemd timer that runs every 3 hours by default.
 
 ```bash
 bash scripts/db_scripts/install-db-dump-timer-vm.sh
@@ -83,7 +83,7 @@ bash scripts/db_scripts/install-db-dump-timer-vm.sh
 Custom schedule example:
 
 ```bash
-bash scripts/db_scripts/install-db-dump-timer-vm.sh --schedule "*:0/5"
+bash scripts/db_scripts/install-db-dump-timer-vm.sh --schedule "*-*-* 00/3:00:00"
 ```
 
 Useful timer commands:
@@ -100,4 +100,5 @@ journalctl --user -u swp-team30-db-dump.service --since today
 - The script expects the compose Postgres service to be named `postgres`.
 - By default it uses database `mydatabase` and user `myuser`.
 - You can override `POSTGRES_SERVICE`, `POSTGRES_DB`, `POSTGRES_USER`, and `POSTGRES_PASSWORD` with environment variables.
+- The timer runs every 3 hours by default, and the dump script saves a file only when the database state changed.
 - The saved dump is normalized plain SQL so the change detector is stable across repeated runs.
