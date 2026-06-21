@@ -5,24 +5,28 @@ GDE Website - website for GDE innopolis club, where local game developers can pu
 
 ---
 
-## Local setup instructions
-Open https://github.com/Son-Go/SWP_team30/tree/8c2e78c353f0c7f9470b3c63cf59da54a8ecf47e/temp-frontend/htmlFrontend folder, and run VS code Live server extension. MVP-v0 has no backend functionality
+## Access instructions
 
 To access deployed MVP-v0 open [link](https://precious-toffee-52e805.netlify.app/)
+To access deployed MVP-v1 open [link](http://193.187.95.33)
+
+---
+
+## Local setup instructions
+
+**MVP-v0:** Open https://github.com/Son-Go/SWP_team30/tree/8c2e78c353f0c7f9470b3c63cf59da54a8ecf47e/temp-frontend/htmlFrontend folder, and run VS code Live server extension. MVP-v0 has no backend functionality
+**MVP-v1:** Clone project, run docker compose up. `http://localhost:80` will show working website
 
 ---
 
 ## Weekly README reports
 
 - Week 2 [README.md](https://github.com/Son-Go/SWP_team30/blob/8b765b5d98da638555c6fb2a9f5be49d44b7cc38/reports/week2/README.md)
+- Week 3 [README.md](https://github.com/Son-Go/SWP_team30/blob/1214b680442a30e2ae7adfb5d748f33b7229d92b/reports/week3/README.md)
 
 ---
 
 ## Visuals
-
----
-
-## Installation
 
 ---
 
