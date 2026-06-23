@@ -1,7 +1,7 @@
 package gde.gde_website.games.controller;
 
-import gde.gde_website.games.entity.GamesEntity;
 import gde.gde_website.games.model.Games;
+import gde.gde_website.games.model.GamesCardResponce;
 import gde.gde_website.games.model.GamesResponce;
 import gde.gde_website.games.service.GamesService;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class GamesController {
      * @Author: Artemii Gorelov
      */
     @GetMapping
-    public ResponseEntity<Page<GamesEntity>> getAllGames(
+    public ResponseEntity<Page<GamesCardResponce>> getAllGames(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "24") int size
     ) {
