@@ -1,4 +1,17 @@
 services:
+  loki:
+    image: grafana/loki:latest
+    restart: unless-stopped
+    command:
+      - -config.file=/etc/loki/config.yaml
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./observability/loki/config.yaml:/etc/loki/config.yaml:ro
+      - loki_data:/loki
+    networks:
+      - gde-network
+
   alloy:
     image: grafana/alloy:latest
     restart: unless-stopped
@@ -20,3 +33,4 @@ services:
 
 volumes:
   alloy_data:
+  loki_data:

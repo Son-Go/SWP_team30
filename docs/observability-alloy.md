@@ -23,14 +23,14 @@ Start the main app stack first:
 docker compose up -d
 ```
 
-Start Alloy with the observability overlay:
+Start Loki and Alloy with the observability overlay:
 
 ```bash
-docker compose -f compose.yaml -f compose.observability.yaml up -d alloy
+docker compose -f compose.yaml -f compose.observability.yaml up -d loki alloy
 ```
 
 ## Notes
 
 - The overlay expects the base Compose network to already exist.
 - The default Loki push target is `http://loki:3100/loki/api/v1/push`.
-- Until Loki is added to the stack, Alloy can start, but log delivery will retry and fail until that endpoint becomes available.
+- Loki is exposed on `http://localhost:3100`.
