@@ -10,6 +10,8 @@ import gde.gde_website.games.model.GamesPageResponce;
 import gde.gde_website.games.repository.GameTagRepository;
 import gde.gde_website.games.repository.GamesRepository;
 import gde.gde_website.games.repository.TagRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,8 +109,16 @@ public class GamesService {
             }
         }
 
-        GamesEntity gameWithTags = gamesRepository.findById(savedGame.getId()).orElseThrow();
-        return mapper.entityToGames(gameWithTags);
+        return new Games(
+                savedGame.getId(),
+                savedGame.getAuthorId(),
+                savedGame.getTitle(),
+                savedGame.getDescription(),
+                savedGame.getBannerUrl(),
+                savedGame.getCreatedAt(),
+                savedGame.getUpdatedAt(),
+                entity.gameTags()
+        );
     }
 
     /**
