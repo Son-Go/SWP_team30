@@ -1,11 +1,15 @@
 package gde.gde_website.games.service;
 
+import gde.gde_website.games.entity.GameTagEntity;
 import gde.gde_website.games.entity.GamesEntity;
+import gde.gde_website.games.entity.TagEntity;
 import gde.gde_website.games.mapper.GamesMapper;
 import gde.gde_website.games.model.Games;
 import gde.gde_website.games.model.GamesCardResponce;
 import gde.gde_website.games.model.GamesPageResponce;
+import gde.gde_website.games.repository.GameTagRepository;
 import gde.gde_website.games.repository.GamesRepository;
+import gde.gde_website.games.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -26,7 +31,9 @@ import java.util.List;
 public class GamesService {
     private static final Logger gamesServiceLogger = LoggerFactory.getLogger(GamesService.class);
 
-    private final GamesRepository repository;
+    private final GamesRepository gamesRepository;
+    private final TagRepository tagRepository;
+    private final GameTagRepository gameTagRepository;
     private final GamesMapper mapper;
 
     /**
@@ -35,9 +42,10 @@ public class GamesService {
      * @return - returns  sublist of games entity
      * @Author: Artemii Gorelov
      */
+    @Transactional(readOnly = true)
     public Page<GamesPageResponce> getAllGames(Pageable pageable) {
         gamesServiceLogger.info("Called getAllGames method");
-        return repository.findAllByOrderByCreatedAtDesc(pageable)
+        return gamesRepository.findAllByOrderByCreatedAtDesc(pageable)
                 .map(game -> {
                     List<String> tagNames = game.getGameTags().stream()
                             .map(gameTag -> gameTag.getTag().getName()).toList();
@@ -59,9 +67,10 @@ public class GamesService {
      * @return game response object
      * @Author: Egor Grishin
      */
+    @Transactional(readOnly = true)
     public GamesCardResponce getGameById(Long gameId, Long currentUserId) {
         gamesServiceLogger.info("Called GamesService getGameById method");
-        GamesEntity game = repository.findById(gameId).
+        GamesEntity game = gamesRepository.findById(gameId).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         return mapper.entityToResponse(game, currentUserId);
@@ -83,7 +92,20 @@ public class GamesService {
                 entity.bannerUrl()
         );
 
-        GamesEntity savedGame = repository.save(game);
+        GamesEntity savedGame = gamesRepository.save(game);
+
+        if (entity.gameTags() != null) {
+            for (String tagName : entity.gameTags()) {
+                TagEntity tag = tagRepository.findByName(tagName)
+                        .orElseThrow(() -> new ResponseStatusException(
+                                HttpStatus.BAD_REQUEST,
+                                "Tag not found: " + tagName
+                        ));
+
+                gameTagRepository.save(new GameTagEntity(savedGame.getId(), tag.getId()));
+            }
+        }
+
         return mapper.entityToGames(savedGame);
     }
 
@@ -99,7 +121,7 @@ public class GamesService {
      */
     public Games updateGame(Games entity, Long gameId) {
         gamesServiceLogger.info("Called GamesService updateGame method");
-        GamesEntity gameToUpdate = repository.findById(gameId).
+        GamesEntity gameToUpdate = gamesRepository.findById(gameId).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         if (!gameToUpdate.getAuthorId().equals(entity.authorId())) {
@@ -111,7 +133,7 @@ public class GamesService {
         gameToUpdate.setDescription(entity.description());
         gameToUpdate.setBannerUrl(entity.bannerUrl());
 
-        GamesEntity savedGame = repository.save(gameToUpdate);
+        GamesEntity savedGame = gamesRepository.save(gameToUpdate);
         gamesServiceLogger.info("Successfully updated game id={}", gameId);
 
         return mapper.entityToGames(savedGame);
@@ -129,7 +151,7 @@ public class GamesService {
      */
     public Games deleteGame(Long gameId, Long currentUserId) {
         gamesServiceLogger.info("Called GamesService deleteGame method");
-        GamesEntity entity = repository.findById(gameId)
+        GamesEntity entity = gamesRepository.findById(gameId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
 
         if (!entity.getAuthorId().equals(currentUserId)) {
@@ -137,7 +159,7 @@ public class GamesService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not the owner of this game");
         }
 
-        repository.delete(entity);
+        gamesRepository.delete(entity);
         gamesServiceLogger.info("Successfully deleted game id={}", gameId);
         return mapper.entityToGames(entity);
     }

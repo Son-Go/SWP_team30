@@ -12,10 +12,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class is used for handling specific HTTP requests which includes /games/ in their paths
@@ -79,11 +83,12 @@ public class GamesController {
      * @throws ResponseStatusException with code 401 while user is not authenticated
      * @Author: Artemii Gorelov
      */
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Games> createGame(
             @RequestParam String title,
             @RequestParam String description,
             @RequestParam String bannerUrl,
+            @RequestParam(required = false) List<String> gameTags,
             Authentication authentication
     ) {
 
@@ -95,7 +100,7 @@ public class GamesController {
 
         Long currentUserId = (Long) authentication.getPrincipal();
 
-        Games gameWithCurrentAuthor = createNewRawGame(currentUserId, title, description, bannerUrl);
+        Games gameWithCurrentAuthor = createNewRawGame(currentUserId, title, description, bannerUrl, gameTags);
 
         Games createGame = gamesService.createGame(gameWithCurrentAuthor, currentUserId);
         return ResponseEntity.status(HttpStatus.CREATED).body(createGame);
@@ -118,6 +123,7 @@ public class GamesController {
             @RequestParam String title,
             @RequestParam String description,
             @RequestParam String bannerUrl,
+            @RequestParam List<String> gameTags,
             Authentication authentication) {
 
         gamesControllerLogger.info("Called GamesController /games/id (post)");
@@ -127,7 +133,7 @@ public class GamesController {
 
         Long currentUserId = (Long) authentication.getPrincipal();
 
-        Games gameToUpdate = createNewRawGame(currentUserId, title, description, bannerUrl);
+        Games gameToUpdate = createNewRawGame(currentUserId, title, description, bannerUrl, gameTags);
 
         Games updatedGame = gamesService.updateGame(gameToUpdate, gameId);
         return ResponseEntity.status(HttpStatus.OK).body(updatedGame);
@@ -168,7 +174,11 @@ public class GamesController {
      * @return new Games object
      * @Author: Egor Grishin
      */
-    private Games createNewRawGame(Long currentUserId, String title, String description, String bannerUrl) {
+    private Games createNewRawGame(Long currentUserId,
+                                   String title,
+                                   String description,
+                                   String bannerUrl,
+                                   List<String> gameTags) {
         return new Games(
                 null,
                 currentUserId,
@@ -176,7 +186,8 @@ public class GamesController {
                 description,
                 bannerUrl,
                 null,
-                null
+                null,
+                gameTags
         );
     }
 }

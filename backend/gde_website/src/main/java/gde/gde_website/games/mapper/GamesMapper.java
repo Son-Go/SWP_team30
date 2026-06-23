@@ -64,7 +64,9 @@ public class GamesMapper {
                 entity.getDescription(),
                 entity.getBannerUrl(),
                 entity.getCreatedAt(),
-                entity.getUpdatedAt()
+                entity.getUpdatedAt(),
+                entity.getGameTags().stream().
+                        map(gameTagEntity -> gameTagEntity.getTag().getName()).toList()
         );
     }
 }
