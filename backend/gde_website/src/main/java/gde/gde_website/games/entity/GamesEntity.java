@@ -39,7 +39,7 @@ public class GamesEntity {
     @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT now()")
     private Instant updatedAt;
 
-    @OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<GameTagEntity> gameTags = new ArrayList<>();
 
     public GamesEntity(Long authorId, String title, String description, String bannerUrl) {

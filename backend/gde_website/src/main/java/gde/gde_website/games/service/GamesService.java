@@ -98,15 +98,16 @@ public class GamesService {
         GamesEntity savedGame = gamesRepository.save(game);
 
         if (entity.gameTags() != null) {
-            for (String tagName : entity.gameTags()) {
-                TagEntity tag = tagRepository.findByName(tagName)
-                        .orElseThrow(() -> new ResponseStatusException(
-                                HttpStatus.BAD_REQUEST,
-                                "Tag not found: " + tagName
-                        ));
+            List<GameTagEntity> tags = entity.gameTags().stream()
+                    .map(tagName -> {
+                        TagEntity tag = tagRepository.findByName(tagName)
+                                .orElseThrow(() -> new ResponseStatusException(
+                                        HttpStatus.BAD_REQUEST, "Tag not found: " + tagName));
+                        return new GameTagEntity(savedGame.getId(), tag.getId());
+                    })
+                    .toList();
 
-                gameTagRepository.save(new GameTagEntity(savedGame.getId(), tag.getId()));
-            }
+            gameTagRepository.saveAll(tags);
         }
 
         return new Games(
@@ -149,15 +150,16 @@ public class GamesService {
         gameTagRepository.deleteAllByGameId(gameId);
 
         if (entity.gameTags() != null) {
-            for (String tagName : entity.gameTags()) {
-                TagEntity tag = tagRepository.findByName(tagName)
-                        .orElseThrow(() -> new ResponseStatusException(
-                                HttpStatus.BAD_REQUEST,
-                                "Tag not found: " + tagName
-                        ));
+            List<GameTagEntity> tags = entity.gameTags().stream()
+                    .map(tagName -> {
+                        TagEntity tag = tagRepository.findByName(tagName)
+                                .orElseThrow(() -> new ResponseStatusException(
+                                        HttpStatus.BAD_REQUEST, "Tag not found: " + tagName));
+                        return new GameTagEntity(gameId, tag.getId());
+                    })
+                    .toList();
 
-                gameTagRepository.save(new GameTagEntity(gameId, tag.getId()));
-            }
+            gameTagRepository.saveAll(tags);
         }
 
         GamesEntity savedGame = gamesRepository.save(gameToUpdate);
@@ -196,7 +198,6 @@ public class GamesService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not the owner of this game");
         }
 
-        gameTagRepository.deleteAllByGameId(gameId);
         gamesRepository.delete(gameToDelete);
 
         gamesServiceLogger.info("Successfully deleted game id={}", gameId);

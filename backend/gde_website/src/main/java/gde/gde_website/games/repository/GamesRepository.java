@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 /**
  * This class is used for working with PostgreSQL database connected with games table
  * @Author: Artemii Gorelov
@@ -21,4 +23,7 @@ public interface GamesRepository extends JpaRepository<GamesEntity, Long> {
      */
     @EntityGraph(attributePaths = {"gameTags", "gameTags.tag"})
     Page<GamesEntity> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
+    @EntityGraph(attributePaths = {"gameTags", "gameTags.tag"})
+    Optional<GamesEntity> findById(Long id);
 }
