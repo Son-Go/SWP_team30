@@ -117,13 +117,16 @@ public class GamesController {
      * @throws ResponseStatusException with code 401 while user token is invalid
      * @Author: Egor Grishin
      */
-    @PatchMapping("/{id}")
+    @PatchMapping(path = "/{id}", consumes = {
+            MediaType.MULTIPART_FORM_DATA_VALUE,
+            MediaType.APPLICATION_FORM_URLENCODED_VALUE
+    })
     public ResponseEntity<Games> updateGame(
             @PathVariable("id") Long gameId,
             @RequestParam String title,
             @RequestParam String description,
             @RequestParam String bannerUrl,
-            @RequestParam List<String> gameTags,
+            @RequestParam(required = false) List<String> gameTags,
             Authentication authentication) {
 
         gamesControllerLogger.info("Called GamesController /games/id (post)");

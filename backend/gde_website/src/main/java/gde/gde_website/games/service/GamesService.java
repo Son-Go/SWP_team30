@@ -85,7 +85,7 @@ public class GamesService {
      * @return new games object
      * @Author: Artemii Gorelov, Egor Grishin
      */
-    @Transactional()
+    @Transactional
     public Games createGame(Games entity, Long authorId) {
         gamesServiceLogger.info("Called GamesService createGame method");
         GamesEntity game = new GamesEntity(
@@ -131,6 +131,7 @@ public class GamesService {
      * 401 when user who wants to update game is not its author or admin
      * @Author: Egor Grishin
      */
+    @Transactional
     public Games updateGame(Games entity, Long gameId) {
         gamesServiceLogger.info("Called GamesService updateGame method");
         GamesEntity gameToUpdate = gamesRepository.findById(gameId).
@@ -144,6 +145,8 @@ public class GamesService {
         gameToUpdate.setTitle(entity.title());
         gameToUpdate.setDescription(entity.description());
         gameToUpdate.setBannerUrl(entity.bannerUrl());
+
+        gameTagRepository.deleteAllByGameId(gameId);
 
         if (entity.gameTags() != null) {
             for (String tagName : entity.gameTags()) {
@@ -160,7 +163,16 @@ public class GamesService {
         GamesEntity savedGame = gamesRepository.save(gameToUpdate);
         gamesServiceLogger.info("Successfully updated game id={}", gameId);
 
-        return mapper.entityToGames(savedGame);
+        return new Games(
+                savedGame.getId(),
+                savedGame.getAuthorId(),
+                savedGame.getTitle(),
+                savedGame.getDescription(),
+                savedGame.getBannerUrl(),
+                savedGame.getCreatedAt(),
+                savedGame.getUpdatedAt(),
+                entity.gameTags()
+        );
     }
 
     /**
@@ -171,20 +183,23 @@ public class GamesService {
      * @throws ResponseStatusException with codes:
      * 404 when game with requested id does not found
      * 401 when user who wants to delete the game is not game author or admin
-     * @Author: Artemii Gorelov
+     * @Author: Artemii Gorelov, Egor Grishin
      */
+    @Transactional
     public Games deleteGame(Long gameId, Long currentUserId) {
         gamesServiceLogger.info("Called GamesService deleteGame method");
-        GamesEntity entity = gamesRepository.findById(gameId)
+        GamesEntity gameToDelete = gamesRepository.findById(gameId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
 
-        if (!entity.getAuthorId().equals(currentUserId)) {
+        if (!gameToDelete.getAuthorId().equals(currentUserId)) {
             gamesServiceLogger.error("User permissions error");
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not the owner of this game");
         }
 
-        gamesRepository.delete(entity);
+        gameTagRepository.deleteAllByGameId(gameId);
+        gamesRepository.delete(gameToDelete);
+
         gamesServiceLogger.info("Successfully deleted game id={}", gameId);
-        return mapper.entityToGames(entity);
+        return mapper.entityToGames(gameToDelete);
     }
 }
