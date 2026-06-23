@@ -81,8 +81,9 @@ public class GamesService {
      * @param entity - entity of game to be created
      * @param authorId - id of author that creating game
      * @return new games object
-     * @Author: Artemii Gorelov
+     * @Author: Artemii Gorelov, Egor Grishin
      */
+    @Transactional()
     public Games createGame(Games entity, Long authorId) {
         gamesServiceLogger.info("Called GamesService createGame method");
         GamesEntity game = new GamesEntity(
@@ -106,7 +107,8 @@ public class GamesService {
             }
         }
 
-        return mapper.entityToGames(savedGame);
+        GamesEntity gameWithTags = gamesRepository.findById(savedGame.getId()).orElseThrow();
+        return mapper.entityToGames(gameWithTags);
     }
 
     /**
