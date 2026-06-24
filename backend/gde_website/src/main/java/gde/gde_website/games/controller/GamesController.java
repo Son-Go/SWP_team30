@@ -18,7 +18,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,7 +46,7 @@ public class GamesController {
     ) {
 
         gamesControllerLogger.info("Called GamesController /games method (get)");
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt"));
+        Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.status(HttpStatus.OK).body(gamesService.getAllGames(pageable));
     }
 
