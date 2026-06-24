@@ -262,7 +262,7 @@
             "type": "loki",
             "uid": "loki"
           },
-          "expr": "sum(count_over_time({job=\"docker\", service_name!~\"loki|grafana|prometheus|alloy|cadvisor\"} |~ \"(?i)error|exception|failed\" [5m]))",
+          "expr": "sum(count_over_time({job=\"docker\", service_name!~\"loki|grafana|prometheus|alloy|cadvisor|docker-events\"} |~ \"(?i)error|exception|failed\" [5m]))",
           "refId": "A"
         }
       ],
@@ -657,7 +657,7 @@
             "type": "loki",
             "uid": "loki"
           },
-          "expr": "{job=\"docker\", service_name!~\"loki|grafana|prometheus|alloy|cadvisor\"} |~ \"(?i)error|exception|failed|warn\"",
+          "expr": "{job=\"docker\", service_name!~\"loki|grafana|prometheus|alloy|cadvisor|docker-events\"} |~ \"(?i)error|exception|failed|warn\"",
           "refId": "A"
         }
       ],
@@ -913,12 +913,11 @@
             "type": "loki",
             "uid": "loki"
           },
-          "expr": "{job=\"docker\", service_name!~\"loki|grafana|prometheus|alloy|cadvisor\"} |~ \"(?i)error|exception|failed\"",
+          "expr": "{job=\"docker\", service_name!~\"loki|grafana|prometheus|alloy|cadvisor|docker-events\"} |~ \"(?i)error|exception|failed\"",
           "refId": "A"
         }
       ],
-      "timeFrom": "5m",
-      "title": "Error Details From Last 5m",
+      "title": "Error Details",
       "type": "logs"
     },
     {
@@ -949,7 +948,7 @@
             "type": "loki",
             "uid": "loki"
           },
-          "expr": "{job=\"docker\", service_name=\"docker-events\"} |~ \"die|oom|kill|stop|destroy|restart|health_status: unhealthy\"",
+          "expr": "{job=\"docker\", service_name=\"docker-events\"} |~ \"\\\\\\\"Action\\\\\\\":\\\\\\\"(die|oom|kill|stop|destroy|restart|health_status: unhealthy)\\\\\\\"\"",
           "refId": "A"
         }
       ],
