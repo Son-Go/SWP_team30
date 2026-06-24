@@ -358,3 +358,31 @@ textarea:focus-visible {
     min-height: 64px;
   }
 }
+
+/* Clickable card */
+
+.card-link {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.card-link:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(81, 53, 177, 0.14);
+  border-color: var(--primary);
+  color: inherit;
+}
+
+.card-link:active {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(81, 53, 177, 0.12);
+  border-color: var(--primary-hover);
+}

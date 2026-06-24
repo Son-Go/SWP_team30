@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 function GameCard({ game }) {
   return (
-    <article className="card section">
+    <Link to={`/games/${game.id}`} className="card card-link">
       {game.bannerUrl ? (
         <img src={game.bannerUrl} alt={game.title} />
       ) : (
@@ -17,13 +17,7 @@ function GameCard({ game }) {
           {game.description || "Описание пока отсутствует."}
         </p>
       </div>
-
-      <div className="card-actions">
-        <Link to={`/games/${game.id}`} className="button">
-          К игре
-        </Link>
-      </div>
-    </article>
+    </Link>
   );
 }
 
