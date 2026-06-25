@@ -19,48 +19,64 @@ function GamePage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [bannerUrl, setBannerUrl] = useState("");
+  const [tags, setTags] = useState([]);
+  const [tagInput, setTagInput] = useState("");
 
   useEffect(() => {
     async function loadGame() {
       try {
         setLoading(true);
         setError("");
-
         const data = await getGameById(id, token);
         setGame(data);
         setTitle(data.title || "");
         setDescription(data.description || "");
         setBannerUrl(data.bannerUrl || "");
+        setTags(data.gameTags || []);
       } catch (err) {
         setError(err.message || "Не удалось загрузить игру");
       } finally {
         setLoading(false);
       }
     }
-
     loadGame();
   }, [id, token]);
 
+  function handleAddTag() {
+    const trimmed = tagInput.trim();
+    if (trimmed && !tags.includes(trimmed)) {
+      setTags([...tags, trimmed]);
+    }
+    setTagInput("");
+  }
+
+  function handleRemoveTag(tag) {
+    setTags(tags.filter((t) => t !== tag));
+  }
+
+  function handleTagKeyDown(e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAddTag();
+    }
+  }
+
   async function handleUpdate(event) {
     event.preventDefault();
-
     try {
       setIsSubmitting(true);
       setError("");
-
       const formData = new FormData();
       formData.append("title", title);
       formData.append("description", description);
-
-      if (bannerUrl) {
-        formData.append("bannerUrl", bannerUrl);
-      }
-
+      if (bannerUrl) formData.append("bannerUrl", bannerUrl);
+      tags.forEach((tag) => formData.append("tags", tag));
       const updatedGame = await updateGame(id, formData, token);
       setGame(updatedGame);
       setTitle(updatedGame.title || "");
       setDescription(updatedGame.description || "");
       setBannerUrl(updatedGame.bannerUrl || "");
+      setTags(updatedGame.gameTags || []);
       setIsEditing(false);
     } catch (err) {
       setError(err.message || "Не удалось обновить игру");
@@ -71,15 +87,10 @@ function GamePage() {
 
   async function handleDelete() {
     const confirmed = window.confirm("Уверен? Дороги назад не будет.");
-
-    if (!confirmed) {
-      return;
-    }
-
+    if (!confirmed) return;
     try {
       setIsSubmitting(true);
       setError("");
-
       await deleteGame(id, token);
       navigate("/games");
     } catch (err) {
@@ -88,17 +99,9 @@ function GamePage() {
     }
   }
 
-  if (loading) {
-    return <Loader text="Загрузка игры..." />;
-  }
-
-  if (error && !game) {
-    return <ErrorState message={error} />;
-  }
-
-  if (!game) {
-    return <ErrorState message="Игра не найдена))" />;
-  }
+  if (loading) return <Loader text="Загрузка игры..." />;
+  if (error && !game) return <ErrorState message={error} />;
+  if (!game) return <ErrorState message="Игра не найдена))" />;
 
   return (
     <section className="section-lg">
@@ -129,13 +132,13 @@ function GamePage() {
                   setTitle(game.title || "");
                   setDescription(game.description || "");
                   setBannerUrl("");
+                  setTags(game.gameTags || []);
                   setError("");
                 }}
               >
                 Отмена
               </button>
             )}
-
             <button
               type="button"
               className="button button-danger"
@@ -157,10 +160,19 @@ function GamePage() {
           ) : (
             <div className="state-box">Баннер пока не загружен.</div>
           )}
-
           <div className="section">
             <h2 className="card-title">Описание</h2>
             <p className="card-text">{game.description || "Описания нема."}</p>
+
+            {game.gameTags?.length > 0 && (
+              <div className="tag-list">
+                {game.gameTags.map((tag) => (
+                  <span key={tag} className="tag-badge">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </article>
       ) : (
@@ -175,7 +187,7 @@ function GamePage() {
                 className="input"
                 type="text"
                 value={title}
-                onChange={(event) => setTitle(event.target.value)}
+                onChange={(e) => setTitle(e.target.value)}
                 required
               />
             </div>
@@ -188,12 +200,12 @@ function GamePage() {
                 id="description"
                 className="textarea"
                 value={description}
-                onChange={(event) => setDescription(event.target.value)}
+                onChange={(e) => setDescription(e.target.value)}
               />
             </div>
 
             <div className="form-group">
-              <label className="label" htmlFor="banner">
+              <label className="label" htmlFor="bannerUrl">
                 Новый баннер
               </label>
               <input
@@ -202,8 +214,41 @@ function GamePage() {
                 type="url"
                 placeholder="https://biographe.ru/char/shrek/"
                 value={bannerUrl}
-                onChange={(event) => setBannerUrl(event.target.value)}
+                onChange={(e) => setBannerUrl(e.target.value)}
               />
+            </div>
+
+            <div className="form-group">
+              <label className="label">Теги</label>
+              <div className="tag-input-row">
+                <input
+                  className="input"
+                  type="text"
+                  placeholder="Введи тег и нажми Enter или +"
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyDown={handleTagKeyDown}
+                />
+                <button type="button" className="button" onClick={handleAddTag}>
+                  +
+                </button>
+              </div>
+              {tags.length > 0 && (
+                <div className="tag-list">
+                  {tags.map((tag) => (
+                    <span key={tag} className="tag-badge">
+                      {tag}
+                      <button
+                        type="button"
+                        className="tag-remove"
+                        onClick={() => handleRemoveTag(tag)}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="card-actions">
@@ -214,7 +259,6 @@ function GamePage() {
               >
                 {isSubmitting ? "Сохранение..." : "Сохранить"}
               </button>
-
               <button
                 type="button"
                 className="button button-ghost"
@@ -223,6 +267,7 @@ function GamePage() {
                   setTitle(game.title || "");
                   setDescription(game.description || "");
                   setBannerUrl("");
+                  setTags(game.gameTags || []);
                   setError("");
                 }}
               >
