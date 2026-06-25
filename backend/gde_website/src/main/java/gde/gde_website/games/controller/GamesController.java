@@ -33,21 +33,32 @@ public class GamesController {
     private final GamesService gamesService;
 
     /**
-     * This method is used for handling get list of all games divided on the groups of specific size request
+     * This method is used for handling get list of all games or games filtered by tags request,
+     * divided on the groups of specific size
      * @param page - initial page
      * @param size - number of elements on each page
+     * @param tags - optional list of tag names to filter games by; if not provided or empty, returns all games
      * @return - returns status OK  (code 200) with sublist of games entity inside response body
-     * @Author: Artemii Gorelov
+     * @Author: Artemii Gorelov, Egor Grishin
      */
     @GetMapping
     public ResponseEntity<Page<GamesPageResponce>> getAllGames(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "24") int size
+            @RequestParam(defaultValue = "24") int size,
+            @RequestParam(required = false) List<String> tags
     ) {
 
         gamesControllerLogger.info("Called GamesController /games method (get)");
         Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.status(HttpStatus.OK).body(gamesService.getAllGames(pageable));
+
+        Page<GamesPageResponce> games;
+        if (tags != null && !tags.isEmpty()) {
+            games = gamesService.getGamesByTags(tags, pageable);
+        } else {
+            games = gamesService.getAllGames(pageable);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(games);
     }
 
     /**

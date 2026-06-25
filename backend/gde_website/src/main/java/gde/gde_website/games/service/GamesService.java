@@ -63,6 +63,36 @@ public class GamesService {
     }
 
     /**
+     * This method is used for getting list of games filtered by specific tags
+     * @param tags - list of tag names to filter game by (uses OR logic - game must have at least one of the tags)
+     * @param pageable - pagination information including page number, size and sort order,
+     * @return paginated list of games that match at least one of the specified tags, or all games if tags list is null or empty
+     * @Author: Artemii Gorelov
+     */
+    @Transactional(readOnly = true)
+    public Page<GamesPageResponce> getGamesByTags(List<String> tags, Pageable pageable) {
+        gamesServiceLogger.info("Called getAllGames method with tags {}", tags);
+
+        if (tags == null || tags.isEmpty()) {
+            return getAllGames(pageable);
+        }
+
+        return gamesRepository.findByTagNames(tags, pageable)
+                .map(game -> {
+                    List<String> tagNames = game.getGameTags().stream()
+                            .map(gameTag -> gameTag.getTag().getName()).toList();
+
+                    return new GamesPageResponce(
+                            game.getId(),
+                            game.getTitle(),
+                            game.getDescription(),
+                            game.getBannerUrl(),
+                            tagNames
+                    );
+                });
+    }
+
+    /**
      * This function is used for getting game by requested id
      * @param gameId - id of the game to get
      * @param currentUserId - user id
