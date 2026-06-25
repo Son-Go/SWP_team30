@@ -164,7 +164,7 @@ function GamePage() {
           </div>
         </article>
       ) : (
-        <article className="card">
+        <article className="card create-game-card">
           <form className="form" onSubmit={handleUpdate}>
             <div className="form-group">
               <label className="label" htmlFor="title">
