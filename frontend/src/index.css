@@ -1,31 +1,27 @@
 :root {
-  --bg: #f7f7fb;
-  --surface: #ffffff;
-  --surface-soft: #f1effa;
-  --text: #1d1b2a;
-  --text-muted: #5f5b76;
-  --border: #ddd7f3;
+  --bg: #0a0a0a;
+  --surface: #1e1e1e;
+  --surface-soft: #1a1025;
+  --text: #f0f0f0;
+  --text-muted: #8a8a9a;
+  --border: #2a2040;
 
-  --primary: #6d4aff;
-  --primary-hover: #5d3df0;
-  --primary-soft: #ece7ff;
+  --primary: #8b5cf6;
+  --primary-hover: #7c3aed;
+  --primary-soft: #1e1535;
 
-  --secondary: #19b37d;
-  --secondary-hover: #149567;
-  --secondary-soft: #e7fbf4;
+  --secondary: #22c55e;
+  --secondary-hover: #16a34a;
+  --secondary-soft: #0d2618;
 
-  --danger: #d6455d;
-  --danger-hover: #ba334b;
+  --danger: #f43f5e;
+  --danger-hover: #e11d48;
 
-  --shadow: 0 10px 30px rgba(81, 53, 177, 0.08);
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
   --radius: 16px;
   --radius-sm: 10px;
 
   --container: 1120px;
-}
-
-* {
-  box-sizing: border-box;
 }
 
 html {
@@ -43,7 +39,7 @@ html {
 body {
   margin: 0;
   min-width: 320px;
-  background: linear-gradient(180deg, #f8f7ff 0%, #f4fff9 100%);
+  background: #0a0a0a;
   color: var(--text);
 }
 
@@ -126,8 +122,8 @@ img {
   top: 0;
   z-index: 10;
   backdrop-filter: blur(10px);
-  background: rgba(247, 247, 251, 0.85);
-  border-bottom: 1px solid rgba(109, 74, 255, 0.08);
+  background: rgba(10, 10, 10, 0.85);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
 }
 
 .navbar {
@@ -364,9 +360,9 @@ button:disabled,
 
 .state-box.error {
   border-style: solid;
-  border-color: rgba(214, 69, 93, 0.24);
-  background: #fff3f5;
-  color: #8c2438;
+  border-color: rgba(244, 63, 94, 0.3);
+  background: #1a0a0e;
+  color: #f43f5e;
 }
 
 /* Focus */
@@ -375,7 +371,7 @@ a:focus-visible,
 button:focus-visible,
 input:focus-visible,
 textarea:focus-visible {
-  outline: 3px solid #8d72ff;
+  outline: 3px solid #8b5cf6;
   outline-offset: 2px;
 }
 
@@ -413,13 +409,23 @@ textarea:focus-visible {
 
 .card-link:hover {
   transform: translateY(-3px);
-  box-shadow: 0 16px 40px rgba(81, 53, 177, 0.14);
+  box-shadow: 0 16px 40px rgba(139, 92, 246, 0.25);
   border-color: var(--primary);
   color: inherit;
 }
 
 .card-link:active {
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(81, 53, 177, 0.12);
+  box-shadow: 0 6px 18px rgba(34, 197, 94, 0.2);
   border-color: var(--primary-hover);
+}
+
+/* GamesPage accent */
+
+.games-page-title {
+  color: var(--text);
+}
+
+.games-page-title span {
+  color: var(--secondary);
 }

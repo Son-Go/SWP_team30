@@ -12,10 +12,6 @@ function GameCard({ game }) {
 
       <div className="section">
         <h2 className="card-title">{game.title}</h2>
-
-        <p className="card-text">
-          {game.description || "Описание пока отсутствует."}
-        </p>
       </div>
     </Link>
   );

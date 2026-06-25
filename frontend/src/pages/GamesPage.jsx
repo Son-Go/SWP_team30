@@ -52,10 +52,10 @@ function GamesPage() {
       <section className="section-lg">
         <div className="page-header">
           <div>
-            <h1 className="page-title">Каталог</h1>
+            <div className="page-title">Последние загруженные игры</div>
           </div>
 
-          <Link to="/games/create" className="button">
+          <Link to="/games/create" className="button button-secondary">
             Выложить игру
           </Link>
         </div>
@@ -72,11 +72,11 @@ function GamesPage() {
     <section className="section-lg">
       <div className="page-header">
         <div>
-          <h1 className="page-title">Каталог</h1>
+          <div className="page-title">Последние загруженные игры</div>
         </div>
 
-        <Link to="/games/create" className="button">
-          Создать игру
+        <Link to="/games/create" className="button button-secondary">
+          Выложить игру
         </Link>
       </div>
 
