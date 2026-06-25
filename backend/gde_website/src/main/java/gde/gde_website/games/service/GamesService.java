@@ -4,17 +4,12 @@ import gde.gde_website.games.entity.GameTagEntity;
 import gde.gde_website.games.entity.GamesEntity;
 import gde.gde_website.games.entity.TagEntity;
 import gde.gde_website.games.mapper.GamesMapper;
-import gde.gde_website.games.model.AuthorResponse;
-import gde.gde_website.games.model.Games;
-import gde.gde_website.games.model.GamesCardResponce;
-import gde.gde_website.games.model.GamesPageResponce;
+import gde.gde_website.games.model.*;
 import gde.gde_website.games.repository.GameTagRepository;
 import gde.gde_website.games.repository.GamesRepository;
 import gde.gde_website.games.repository.TagRepository;
 import gde.gde_website.users.entity.UserEntity;
 import gde.gde_website.users.repository.UsersRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -253,5 +248,12 @@ public class GamesService {
           author.getProfileImageUrl(),
           author.getEmail()
         );
+    }
+
+    public TagsResponse getAllTags() {
+        List<String> gameTags = tagRepository.findAll().stream().
+                map(TagEntity::getName).toList();
+
+        return new TagsResponse(gameTags);
     }
 }

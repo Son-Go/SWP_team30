@@ -1,9 +1,6 @@
 package gde.gde_website.games.controller;
 
-import gde.gde_website.games.model.AuthorResponse;
-import gde.gde_website.games.model.Games;
-import gde.gde_website.games.model.GamesCardResponce;
-import gde.gde_website.games.model.GamesPageResponce;
+import gde.gde_website.games.model.*;
 import gde.gde_website.games.service.GamesService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -192,6 +189,14 @@ public class GamesController {
         AuthorResponse author = gamesService.getAuthorById(id);
         return ResponseEntity.ok(author);
     }
+
+
+    @GetMapping("/tags/all")
+    public ResponseEntity<TagsResponse> getAllTags() {
+        gamesControllerLogger.info("Called /games/tags/all get all tags method");
+        return ResponseEntity.status(HttpStatus.OK).body(gamesService.getAllTags());
+    }
+
 
     /**
      * This function is used for creating new raw game (without id and creation time for database)
