@@ -132,3 +132,7 @@ export async function getCurrentUser(token) {
     },
   });
 }
+
+export function getGameAuthor(authorId) {
+  return request(`/games/author/${authorId}`);
+}

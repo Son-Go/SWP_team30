@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { deleteGame, getGameById, updateGame } from "../api/api";
+import { deleteGame, getGameById, updateGame, getGameAuthor } from "../api/api";
 import ErrorState from "../components/ErrorState";
 import Loader from "../components/Loader";
 import { useAuth } from "../context/auth-context";
@@ -21,6 +21,7 @@ function GamePage() {
   const [bannerUrl, setBannerUrl] = useState("");
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
+  const [authorName, setAuthorName] = useState(null);
 
   useEffect(() => {
     async function loadGame() {
@@ -29,6 +30,11 @@ function GamePage() {
         setError("");
         const data = await getGameById(id, token);
         setGame(data);
+        if (data.authorId) {
+          getGameAuthor(data.authorId)
+            .then((author) => setAuthorName(author.username))
+            .catch(() => setAuthorName(null));
+        }
         setTitle(data.title || "");
         setDescription(data.description || "");
         setBannerUrl(data.bannerUrl || "");
@@ -111,6 +117,7 @@ function GamePage() {
             ← Назад к каталогу
           </Link>
           <h1 className="page-title">{game.title}</h1>
+          {authorName && <p className="card-author">{authorName}</p>}
         </div>
 
         {game.isOwner && (
