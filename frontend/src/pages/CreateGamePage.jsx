@@ -50,7 +50,7 @@ function CreateGamePage() {
         </div>
       </div>
 
-      <article className="card">
+      <article className="card create-game-card">
         {error ? <ErrorState message={error} /> : null}
 
         <form className="form" onSubmit={handleSubmit}>

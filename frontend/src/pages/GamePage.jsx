@@ -142,7 +142,7 @@ function GamePage() {
               onClick={handleDelete}
               disabled={isSubmitting}
             >
-              Удалить игру к чертям
+              Удалить
             </button>
           </div>
         )}
