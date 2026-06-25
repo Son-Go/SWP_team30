@@ -4,12 +4,15 @@ import gde.gde_website.games.entity.GameTagEntity;
 import gde.gde_website.games.entity.GamesEntity;
 import gde.gde_website.games.entity.TagEntity;
 import gde.gde_website.games.mapper.GamesMapper;
+import gde.gde_website.games.model.AuthorResponse;
 import gde.gde_website.games.model.Games;
 import gde.gde_website.games.model.GamesCardResponce;
 import gde.gde_website.games.model.GamesPageResponce;
 import gde.gde_website.games.repository.GameTagRepository;
 import gde.gde_website.games.repository.GamesRepository;
 import gde.gde_website.games.repository.TagRepository;
+import gde.gde_website.users.entity.UserEntity;
+import gde.gde_website.users.repository.UsersRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +40,7 @@ public class GamesService {
     private final TagRepository tagRepository;
     private final GameTagRepository gameTagRepository;
     private final GamesMapper mapper;
+    private final UsersRepository usersRepository;
 
     /**
      * This method is used for getting list of all games divided on the groups of specific size request
@@ -232,5 +236,22 @@ public class GamesService {
 
         gamesServiceLogger.info("Successfully deleted game id={}", gameId);
         return mapper.entityToGames(gameToDelete);
+    }
+
+    /**
+     * This function is used for getting author info by requested specific id
+     * @param id - author id, we want info about
+     * @return returns object of AuthorResponse which contains author username, profile image, and email
+     * @Author: Artemii Gorelov
+     */
+    public AuthorResponse getAuthorById(Long id) {
+        UserEntity author = usersRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Author with id = " + id + " not found"));
+
+        return new AuthorResponse(
+          author.getUsername(),
+          author.getProfileImageUrl(),
+          author.getEmail()
+        );
     }
 }

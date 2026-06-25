@@ -1,5 +1,6 @@
 package gde.gde_website.games.controller;
 
+import gde.gde_website.games.model.AuthorResponse;
 import gde.gde_website.games.model.Games;
 import gde.gde_website.games.model.GamesCardResponce;
 import gde.gde_website.games.model.GamesPageResponce;
@@ -176,6 +177,20 @@ public class GamesController {
 
         Games deletedGame = gamesService.deleteGame(id, currentUserId);
         return ResponseEntity.status(204).build();
+    }
+
+    /**
+     * This function is used for handling GET /games/author/{id} request to get info about specific author
+     * @param id - requested author id
+     * @return - returns HTTP status OK with code {@code 200} if successfully returned author info.
+     * code {@code 404} if author with requested id is not present in database
+     * @Author: Artemii Gorelov
+     */
+    @GetMapping("/author/{id}")
+    public ResponseEntity<AuthorResponse> getGameAuthor(@PathVariable Long id) {
+        gamesControllerLogger.info("Called /games get game author method with id = {}", id);
+        AuthorResponse author = gamesService.getAuthorById(id);
+        return ResponseEntity.ok(author);
     }
 
     /**
