@@ -1,0 +1,24 @@
+import React from "react";
+import { Link } from "react-router-dom";
+
+function GameCard({ game }) {
+  return (
+    <Link to={`/games/${game.id}`} className="card card-link">
+      {game.bannerUrl ? (
+        <img src={game.bannerUrl} alt={game.title} />
+      ) : (
+        <div className="state-box">Баннер пока не загружен.</div>
+      )}
+
+      <div className="section">
+        <h2 className="card-title">{game.title}</h2>
+
+        <p className="card-text">
+          {game.description || "Описание пока отсутствует."}
+        </p>
+      </div>
+    </Link>
+  );
+}
+
+export default GameCard;

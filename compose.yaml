@@ -1,24 +1,32 @@
 services:
   postgres:
-    image: 'postgres:latest'
+    image: "postgres:latest"
+    restart: unless-stopped
     environment:
-      - 'POSTGRES_DB=mydatabase'
-      - 'POSTGRES_PASSWORD=secret'
-      - 'POSTGRES_USER=myuser'
+      - "POSTGRES_DB=mydatabase"
+      - "POSTGRES_PASSWORD=secret"
+      - "POSTGRES_USER=myuser"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser -d mydatabase"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     ports:
-      - '5432:5432'
+      - "5432:5432"
     networks:
       - gde-network
     volumes:
       - postgres_data:/var/lib/postgresql
 
   pgadmin:
-    image: 'dpage/pgadmin4:latest'
+    image: "dpage/pgadmin4:latest"
+    restart: unless-stopped
     environment:
-      - 'PGADMIN_DEFAULT_EMAIL=admin@example.com'
-      - 'PGADMIN_DEFAULT_PASSWORD=admin'
+      - "PGADMIN_DEFAULT_EMAIL=admin@example.com"
+      - "PGADMIN_DEFAULT_PASSWORD=admin"
     ports:
-      - '5050:80'
+      - "5050:80"
     networks:
       - gde-network
     depends_on:
@@ -28,14 +36,23 @@ services:
     build:
       context: ./backend/gde_website
       dockerfile: Dockerfile
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/8080'"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     ports:
-      - '8080:8080'
+      - "8080:8080"
     environment:
-      - 'SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/mydatabase'
-      - 'SPRING_DATASOURCE_USERNAME=myuser'
-      - 'SPRING_DATASOURCE_PASSWORD=secret'
+      - "SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/mydatabase"
+      - "SPRING_DATASOURCE_USERNAME=myuser"
+      - "SPRING_DATASOURCE_PASSWORD=secret"
+      - "JWT_SECRET=${JWT_SECRET}"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - gde-network
 
@@ -43,13 +60,19 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
     ports:
-      - '80:80'
+      - "80:80"
     depends_on:
       - backend
     networks:
-      - gde-network  
-
+      - gde-network
 
 networks:
   gde-network:

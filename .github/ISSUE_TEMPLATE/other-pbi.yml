@@ -1,0 +1,112 @@
+name: Other PBI
+description: Create a new Product Backlog Item (technical task, bug, documentation, spike, etc.)
+title: "[PBI] "
+labels: []
+projects: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## PBI Details
+        Create a new Product Backlog Item. Fill in all fields below.
+
+  - type: dropdown
+    id: pbi-type
+    attributes:
+      label: Type
+      description: Select the type of this PBI
+      options:
+        - Technical Task
+        - Bug
+        - Documentation
+        - Spike / Research
+        - Refactor
+        - Design
+        - Testing / QA
+        - Deployment / DevOps
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Provide enough detail to understand the work to be done
+      placeholder: |
+        What is the goal?
+        Why is this needed?
+        Current state (if applicable):
+        Desired state:
+    validations:
+      required: true
+
+  - type: dropdown
+    id: work-status
+    attributes:
+      label: Work Status
+      description: Current state of this PBI
+      options:
+        - To Do
+        - In Progress
+        - In Review
+        - Done
+    validations:
+      required: true
+
+  - type: dropdown
+    id: moscow
+    attributes:
+      label: MoSCoW Priority
+      description: Select the priority of this PBI
+      options:
+        - Must Have
+        - Should Have
+        - Could Have
+        - Won't Have
+    validations:
+      required: true
+
+  - type: input
+    id: story-points
+    attributes:
+      label: Story Points
+      description: Estimated effort in story points
+      placeholder: "e.g., 3, 5, 8"
+    validations:
+      required: true
+
+  - type: input
+    id: milestone
+    attributes:
+      label: Milestone
+      description: Sprint milestone when applicable (leave blank if not yet assigned)
+      placeholder: "e.g., Sprint 1"
+
+  - type: input
+    id: assignee
+    attributes:
+      label: Assignee
+      description: Team member assigned to this PBI when in the current Sprint Backlog
+      placeholder: "@username"
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Define clear, testable conditions for completion (required if this PBI is part of MVP v1 or current Sprint)
+      placeholder: |
+        - [ ] Criteria 1:
+        - [ ] Criteria 2:
+        - [ ] Criteria 3:
+    validations:
+      required: false
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional Notes
+      description: Dependencies, references, or context that might help
+      placeholder: "Any extra context..."
+    validations:
+      required: false
