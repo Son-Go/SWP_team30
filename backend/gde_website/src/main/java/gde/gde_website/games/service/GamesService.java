@@ -288,6 +288,11 @@ public class GamesService {
         );
     }
 
+    /**
+     * This function is used for returning list of all tags
+     * @return new TagsResponse Object which contains list of tags
+     * @Author: Egor Grishin
+     */
     public TagsResponse getAllTags() {
         List<String> gameTags = tagRepository.findAll().stream().
                 map(TagEntity::getName).toList();
