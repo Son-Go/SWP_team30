@@ -12,7 +12,7 @@
 .vscode/
 
 ### Environment ###
-.env
+.env.secret
 
 ### Generated backups ###
 backups/postgres/
