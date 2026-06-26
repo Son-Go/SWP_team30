@@ -83,20 +83,14 @@ public class GamesController {
 
     /**
      * This method is used for handling create new game request
-     * @param title - title of game to be created
-     * @param description - description of game to be created
-     * @param bannerUrl - banner url path of game to be created
      * @param authentication - user token
      * @return http status CREATED (code 201) with created game info inside response body
      * @throws ResponseStatusException with code 401 while user is not authenticated
      * @Author: Artemii Gorelov
      */
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Games> createGame(
-            @RequestParam String title,
-            @RequestParam String description,
-            @RequestParam String bannerUrl,
-            @RequestParam(required = false) List<String> gameTags,
+            @RequestBody GamesCreateRequest request,
             Authentication authentication
     ) {
 
@@ -108,33 +102,22 @@ public class GamesController {
 
         Long currentUserId = (Long) authentication.getPrincipal();
 
-        Games gameWithCurrentAuthor = createNewRawGame(currentUserId, title, description, bannerUrl, gameTags);
-
-        Games createGame = gamesService.createGame(gameWithCurrentAuthor, currentUserId);
+        Games createGame = gamesService.createGame(request, currentUserId);
         return ResponseEntity.status(HttpStatus.CREATED).body(createGame);
     }
 
     /**
      * This method is used for handling update request for game with specific id
      * @param gameId - id of game to pe updated
-     * @param title - title to be updated
-     * @param description - description to be updated
-     * @param bannerUrl - banner url path to be updated
      * @param authentication - user token
      * @return Http status ok (code 200) with body of updated game
      * @throws ResponseStatusException with code 401 while user token is invalid
      * @Author: Egor Grishin
      */
-    @PatchMapping(path = "/{id}", consumes = {
-            MediaType.MULTIPART_FORM_DATA_VALUE,
-            MediaType.APPLICATION_FORM_URLENCODED_VALUE
-    })
+    @PatchMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Games> updateGame(
             @PathVariable("id") Long gameId,
-            @RequestParam String title,
-            @RequestParam String description,
-            @RequestParam String bannerUrl,
-            @RequestParam(required = false) List<String> gameTags,
+            @RequestBody UpdateGameRequest request,
             Authentication authentication) {
 
         gamesControllerLogger.info("Called GamesController /games/id (post)");
@@ -144,9 +127,7 @@ public class GamesController {
 
         Long currentUserId = (Long) authentication.getPrincipal();
 
-        Games gameToUpdate = createNewRawGame(currentUserId, title, description, bannerUrl, gameTags);
-
-        Games updatedGame = gamesService.updateGame(gameToUpdate, gameId);
+        Games updatedGame = gamesService.updateGame(request, currentUserId, gameId);
         return ResponseEntity.status(HttpStatus.OK).body(updatedGame);
     }
 
@@ -199,32 +180,5 @@ public class GamesController {
     public ResponseEntity<TagsResponse> getAllTags() {
         gamesControllerLogger.info("Called /games/tags/all get all tags method");
         return ResponseEntity.status(HttpStatus.OK).body(gamesService.getAllTags());
-    }
-
-
-    /**
-     * This function is used for creating new raw game (without id and creation time for database)
-     * @param currentUserId - id of user which creating game
-     * @param title - title of the game
-     * @param description - game description
-     * @param bannerUrl - game banner url path
-     * @return new Games object
-     * @Author: Egor Grishin
-     */
-    private Games createNewRawGame(Long currentUserId,
-                                   String title,
-                                   String description,
-                                   String bannerUrl,
-                                   List<String> gameTags) {
-        return new Games(
-                null,
-                currentUserId,
-                title,
-                description,
-                bannerUrl,
-                null,
-                null,
-                gameTags
-        );
     }
 }

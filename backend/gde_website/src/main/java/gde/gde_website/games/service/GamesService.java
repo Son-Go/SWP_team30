@@ -1,6 +1,5 @@
 package gde.gde_website.games.service;
 
-import gde.gde_website.games.entity.GameTagEntity;
 import gde.gde_website.games.entity.GamesEntity;
 import gde.gde_website.games.entity.TagEntity;
 import gde.gde_website.games.mapper.GamesMapper;
@@ -127,7 +126,7 @@ public class GamesService {
     @Transactional(readOnly = true)
     public GamesCardResponce getGameById(Long gameId, Long currentUserId) {
         gamesServiceLogger.info("Called GamesService getGameById method");
-        GamesEntity game = gamesRepository.findById(gameId).
+        GamesEntity game = gamesRepository.findDetailedById(gameId).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         UserEntity author = usersRepository.findById(game.getAuthorId())
@@ -147,34 +146,34 @@ public class GamesService {
 
     /**
      * This function is used to create new game in database
-     * @param entity - entity of game to be created
      * @param authorId - id of author that creating game
      * @return new games object
      * @Author: Artemii Gorelov, Egor Grishin
      */
     @Transactional
-    public Games createGame(Games entity, Long authorId) {
+    public Games createGame(GamesCreateRequest request, Long authorId) {
         gamesServiceLogger.info("Called GamesService createGame method");
         GamesEntity game = new GamesEntity(
                 authorId,
-                entity.title(),
-                entity.description(),
-                entity.bannerUrl()
+                request.title(),
+                request.description(),
+                request.bannerUrl()
         );
 
         GamesEntity savedGame = gamesRepository.save(game);
 
-        if (entity.gameTags() != null) {
-            List<GameTagEntity> tags = entity.gameTags().stream()
-                    .map(tagName -> {
-                        TagEntity tag = tagRepository.findByName(tagName)
-                                .orElseThrow(() -> new ResponseStatusException(
-                                        HttpStatus.BAD_REQUEST, "Tag not found: " + tagName));
-                        return new GameTagEntity(savedGame.getId(), tag.getId());
-                    })
+        if (request.gameTags() != null) {
+            List<Integer> tagIds = request.gameTags().stream()
+                    .map(tagName -> tagRepository.findByName(tagName)
+                            .orElseThrow(() -> new ResponseStatusException(
+                                    HttpStatus.BAD_REQUEST, "Tag not found: " + tagName))
+                            .getId())
+                    .distinct()
                     .toList();
 
-            gameTagRepository.saveAll(tags);
+            for (Integer tagId : tagIds) {
+                gameTagRepository.insertGameTag(savedGame.getId(), tagId);
+            }
         }
 
         return new Games(
@@ -185,13 +184,12 @@ public class GamesService {
                 savedGame.getBannerUrl(),
                 savedGame.getCreatedAt(),
                 savedGame.getUpdatedAt(),
-                entity.gameTags()
+                request.gameTags()
         );
     }
 
     /**
      * This function is used for updating game with requested id
-     * @param entity - entity of game to be updated
      * @param gameId - id of game to be updated
      * @return updated game object
      * @throws ResponseStatusException with codes:
@@ -200,33 +198,40 @@ public class GamesService {
      * @Author: Egor Grishin
      */
     @Transactional
-    public Games updateGame(Games entity, Long gameId) {
+    public Games updateGame(UpdateGameRequest request, Long currentUserId, Long gameId) {
         gamesServiceLogger.info("Called GamesService updateGame method");
         GamesEntity gameToUpdate = gamesRepository.findById(gameId).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        if (!gameToUpdate.getAuthorId().equals(entity.authorId())) {
+        if (!gameToUpdate.getAuthorId().equals(currentUserId)) {
             gamesServiceLogger.error("User permissions error");
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not the owner of this game");
         }
 
-        gameToUpdate.setTitle(entity.title());
-        gameToUpdate.setDescription(entity.description());
-        gameToUpdate.setBannerUrl(entity.bannerUrl());
+        if (request.title() != null) {
+            gameToUpdate.setTitle(request.title());
+        }
+        if (request.description() != null) {
+            gameToUpdate.setDescription(request.description());
+        }
+        if (request.bannerUrl() != null) {
+            gameToUpdate.setBannerUrl(request.bannerUrl());
+        }
 
-        gameTagRepository.deleteAllByGameId(gameId);
+        if (request.gameTags() != null) {
+            gameTagRepository.deleteAllByGameId(gameId);
 
-        if (entity.gameTags() != null) {
-            List<GameTagEntity> tags = entity.gameTags().stream()
-                    .map(tagName -> {
-                        TagEntity tag = tagRepository.findByName(tagName)
-                                .orElseThrow(() -> new ResponseStatusException(
-                                        HttpStatus.BAD_REQUEST, "Tag not found: " + tagName));
-                        return new GameTagEntity(gameId, tag.getId());
-                    })
+            List<Integer> tagIds = request.gameTags().stream()
+                    .map(tagName -> tagRepository.findByName(tagName)
+                            .orElseThrow(() -> new ResponseStatusException(
+                                    HttpStatus.BAD_REQUEST, "Tag not found: " + tagName))
+                            .getId())
+                    .distinct()
                     .toList();
 
-            gameTagRepository.saveAll(tags);
+            for (Integer tagId : tagIds) {
+                gameTagRepository.insertGameTag(gameId, tagId);
+            }
         }
 
         GamesEntity savedGame = gamesRepository.save(gameToUpdate);
@@ -240,7 +245,7 @@ public class GamesService {
                 savedGame.getBannerUrl(),
                 savedGame.getCreatedAt(),
                 savedGame.getUpdatedAt(),
-                entity.gameTags()
+                request.gameTags()
         );
     }
 

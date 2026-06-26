@@ -27,7 +27,7 @@ public interface GamesRepository extends JpaRepository<GamesEntity, Long> {
     Page<GamesEntity> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
     @EntityGraph(attributePaths = {"gameTags", "gameTags.tag"})
-    Optional<GamesEntity> findById(Long id);
+    Optional<GamesEntity> findDetailedById(Long id);
 
     @Query("SELECT DISTINCT g FROM GamesEntity g " +
             "JOIN g.gameTags gt " +
