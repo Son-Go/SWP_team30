@@ -248,23 +248,6 @@ function GamePage() {
               <label className="label">Теги</label>
               <TagSelector selected={tags} onChange={setTags} />
             </div>
-            {tags.length > 0 && (
-              <div className="tag-list">
-                {tags.map((tag) => (
-                  <span key={tag} className="tag-badge">
-                    {tag}
-                    <button
-                      type="button"
-                      className="tag-remove"
-                      onClick={() => handleRemoveTag(tag)}
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
-
             <div className="card-actions">
               <button
                 type="submit"
