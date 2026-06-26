@@ -1,6 +1,7 @@
 package gde.gde_website.games.mapper;
 
 import gde.gde_website.games.entity.GamesEntity;
+import gde.gde_website.games.model.AuthorResponse;
 import gde.gde_website.games.model.Games;
 import gde.gde_website.games.model.GamesCardResponce;
 import org.springframework.stereotype.Component;
@@ -19,7 +20,7 @@ public class GamesMapper {
      * @return returns game response object
      * @Author: Egor Grishin
      */
-    public GamesCardResponce entityToResponse(GamesEntity entity, Long currentUserId) {
+    public GamesCardResponce entityToResponse(GamesEntity entity, Long currentUserId, AuthorResponse author) {
         boolean isOwner = currentUserId != null && currentUserId.equals(entity.getAuthorId());
 
         return new GamesCardResponce(
@@ -31,6 +32,7 @@ public class GamesMapper {
                 entity.getCreatedAt(),
                 entity.getUpdatedAt(),
                 isOwner,
+                author,
                 entity.getGameTags().stream().map(gameTagEntity ->
                         gameTagEntity.getTag().getName()).toList()
         );

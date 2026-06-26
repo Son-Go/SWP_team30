@@ -171,7 +171,11 @@ public class GamesController {
         return ResponseEntity.ok(author);
     }
 
-
+    /**
+     * This method is used for handling GET all tags request
+     * @return Response entity with status {@code 200} and list of tags in body of response
+     * @Author: Egor Grishin
+     */
     @GetMapping("/tags/all")
     public ResponseEntity<TagsResponse> getAllTags() {
         gamesControllerLogger.info("Called /games/tags/all get all tags method");

@@ -50,11 +50,24 @@ public class GamesService {
                     List<String> tagNames = game.getGameTags().stream()
                             .map(gameTag -> gameTag.getTag().getName()).toList();
 
+                    UserEntity author = usersRepository.findById(game.getAuthorId()).orElse(null);
+
+                    AuthorResponse authorResp = null;
+                    if (author != null) {
+                        authorResp = new AuthorResponse(
+                                author.getUsername(),
+                                author.getProfileImageUrl(),
+                                author.getEmail()
+                        );
+                    }
+
                     return new GamesPageResponce(
                             game.getId(),
+                            game.getAuthorId(),
                             game.getTitle(),
                             game.getDescription(),
                             game.getBannerUrl(),
+                            authorResp,
                             tagNames
                     );
                 });
@@ -80,11 +93,24 @@ public class GamesService {
                     List<String> tagNames = game.getGameTags().stream()
                             .map(gameTag -> gameTag.getTag().getName()).toList();
 
+                    UserEntity author = usersRepository.findById(game.getAuthorId()).orElse(null);
+
+                    AuthorResponse authorResp = null;
+                    if (author != null) {
+                        authorResp = new AuthorResponse(
+                                author.getUsername(),
+                                author.getProfileImageUrl(),
+                                author.getEmail()
+                        );
+                    }
+
                     return new GamesPageResponce(
                             game.getId(),
+                            game.getAuthorId(),
                             game.getTitle(),
                             game.getDescription(),
                             game.getBannerUrl(),
+                            authorResp,
                             tagNames
                     );
                 });
@@ -103,7 +129,19 @@ public class GamesService {
         GamesEntity game = gamesRepository.findDetailedById(gameId).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        return mapper.entityToResponse(game, currentUserId);
+        UserEntity author = usersRepository.findById(game.getAuthorId())
+                .orElse(null);
+
+        AuthorResponse authorResponse = null;
+        if (author != null) {
+            authorResponse = new AuthorResponse(
+                    author.getUsername(),
+                    author.getProfileImageUrl(),
+                    author.getEmail()
+            );
+        }
+
+        return mapper.entityToResponse(game, currentUserId, authorResponse);
     }
 
     /**
@@ -255,6 +293,11 @@ public class GamesService {
         );
     }
 
+    /**
+     * This function is used for returning list of all tags
+     * @return new TagsResponse Object which contains list of tags
+     * @Author: Egor Grishin
+     */
     public TagsResponse getAllTags() {
         List<String> gameTags = tagRepository.findAll().stream().
                 map(TagEntity::getName).toList();
