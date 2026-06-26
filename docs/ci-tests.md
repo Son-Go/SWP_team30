@@ -20,10 +20,6 @@ How CI uses it:
 - loads PostgreSQL and backend credentials from that file
 - uses the same file for the Docker Compose smoke test
 
-Important:
-- `.env.secret` is gitignored and is not committed to the repository
-- updating `.env.secret` locally does not update GitHub Actions automatically
-- when credentials change, update both the local `.env.secret` file and the `ENV_SECRET_FILE` GitHub secret
 
 ## What tests were added
 
