@@ -608,3 +608,10 @@ textarea:focus-visible {
   line-height: 1;
   margin-left: 2px;
 }
+
+.card-author {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
