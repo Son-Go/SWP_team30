@@ -4,6 +4,7 @@ import { deleteGame, getGameById, updateGame, getGameAuthor } from "../api/api";
 import ErrorState from "../components/ErrorState";
 import Loader from "../components/Loader";
 import { useAuth } from "../context/auth-context";
+import TagSelector from "../components/TagSelector";
 
 function GamePage() {
   const { id } = useParams();
@@ -82,7 +83,16 @@ function GamePage() {
       console.log("Отправляем теги:", tags);
       for (let [k, v] of formData.entries()) console.log(k, v);
 
-      const updatedGame = await updateGame(id, formData, token);
+      const updatedGame = await updateGame(
+        id,
+        {
+          title,
+          description,
+          bannerUrl: bannerUrl || undefined,
+          gameTags: tags,
+        },
+        token,
+      );
 
       // ЛОГ 2 — что вернул бэк
       // console.log("Ответ бэка:", updatedGame);
@@ -236,18 +246,9 @@ function GamePage() {
 
             <div className="form-group">
               <label className="label">Теги</label>
-              <div className="tag-input-row">
-                <input
-                  className="input"
-                  type="text"
-                  placeholder="Введи тег и нажми Enter или +"
-                  value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
-                  onKeyDown={handleTagKeyDown}
-                />
-                <button type="button" className="button" onClick={handleAddTag}>
-                  +
-                </button>
+              <div className="form-group">
+                <label className="label">Теги</label>
+                <TagSelector selected={tags} onChange={setTags} />
               </div>
               {tags.length > 0 && (
                 <div className="tag-list">

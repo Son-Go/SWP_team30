@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createGame } from "../api/api";
 import ErrorState from "../components/ErrorState";
+import TagSelector from "../components/TagSelector";
 import { useAuth } from "../context/auth-context";
 
 function CreateGamePage() {
@@ -11,6 +12,7 @@ function CreateGamePage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [bannerUrl, setBannerUrl] = useState("");
+  const [tags, setTags] = useState([]);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -24,10 +26,8 @@ function CreateGamePage() {
       const formData = new FormData();
       formData.append("title", title);
       formData.append("description", description);
-
-      if (bannerUrl) {
-        formData.append("bannerUrl", bannerUrl);
-      }
+      if (bannerUrl) formData.append("bannerUrl", bannerUrl);
+      tags.forEach((tag) => formData.append("tags", tag));
 
       const createdGame = await createGame(formData, token);
       navigate(`/games/${createdGame.id}`);
@@ -44,9 +44,8 @@ function CreateGamePage() {
         <Link to="/games" className="nav-link">
           ← Назад
         </Link>
-
         <div className="section">
-          <h1 className="page-title">Создать игру</h1>
+          <h1 className="page-title">Выложить игру</h1>
         </div>
       </div>
 
@@ -63,7 +62,7 @@ function CreateGamePage() {
               className="input"
               type="text"
               value={title}
-              onChange={(event) => setTitle(event.target.value)}
+              onChange={(e) => setTitle(e.target.value)}
               required
             />
           </div>
@@ -76,12 +75,12 @@ function CreateGamePage() {
               id="description"
               className="textarea"
               value={description}
-              onChange={(event) => setDescription(event.target.value)}
+              onChange={(e) => setDescription(e.target.value)}
             />
           </div>
 
           <div className="form-group">
-            <label className="label" htmlFor="banner">
+            <label className="label" htmlFor="bannerUrl">
               Баннер
             </label>
             <input
@@ -90,8 +89,13 @@ function CreateGamePage() {
               type="url"
               placeholder="https://biographe.ru/char/shrek/"
               value={bannerUrl}
-              onChange={(event) => setBannerUrl(event.target.value)}
+              onChange={(e) => setBannerUrl(e.target.value)}
             />
+          </div>
+
+          <div className="form-group">
+            <label className="label">Теги</label>
+            <TagSelector selected={tags} onChange={setTags} />
           </div>
 
           <div className="card-actions">
@@ -102,7 +106,6 @@ function CreateGamePage() {
             >
               {submitting ? "Создание..." : "Создать"}
             </button>
-
             <Link to="/games" className="button button-ghost">
               Отмена
             </Link>
