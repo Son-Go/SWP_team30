@@ -21,7 +21,7 @@
   --radius: 16px;
   --radius-sm: 10px;
 
-  --container: 1120px;
+  --container: 1200px;
 }
 
 html {
@@ -299,12 +299,13 @@ img {
 }
 
 .button-danger {
-  background: var(--danger);
-  color: #ffffff;
+  background: transparent;
+  border-color: var(--danger);
+  color: var(--danger);
 }
 
 .button-danger:hover {
-  background: var(--danger-hover);
+  background: var(--danger);
   color: #ffffff;
 }
 
@@ -529,4 +530,107 @@ textarea:focus-visible {
   border-color: rgba(139, 92, 246, 0.8);
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
   outline: none;
+}
+
+.tag-selector {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.tag-selector-all,
+.tag-selector-selected {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tag-selector-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tag-selector-empty {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  padding: 5px 12px;
+  border-radius: 8px;
+  background-color: #2a2640;
+  color: #b8b0d0;
+  font-weight: 500;
+  line-height: 1;
+  border: 1px solid #3a3550;
+}
+
+/* в TagSelector — невыбранный (кликабельный) */
+.tag-badge-selectable {
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.tag-badge-selectable:hover {
+  background-color: #342f50;
+  color: #d4ccea;
+}
+
+/* выбранный тег в левой части — тусклый */
+.tag-badge-dimmed {
+  opacity: 0.3;
+}
+
+/* выбранный тег в правой части */
+.tag-badge-selected {
+  cursor: pointer;
+  background-color: #3b3560;
+  color: #c8bef0;
+  border-color: #6c5fc7;
+  transition: opacity 0.15s ease;
+}
+
+.tag-badge-selected:hover {
+  opacity: 0.7;
+}
+
+.tag-remove-icon {
+  font-size: 1rem;
+  line-height: 1;
+  margin-left: 2px;
+}
+
+.card-author {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.button-outline {
+  background: transparent;
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.button-outline:hover {
+  background: var(--primary);
+  color: #ffffff;
 }

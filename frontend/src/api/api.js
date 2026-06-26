@@ -48,19 +48,25 @@ export function getGameById(id, token) {
   });
 }
 
-export function createGame(formData, token) {
+export function createGame(body, token) {
   return request("/games", {
     method: "POST",
-    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-    body: formData,
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify(body),
   });
 }
 
-export function updateGame(id, formData, token) {
+export function updateGame(id, body, token) {
   return request(`/games/${id}`, {
     method: "PATCH",
-    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-    body: formData,
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify(body),
   });
 }
 
@@ -131,4 +137,12 @@ export async function getCurrentUser(token) {
       Authorization: `Bearer ${token}`,
     },
   });
+}
+
+export function getGameAuthor(authorId) {
+  return request(`/games/author/${authorId}`);
+}
+
+export function getAllTags() {
+  return request("/games/tags/all");
 }
