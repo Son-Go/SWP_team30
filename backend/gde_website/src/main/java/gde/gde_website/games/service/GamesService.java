@@ -1,10 +1,15 @@
 package gde.gde_website.games.service;
 
+import gde.gde_website.games.entity.GameTagEntity;
 import gde.gde_website.games.entity.GamesEntity;
+import gde.gde_website.games.entity.TagEntity;
 import gde.gde_website.games.mapper.GamesMapper;
-import gde.gde_website.games.model.Games;
-import gde.gde_website.games.model.GamesResponce;
+import gde.gde_website.games.model.*;
+import gde.gde_website.games.repository.GameTagRepository;
 import gde.gde_website.games.repository.GamesRepository;
+import gde.gde_website.games.repository.TagRepository;
+import gde.gde_website.users.entity.UserEntity;
+import gde.gde_website.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +17,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 /**
  * This class is implementing business logic of requests handlers
@@ -23,8 +31,11 @@ import org.springframework.web.server.ResponseStatusException;
 public class GamesService {
     private static final Logger gamesServiceLogger = LoggerFactory.getLogger(GamesService.class);
 
-    private final GamesRepository repository;
+    private final GamesRepository gamesRepository;
+    private final TagRepository tagRepository;
+    private final GameTagRepository gameTagRepository;
     private final GamesMapper mapper;
+    private final UsersRepository usersRepository;
 
     /**
      * This method is used for getting list of all games divided on the groups of specific size request
@@ -32,9 +43,78 @@ public class GamesService {
      * @return - returns  sublist of games entity
      * @Author: Artemii Gorelov
      */
-    public Page<GamesEntity> getAllGames(Pageable pageable) {
+    @Transactional(readOnly = true)
+    public Page<GamesPageResponce> getAllGames(Pageable pageable) {
         gamesServiceLogger.info("Called getAllGames method");
-        return repository.findAllByOrderByCreatedAtDesc(pageable);
+        return gamesRepository.findAllByOrderByCreatedAtDesc(pageable)
+                .map(game -> {
+                    List<String> tagNames = game.getGameTags().stream()
+                            .map(gameTag -> gameTag.getTag().getName()).toList();
+
+                    UserEntity author = usersRepository.findById(game.getAuthorId()).orElse(null);
+
+                    AuthorResponse authorResp = null;
+                    if (author != null) {
+                        authorResp = new AuthorResponse(
+                                author.getUsername(),
+                                author.getProfileImageUrl(),
+                                author.getEmail()
+                        );
+                    }
+
+                    return new GamesPageResponce(
+                            game.getId(),
+                            game.getAuthorId(),
+                            game.getTitle(),
+                            game.getDescription(),
+                            game.getBannerUrl(),
+                            authorResp,
+                            tagNames
+                    );
+                });
+    }
+
+    /**
+     * This method is used for getting list of games filtered by specific tags
+     * @param tags - list of tag names to filter game by (uses OR logic - game must have at least one of the tags)
+     * @param pageable - pagination information including page number, size and sort order,
+     * @return paginated list of games that match at least one of the specified tags, or all games if tags list is null or empty
+     * @Author: Artemii Gorelov
+     */
+    @Transactional(readOnly = true)
+    public Page<GamesPageResponce> getGamesByTags(List<String> tags, Pageable pageable) {
+        gamesServiceLogger.info("Called getAllGames method with tags {}", tags);
+
+        if (tags == null || tags.isEmpty()) {
+            return getAllGames(pageable);
+        }
+
+        return gamesRepository.findByTagNames(tags, pageable)
+                .map(game -> {
+                    List<String> tagNames = game.getGameTags().stream()
+                            .map(gameTag -> gameTag.getTag().getName()).toList();
+
+                    UserEntity author = usersRepository.findById(game.getAuthorId()).orElse(null);
+
+                    AuthorResponse authorResp = null;
+                    if (author != null) {
+                        authorResp = new AuthorResponse(
+                                author.getUsername(),
+                                author.getProfileImageUrl(),
+                                author.getEmail()
+                        );
+                    }
+
+                    return new GamesPageResponce(
+                            game.getId(),
+                            game.getAuthorId(),
+                            game.getTitle(),
+                            game.getDescription(),
+                            game.getBannerUrl(),
+                            authorResp,
+                            tagNames
+                    );
+                });
     }
 
     /**
@@ -44,12 +124,25 @@ public class GamesService {
      * @return game response object
      * @Author: Egor Grishin
      */
-    public GamesResponce getGameById(Long gameId, Long currentUserId) {
+    @Transactional(readOnly = true)
+    public GamesCardResponce getGameById(Long gameId, Long currentUserId) {
         gamesServiceLogger.info("Called GamesService getGameById method");
-        GamesEntity game = repository.findById(gameId).
+        GamesEntity game = gamesRepository.findById(gameId).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        return mapper.entityToResponse(game, currentUserId);
+        UserEntity author = usersRepository.findById(game.getAuthorId())
+                .orElse(null);
+
+        AuthorResponse authorResponse = null;
+        if (author != null) {
+            authorResponse = new AuthorResponse(
+                    author.getUsername(),
+                    author.getProfileImageUrl(),
+                    author.getEmail()
+            );
+        }
+
+        return mapper.entityToResponse(game, currentUserId, authorResponse);
     }
 
     /**
@@ -57,8 +150,9 @@ public class GamesService {
      * @param entity - entity of game to be created
      * @param authorId - id of author that creating game
      * @return new games object
-     * @Author: Artemii Gorelov
+     * @Author: Artemii Gorelov, Egor Grishin
      */
+    @Transactional
     public Games createGame(Games entity, Long authorId) {
         gamesServiceLogger.info("Called GamesService createGame method");
         GamesEntity game = new GamesEntity(
@@ -68,8 +162,31 @@ public class GamesService {
                 entity.bannerUrl()
         );
 
-        GamesEntity savedGame = repository.save(game);
-        return mapper.entityToGames(savedGame);
+        GamesEntity savedGame = gamesRepository.save(game);
+
+        if (entity.gameTags() != null) {
+            List<GameTagEntity> tags = entity.gameTags().stream()
+                    .map(tagName -> {
+                        TagEntity tag = tagRepository.findByName(tagName)
+                                .orElseThrow(() -> new ResponseStatusException(
+                                        HttpStatus.BAD_REQUEST, "Tag not found: " + tagName));
+                        return new GameTagEntity(savedGame.getId(), tag.getId());
+                    })
+                    .toList();
+
+            gameTagRepository.saveAll(tags);
+        }
+
+        return new Games(
+                savedGame.getId(),
+                savedGame.getAuthorId(),
+                savedGame.getTitle(),
+                savedGame.getDescription(),
+                savedGame.getBannerUrl(),
+                savedGame.getCreatedAt(),
+                savedGame.getUpdatedAt(),
+                entity.gameTags()
+        );
     }
 
     /**
@@ -82,9 +199,10 @@ public class GamesService {
      * 401 when user who wants to update game is not its author or admin
      * @Author: Egor Grishin
      */
+    @Transactional
     public Games updateGame(Games entity, Long gameId) {
         gamesServiceLogger.info("Called GamesService updateGame method");
-        GamesEntity gameToUpdate = repository.findById(gameId).
+        GamesEntity gameToUpdate = gamesRepository.findById(gameId).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         if (!gameToUpdate.getAuthorId().equals(entity.authorId())) {
@@ -96,10 +214,34 @@ public class GamesService {
         gameToUpdate.setDescription(entity.description());
         gameToUpdate.setBannerUrl(entity.bannerUrl());
 
-        GamesEntity savedGame = repository.save(gameToUpdate);
+        gameTagRepository.deleteAllByGameId(gameId);
+
+        if (entity.gameTags() != null) {
+            List<GameTagEntity> tags = entity.gameTags().stream()
+                    .map(tagName -> {
+                        TagEntity tag = tagRepository.findByName(tagName)
+                                .orElseThrow(() -> new ResponseStatusException(
+                                        HttpStatus.BAD_REQUEST, "Tag not found: " + tagName));
+                        return new GameTagEntity(gameId, tag.getId());
+                    })
+                    .toList();
+
+            gameTagRepository.saveAll(tags);
+        }
+
+        GamesEntity savedGame = gamesRepository.save(gameToUpdate);
         gamesServiceLogger.info("Successfully updated game id={}", gameId);
 
-        return mapper.entityToGames(savedGame);
+        return new Games(
+                savedGame.getId(),
+                savedGame.getAuthorId(),
+                savedGame.getTitle(),
+                savedGame.getDescription(),
+                savedGame.getBannerUrl(),
+                savedGame.getCreatedAt(),
+                savedGame.getUpdatedAt(),
+                entity.gameTags()
+        );
     }
 
     /**
@@ -110,20 +252,51 @@ public class GamesService {
      * @throws ResponseStatusException with codes:
      * 404 when game with requested id does not found
      * 401 when user who wants to delete the game is not game author or admin
-     * @Author: Artemii Gorelov
+     * @Author: Artemii Gorelov, Egor Grishin
      */
+    @Transactional
     public Games deleteGame(Long gameId, Long currentUserId) {
         gamesServiceLogger.info("Called GamesService deleteGame method");
-        GamesEntity entity = repository.findById(gameId)
+        GamesEntity gameToDelete = gamesRepository.findById(gameId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
 
-        if (!entity.getAuthorId().equals(currentUserId)) {
+        if (!gameToDelete.getAuthorId().equals(currentUserId)) {
             gamesServiceLogger.error("User permissions error");
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not the owner of this game");
         }
 
-        repository.delete(entity);
+        gamesRepository.delete(gameToDelete);
+
         gamesServiceLogger.info("Successfully deleted game id={}", gameId);
-        return mapper.entityToGames(entity);
+        return mapper.entityToGames(gameToDelete);
+    }
+
+    /**
+     * This function is used for getting author info by requested specific id
+     * @param id - author id, we want info about
+     * @return returns object of AuthorResponse which contains author username, profile image, and email
+     * @Author: Artemii Gorelov
+     */
+    public AuthorResponse getAuthorById(Long id) {
+        UserEntity author = usersRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Author with id = " + id + " not found"));
+
+        return new AuthorResponse(
+          author.getUsername(),
+          author.getProfileImageUrl(),
+          author.getEmail()
+        );
+    }
+
+    /**
+     * This function is used for returning list of all tags
+     * @return new TagsResponse Object which contains list of tags
+     * @Author: Egor Grishin
+     */
+    public TagsResponse getAllTags() {
+        List<String> gameTags = tagRepository.findAll().stream().
+                map(TagEntity::getName).toList();
+
+        return new TagsResponse(gameTags);
     }
 }

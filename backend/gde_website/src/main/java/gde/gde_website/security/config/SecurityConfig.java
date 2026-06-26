@@ -45,6 +45,7 @@ public class SecurityConfig {
                         // Allow requests for GET /games endpoints without authentication
                         .requestMatchers(HttpMethod.GET, "/games").permitAll()
                         .requestMatchers(HttpMethod.GET, "/games/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/games/author/**").permitAll()
 
                         // Endpoints which requires JWT token authentication
                         .requestMatchers(HttpMethod.POST, "/games").authenticated()
