@@ -18,18 +18,20 @@ function CreateGamePage() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-
     try {
       setSubmitting(true);
       setError("");
 
-      const formData = new FormData();
-      formData.append("title", title);
-      formData.append("description", description);
-      if (bannerUrl) formData.append("bannerUrl", bannerUrl);
-      tags.forEach((tag) => formData.append("tags", tag));
+      const createdGame = await createGame(
+        {
+          title,
+          description,
+          bannerUrl: bannerUrl || undefined,
+          gameTags: tags,
+        },
+        token,
+      );
 
-      const createdGame = await createGame(formData, token);
       navigate(`/games/${createdGame.id}`);
     } catch (err) {
       setError(err.message || "Не удалось создать игру(Фух...)");
