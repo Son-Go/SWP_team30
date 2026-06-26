@@ -1,6 +1,7 @@
 package gde.gde_website.games.model;
 
 import java.time.Instant;
+import java.util.List;
 
 /**
  * This is a record which represents game info
@@ -11,7 +12,7 @@ import java.time.Instant;
  * @param bannerUrl - game banner path
  * @param createdAt - date in which game was created
  * @param updatedAt - date in which game was updated
- * @Author: Artemii Gorelov
+ * @Author: Artemii Gorelov, Egor Grishin
  */
 public record Games(
         Long id,
@@ -20,6 +21,7 @@ public record Games(
         String description,
         String bannerUrl,
         Instant createdAt,
-        Instant updatedAt
+        Instant updatedAt,
+        List<String> gameTags
 ) {
 }
