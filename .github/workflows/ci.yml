@@ -1,0 +1,310 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+  push:
+    branches:
+      - main
+      - master
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  SECRET_ENV_FILE: .env.secret
+
+jobs:
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      backend: ${{ steps.filter.outputs.backend }}
+      infra: ${{ steps.filter.outputs.infra }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect changed areas
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            frontend:
+              - 'frontend/**'
+            backend:
+              - 'backend/**'
+            infra:
+              - '.github/workflows/**'
+              - 'compose.yaml'
+              - 'frontend/Dockerfile'
+              - 'frontend/nginx/**'
+              - 'backend/gde_website/Dockerfile'
+              - 'scripts/**'
+
+  frontend-lint:
+    name: Frontend lint
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true' || needs.changes.outputs.infra == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint frontend
+        run: npm run lint
+
+  frontend-build:
+    name: Frontend build
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true' || needs.changes.outputs.infra == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    env:
+      VITE_API_URL: http://localhost:8080
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Upload frontend artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+          if-no-files-found: error
+
+  backend-build-test:
+    name: Backend build and test
+    needs: changes
+    if: needs.changes.outputs.backend == 'true' || needs.changes.outputs.infra == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend/gde_website
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+
+      - name: Create .env.secret
+        shell: bash
+        run: |
+          if [ -z "${{ secrets.ENV_SECRET_FILE }}" ]; then
+            echo "Missing GitHub secret ENV_SECRET_FILE"
+            exit 1
+          fi
+
+          printf '%s' '${{ secrets.ENV_SECRET_FILE }}' > "$SECRET_ENV_FILE"
+          chmod 600 "$SECRET_ENV_FILE"
+
+      - name: Load CI secrets
+        shell: bash
+        run: |
+          set -a
+          source "$SECRET_ENV_FILE"
+          set +a
+
+          {
+            echo "JWT_SECRET=$JWT_SECRET"
+            echo "POSTGRES_DB=$POSTGRES_DB"
+            echo "POSTGRES_USER=$POSTGRES_USER"
+            echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD"
+            echo "SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/$POSTGRES_DB"
+            echo "SPRING_DATASOURCE_USERNAME=$POSTGRES_USER"
+            echo "SPRING_DATASOURCE_PASSWORD=$POSTGRES_PASSWORD"
+            echo "SPRING_DOCKER_COMPOSE_ENABLED=false"
+          } >> "$GITHUB_ENV"
+
+      - name: Start PostgreSQL
+        shell: bash
+        working-directory: .
+        run: |
+          docker rm -f ci-postgres >/dev/null 2>&1 || true
+          docker run -d \
+            --name ci-postgres \
+            --health-cmd="pg_isready -U $POSTGRES_USER -d $POSTGRES_DB" \
+            --health-interval=10s \
+            --health-timeout=5s \
+            --health-retries=5 \
+            -e POSTGRES_DB="$POSTGRES_DB" \
+            -e POSTGRES_USER="$POSTGRES_USER" \
+            -e POSTGRES_PASSWORD="$POSTGRES_PASSWORD" \
+            -p 5432:5432 \
+            postgres:16
+
+      - name: Wait for PostgreSQL health
+        shell: bash
+        working-directory: .
+        run: |
+          for attempt in {1..24}; do
+            health_status="$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' ci-postgres)"
+            if [ "$health_status" = "healthy" ]; then
+              echo "PostgreSQL is healthy"
+              exit 0
+            fi
+
+            sleep 5
+          done
+
+          echo "PostgreSQL did not become healthy"
+          docker logs ci-postgres
+          exit 1
+
+      - name: Make Maven wrapper executable
+        run: chmod +x mvnw
+
+      - name: Run backend verification
+        env:
+          JWT_SECRET: ${{ env.JWT_SECRET }}
+          SPRING_DATASOURCE_URL: ${{ env.SPRING_DATASOURCE_URL }}
+          SPRING_DATASOURCE_USERNAME: ${{ env.SPRING_DATASOURCE_USERNAME }}
+          SPRING_DATASOURCE_PASSWORD: ${{ env.SPRING_DATASOURCE_PASSWORD }}
+          SPRING_DOCKER_COMPOSE_ENABLED: ${{ env.SPRING_DOCKER_COMPOSE_ENABLED }}
+        run: ./mvnw -B verify
+
+      - name: Upload backend test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-reports
+          path: |
+            backend/gde_website/target/surefire-reports
+            backend/gde_website/target/failsafe-reports
+          if-no-files-found: warn
+
+      - name: Capture PostgreSQL logs
+        if: always()
+        shell: bash
+        working-directory: .
+        run: docker logs ci-postgres > ci-postgres.log
+
+      - name: Upload PostgreSQL logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-postgres-logs
+          path: ci-postgres.log
+          if-no-files-found: warn
+
+      - name: Stop PostgreSQL
+        if: always()
+        shell: bash
+        working-directory: .
+        run: docker rm -f ci-postgres
+
+  docker-compose-smoke:
+    name: Docker Compose smoke
+    needs:
+      - changes
+      - frontend-build
+      - backend-build-test
+    if: always() && (needs.changes.outputs.frontend == 'true' || needs.changes.outputs.backend == 'true' || needs.changes.outputs.infra == 'true') && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create .env.secret
+        shell: bash
+        run: |
+          if [ -z "${{ secrets.ENV_SECRET_FILE }}" ]; then
+            echo "Missing GitHub secret ENV_SECRET_FILE"
+            exit 1
+          fi
+
+          printf '%s' '${{ secrets.ENV_SECRET_FILE }}' > "$SECRET_ENV_FILE"
+          chmod 600 "$SECRET_ENV_FILE"
+
+      - name: Build and start stack
+        run: docker compose up -d --build
+
+      - name: Wait for backend and frontend health
+        shell: bash
+        run: |
+          set -euo pipefail
+          for service in backend frontend; do
+            container_id="$(docker compose ps -q "$service")"
+            if [ -z "$container_id" ]; then
+              echo "Missing container for $service"
+              exit 1
+            fi
+
+            for attempt in {1..24}; do
+              health_status="$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' "$container_id")"
+              if [ "$health_status" = "healthy" ] || [ "$health_status" = "running" ]; then
+                echo "$service is $health_status"
+                break
+              fi
+
+              if [ "$attempt" -eq 24 ]; then
+                echo "$service did not become healthy"
+                docker compose ps
+                exit 1
+              fi
+
+              sleep 5
+            done
+          done
+
+      - name: Show service status
+        if: always()
+        run: docker compose ps
+
+      - name: Capture compose logs
+        if: always()
+        run: docker compose logs --no-color > compose.log
+
+      - name: Upload compose logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-compose-logs
+          path: compose.log
+          if-no-files-found: warn
+
+      - name: Shut down stack
+        if: always()
+        run: docker compose down -v

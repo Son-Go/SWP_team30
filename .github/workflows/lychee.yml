@@ -16,6 +16,6 @@ jobs:
       - name: Run Lychee
         uses: lycheeverse/lychee-action@v1
         with:
-          args: --config Lychee.toml .
+          args: --config .github/workflows/lychee.toml .
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
