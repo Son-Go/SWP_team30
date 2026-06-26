@@ -21,7 +21,7 @@
   --radius: 16px;
   --radius-sm: 10px;
 
-  --container: 1120px;
+  --container: 1200px;
 }
 
 html {
@@ -299,12 +299,13 @@ img {
 }
 
 .button-danger {
-  background: var(--danger);
-  color: #ffffff;
+  background: transparent;
+  border-color: var(--danger);
+  color: var(--danger);
 }
 
 .button-danger:hover {
-  background: var(--danger-hover);
+  background: var(--danger);
   color: #ffffff;
 }
 
@@ -569,33 +570,40 @@ textarea:focus-visible {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   padding: 5px 12px;
-  border-radius: 9999px;
-  background-color: #e8f4f5;
-  color: #01696f;
+  border-radius: 8px;
+  background-color: #2a2640;
+  color: #b8b0d0;
   font-weight: 500;
   line-height: 1;
+  border: 1px solid #3a3550;
 }
 
+/* в TagSelector — невыбранный (кликабельный) */
 .tag-badge-selectable {
   cursor: pointer;
-  transition: opacity 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .tag-badge-selectable:hover {
-  opacity: 0.75;
+  background-color: #342f50;
+  color: #d4ccea;
 }
 
 /* выбранный тег в левой части — тусклый */
 .tag-badge-dimmed {
-  opacity: 0.35;
+  opacity: 0.3;
 }
 
-/* выбранный тег в правой части — яркий с обводкой */
+/* выбранный тег в правой части */
 .tag-badge-selected {
   cursor: pointer;
-  outline: 2px solid #01696f;
+  background-color: #3b3560;
+  color: #c8bef0;
+  border-color: #6c5fc7;
   transition: opacity 0.15s ease;
 }
 
@@ -614,4 +622,15 @@ textarea:focus-visible {
   color: var(--text-muted);
   margin-top: 4px;
   margin-bottom: 4px;
+}
+
+.button-outline {
+  background: transparent;
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.button-outline:hover {
+  background: var(--primary);
+  color: #ffffff;
 }

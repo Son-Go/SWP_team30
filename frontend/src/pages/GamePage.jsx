@@ -144,7 +144,7 @@ function GamePage() {
             {!isEditing ? (
               <button
                 type="button"
-                className="button"
+                className="button button-outline"
                 onClick={() => setIsEditing(true)}
               >
                 Редактировать игру
@@ -165,14 +165,6 @@ function GamePage() {
                 Отмена
               </button>
             )}
-            <button
-              type="button"
-              className="button button-danger"
-              onClick={handleDelete}
-              disabled={isSubmitting}
-            >
-              Удалить
-            </button>
           </div>
         )}
       </div>
@@ -232,7 +224,7 @@ function GamePage() {
 
             <div className="form-group">
               <label className="label" htmlFor="bannerUrl">
-                Новый баннер
+                Баннер
               </label>
               <input
                 id="bannerUrl"
@@ -273,6 +265,18 @@ function GamePage() {
             </div>
           </form>
         </article>
+      )}
+      {isEditing && game.isOwner && (
+        <div>
+          <button
+            type="button"
+            className="button button-danger"
+            onClick={handleDelete}
+            disabled={isSubmitting}
+          >
+            Удалить игру
+          </button>
+        </div>
       )}
     </section>
   );
