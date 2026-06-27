@@ -790,3 +790,38 @@ textarea:focus-visible {
   letter-spacing: 0.06em;
   color: var(--text-muted);
 }
+
+.game-gallery-viewer {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.gallery-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.75);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.8));
+  transition: color 0.15s;
+}
+
+.gallery-arrow:hover {
+  color: #ffffff;
+}
+
+.gallery-arrow-left {
+  left: 8px;
+}
+.gallery-arrow-right {
+  right: 8px;
+}

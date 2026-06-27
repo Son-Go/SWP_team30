@@ -182,17 +182,66 @@ function GamePage() {
           <div className="game-gallery">
             {game.screenshots?.length > 0 ? (
               <>
-                <img
-                  src={activeScreenshot ?? game.screenshots[0]}
-                  alt={game.title}
-                  className="game-gallery-main"
-                />
+                <div className="game-gallery-viewer">
+                  <button
+                    className="gallery-arrow gallery-arrow-left"
+                    onClick={() => {
+                      const idx = game.screenshots.indexOf(
+                        activeScreenshot ?? game.screenshots[0],
+                      );
+                      const prev =
+                        (idx - 1 + game.screenshots.length) %
+                        game.screenshots.length;
+                      setActiveScreenshot(game.screenshots[prev]);
+                    }}
+                  >
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="15 18 9 12 15 6" />
+                    </svg>
+                  </button>
+                  <img
+                    src={activeScreenshot ?? game.screenshots[0]}
+                    alt={game.title}
+                    className="game-gallery-main"
+                  />
+                  <button
+                    className="gallery-arrow gallery-arrow-right"
+                    onClick={() => {
+                      const idx = game.screenshots.indexOf(
+                        activeScreenshot ?? game.screenshots[0],
+                      );
+                      const next = (idx + 1) % game.screenshots.length;
+                      setActiveScreenshot(game.screenshots[next]);
+                    }}
+                  >
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  </button>
+                </div>
                 <div className="game-gallery-thumbs">
                   {game.screenshots.map((url, i) => (
                     <img
                       key={i}
                       src={url}
-                      alt={`Скриншот ${i + 1}`}
                       className={`game-gallery-thumb ${(activeScreenshot ?? game.screenshots[0]) === url ? "active" : ""}`}
                       onClick={() => setActiveScreenshot(url)}
                     />
