@@ -23,6 +23,8 @@ function GamePage() {
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
   const [authorName, setAuthorName] = useState(null);
+  const [screenshots, setScreenshots] = useState([]);
+  const [screenshotInput, setScreenshotInput] = useState("");
 
   useEffect(() => {
     async function loadGame() {
@@ -40,6 +42,7 @@ function GamePage() {
         setDescription(data.description || "");
         setBannerUrl(data.bannerUrl || "");
         setTags(data.gameTags || []);
+        setScreenshots(data.screenshots || []);
       } catch (err) {
         setError(err.message || "Не удалось загрузить игру");
       } finally {
@@ -90,6 +93,7 @@ function GamePage() {
           description,
           bannerUrl: bannerUrl || undefined,
           gameTags: tags,
+          screenshots,
         },
         token,
       );
@@ -102,6 +106,7 @@ function GamePage() {
       setDescription(updatedGame.description || "");
       setBannerUrl(updatedGame.bannerUrl || "");
       setTags(updatedGame.gameTags || []);
+      setScreenshots(updatedGame.screenshots || []);
       setIsEditing(false);
     } catch (err) {
       setError(err.message || "Не удалось обновить игру");
@@ -191,6 +196,16 @@ function GamePage() {
                 ))}
               </div>
             )}
+            {game.screenshots?.length > 0 && (
+              <div className="section">
+                <h2 className="card-title">Скриншоты</h2>
+                <div className="screenshots-grid">
+                  {game.screenshots.map((url, i) => (
+                    <img key={i} src={url} className="screenshot-img" />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </article>
       ) : (
@@ -239,6 +254,66 @@ function GamePage() {
             <div className="form-group">
               <label className="label">Теги</label>
               <TagSelector selected={tags} onChange={setTags} />
+            </div>
+            <div className="form-group">
+              <label className="label">Скриншоты</label>
+              <div className="tag-input-row">
+                <input
+                  className="input"
+                  type="url"
+                  placeholder="https://example.com/screenshot.png"
+                  value={screenshotInput}
+                  onChange={(e) => setScreenshotInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      const trimmed = screenshotInput.trim();
+                      if (trimmed && !screenshots.includes(trimmed)) {
+                        setScreenshots([...screenshots, trimmed]);
+                      }
+                      setScreenshotInput("");
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  className="button button-ghost"
+                  onClick={() => {
+                    const trimmed = screenshotInput.trim();
+                    if (trimmed && !screenshots.includes(trimmed)) {
+                      setScreenshots([...screenshots, trimmed]);
+                    }
+                    setScreenshotInput("");
+                  }}
+                >
+                  Добавить
+                </button>
+              </div>
+              {screenshots.length > 0 && (
+                <div className="screenshots-edit-list">
+                  {screenshots.map((url, i) => (
+                    <div key={i} className="screenshot-edit-item">
+                      <img
+                        src={url}
+                        alt={`Скриншот ${i + 1}`}
+                        className="screenshot-thumb"
+                      />
+                      <span className="screenshot-url">{url}</span>
+                      <button
+                        type="button"
+                        className="button button-danger screenshot-remove"
+                        onClick={() =>
+                          setScreenshots(
+                            screenshots.filter((_, idx) => idx !== i),
+                          )
+                        }
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="card-actions">
               <button
