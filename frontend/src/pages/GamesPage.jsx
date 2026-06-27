@@ -1,72 +1,70 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import GameCard from "../components/GameCard";
 import Loader from "../components/Loader";
 import ErrorState from "../components/ErrorState";
 import EmptyState from "../components/EmptyState";
 import { useGames } from "../hooks/useGames";
+import { getAllTags } from "../api/api";
 
 function GamesPage() {
-  const { games, error, initialLoading, loadingMore, hasMore, loadMore } =
-    useGames();
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [allTags, setAllTags] = useState([]);
+  const [pendingTags, setPendingTags] = useState([]); // выбранные до Apply
+  const [activeTags, setActiveTags] = useState([]); // применённые
+
+  const {
+    games,
+    error,
+    initialLoading,
+    loadingMore,
+    hasMore,
+    loadMore,
+    setFilterTags,
+  } = useGames();
 
   const sentinelRef = useRef(null);
 
   useEffect(() => {
+    getAllTags()
+      .then((data) => setAllTags(data.gameTags || []))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
     const target = sentinelRef.current;
-
-    if (!target) {
-      return;
-    }
-
+    if (!target) return;
     const observer = new IntersectionObserver(
       (entries) => {
-        const entry = entries[0];
-
-        if (entry.isIntersecting) {
-          loadMore();
-        }
+        if (entries[0].isIntersecting) loadMore();
       },
-      {
-        root: null,
-        rootMargin: "200px",
-        threshold: 0,
-      },
+      { root: null, rootMargin: "200px", threshold: 0 },
     );
-
     observer.observe(target);
-
     return () => observer.disconnect();
   }, [loadMore]);
 
-  if (initialLoading) {
-    return <Loader text="Загружаем игры..." />;
-  }
-
-  if (error && games.length === 0) {
-    return <ErrorState message={error} />;
-  }
-
-  if (!games.length) {
-    return (
-      <section className="section-lg">
-        <div className="page-header">
-          <div>
-            <div className="page-title">Последние загруженные игры</div>
-          </div>
-
-          <Link to="/games/create" className="button button-secondary">
-            Выложить игру
-          </Link>
-        </div>
-
-        <EmptyState
-          title="Игры пока не найдены"
-          message="Добавь первую игру в каталог(лучше не надо)"
-        />
-      </section>
+  function togglePending(tag) {
+    setPendingTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
     );
   }
+
+  function handleApply() {
+    setActiveTags(pendingTags);
+    setFilterTags(pendingTags);
+    setFilterOpen(false);
+  }
+
+  function handleReset() {
+    setPendingTags([]);
+    setActiveTags([]);
+    setFilterTags([]);
+    setFilterOpen(false);
+  }
+
+  if (initialLoading) return <Loader text="Загружаем игры..." />;
+  if (error && games.length === 0) return <ErrorState message={error} />;
 
   return (
     <section className="section-lg">
@@ -74,17 +72,77 @@ function GamesPage() {
         <div>
           <div className="page-title">Последние загруженные игры</div>
         </div>
-
-        <Link to="/games/create" className="button button-secondary">
-          Выложить игру
-        </Link>
+        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+          <button
+            className={`button button-ghost filter-toggle ${filterOpen ? "active" : ""}`}
+            onClick={() => {
+              setPendingTags(activeTags);
+              setFilterOpen((v) => !v);
+            }}
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="4" y1="6" x2="20" y2="6" />
+              <line x1="8" y1="12" x2="16" y2="12" />
+              <line x1="11" y1="18" x2="13" y2="18" />
+            </svg>
+            Фильтры
+            {activeTags.length > 0 && (
+              <span className="filter-badge">{activeTags.length}</span>
+            )}
+          </button>
+          <Link to="/games/create" className="button button-secondary">
+            Выложить игру
+          </Link>
+        </div>
       </div>
 
-      <div className="games-grid">
-        {games.map((game) => (
-          <GameCard key={game.id} game={game} />
-        ))}
-      </div>
+      {filterOpen && (
+        <div className="filter-panel">
+          <div className="tag-list">
+            {allTags.map((tag) => (
+              <span
+                key={tag}
+                className={`tag-badge tag-badge-selectable ${pendingTags.includes(tag) ? "tag-badge-filter-active" : ""}`}
+                onClick={() => togglePending(tag)}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+          <div className="filter-panel-actions">
+            <button className="button button-secondary" onClick={handleApply}>
+              Применить
+            </button>
+            {activeTags.length > 0 && (
+              <button className="button button-ghost" onClick={handleReset}>
+                Сбросить
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {!games.length ? (
+        <EmptyState
+          title="Игры не найдены"
+          message="Попробуй изменить фильтры"
+        />
+      ) : (
+        <div className="games-grid">
+          {games.map((game) => (
+            <GameCard key={game.id} game={game} />
+          ))}
+        </div>
+      )}
 
       {error ? <ErrorState message={error} /> : null}
       {loadingMore ? <Loader text="Подгружаем еще игры..." /> : null}

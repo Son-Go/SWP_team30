@@ -38,8 +38,10 @@ async function request(path, options = {}) {
   return data;
 }
 
-export function getGames(page = 0) {
-  return request(`/games?page=${page}`);
+export function getGames(page = 0, tags = []) {
+  const tagParams = tags.map((t) => `tags=${encodeURIComponent(t)}`).join("&");
+  const tagsQuery = tagParams ? `&${tagParams}` : "";
+  return request(`/games?page=${page}${tagsQuery}`);
 }
 
 export function getGameById(id, token) {
