@@ -1,17 +1,25 @@
 package gde.gde_website.games.mapper;
 
 import gde.gde_website.games.entity.GamesEntity;
+import gde.gde_website.games.entity.GamesScreenshotEntity;
 import gde.gde_website.games.model.AuthorResponse;
 import gde.gde_website.games.model.Games;
 import gde.gde_website.games.model.GamesCardResponce;
+import gde.gde_website.games.repository.GameScreenshotsRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * This is a class responsible for transformations between objects
  * @Author: Artemii Gorelov, Egor Grishin
  */
 @Component
+@RequiredArgsConstructor
 public class GamesMapper {
+
+    private final GameScreenshotsRepository gameScreenshotsRepository;
 
     /**
      * This method is used to transform game response entity to response
@@ -20,7 +28,7 @@ public class GamesMapper {
      * @return returns game response object
      * @Author: Egor Grishin
      */
-    public GamesCardResponce entityToResponse(GamesEntity entity, Long currentUserId, AuthorResponse author) {
+    public GamesCardResponce entityToResponse(GamesEntity entity, Long currentUserId, AuthorResponse author, List<String> screenshots) {
         boolean isOwner = currentUserId != null && currentUserId.equals(entity.getAuthorId());
 
         return new GamesCardResponce(
@@ -34,7 +42,8 @@ public class GamesMapper {
                 isOwner,
                 author,
                 entity.getGameTags().stream().map(gameTagEntity ->
-                        gameTagEntity.getTag().getName()).toList()
+                        gameTagEntity.getTag().getName()).toList(),
+                screenshots
         );
     }
 
@@ -59,6 +68,12 @@ public class GamesMapper {
      * @return new game object
      */
     public Games entityToGames(GamesEntity entity) {
+
+        List<String> screenshots = gameScreenshotsRepository.findAllByGameId(entity.getId())
+                .stream()
+                .map(GamesScreenshotEntity::getUrl)
+                .toList();
+
         return new Games(
                 entity.getId(),
                 entity.getAuthorId(),
@@ -68,7 +83,8 @@ public class GamesMapper {
                 entity.getCreatedAt(),
                 entity.getUpdatedAt(),
                 entity.getGameTags().stream().
-                        map(gameTagEntity -> gameTagEntity.getTag().getName()).toList()
+                        map(gameTagEntity -> gameTagEntity.getTag().getName()).toList(),
+                screenshots
         );
     }
 }

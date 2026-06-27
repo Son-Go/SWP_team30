@@ -47,18 +47,19 @@ function AuthPage() {
         setPassword("");
       }
     } catch (err) {
-      setError(err.message || "Не удалось выполнить действие");
+      if (err.message.includes("401")) {
+        setError("Неверный логин или пароль");
+      } else {
+        setError(err.message || "Не удалось выполнить действие");
+      }
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <main className="page">
-      <section
-        className="section-lg"
-        style={{ maxWidth: "520px", margin: "0 auto" }}
-      >
+    <main className="auth-page">
+      <section className="section-lg auth-section">
         <div className="section">
           <Link to="/games" className="nav-link">
             ← К каталогу

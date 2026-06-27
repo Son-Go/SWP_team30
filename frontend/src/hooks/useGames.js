@@ -8,8 +8,9 @@ export function useGames() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState("");
   const [hasMore, setHasMore] = useState(true);
+  const [filterTags, setFilterTags] = useState([]);
 
-  const loadPage = useCallback(async (pageToLoad) => {
+  const loadPage = useCallback(async (pageToLoad, tags) => {
     try {
       setError("");
 
@@ -19,20 +20,17 @@ export function useGames() {
         setLoadingMore(true);
       }
 
-      const data = await getGames(pageToLoad);
+      const data = await getGames(pageToLoad, tags);
       const nextGames = data.content || [];
 
       setGames((prevGames) => {
-        if (pageToLoad === 0) {
-          return nextGames;
-        }
+        if (pageToLoad === 0) return nextGames;
 
         const existingIds = new Set(prevGames.map((game) => game.id));
-        const uniqueNextGames = nextGames.filter(
-          (game) => !existingIds.has(game.id),
-        );
-
-        return [...prevGames, ...uniqueNextGames];
+        return [
+          ...prevGames,
+          ...nextGames.filter((game) => !existingIds.has(game.id)),
+        ];
       });
 
       setPage(data.number);
@@ -46,16 +44,13 @@ export function useGames() {
   }, []);
 
   useEffect(() => {
-    loadPage(0);
-  }, [loadPage]);
+    loadPage(0, filterTags);
+  }, [filterTags, loadPage]);
 
   const loadMore = useCallback(() => {
-    if (initialLoading || loadingMore || !hasMore) {
-      return;
-    }
-
-    loadPage(page + 1);
-  }, [page, initialLoading, loadingMore, hasMore, loadPage]);
+    if (initialLoading || loadingMore || !hasMore) return;
+    loadPage(page + 1, filterTags);
+  }, [page, initialLoading, loadingMore, hasMore, filterTags, loadPage]);
 
   return {
     games,
@@ -64,5 +59,6 @@ export function useGames() {
     loadingMore,
     hasMore,
     loadMore,
+    setFilterTags,
   };
 }
