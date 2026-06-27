@@ -103,7 +103,10 @@ jobs:
 
   frontend-build:
     name: Frontend build
-    needs: changes
+    needs:
+      - changes
+      - frontend-lint
+      - frontend-test
     if: needs.changes.outputs.frontend == 'true' || needs.changes.outputs.infra == 'true'
     runs-on: ubuntu-latest
     defaults:
@@ -265,6 +268,8 @@ jobs:
     name: Docker Compose smoke
     needs:
       - changes
+      - frontend-lint
+      - frontend-test
       - frontend-build
       - backend-build-test
     if: always() && (needs.changes.outputs.frontend == 'true' || needs.changes.outputs.backend == 'true' || needs.changes.outputs.infra == 'true') && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
