@@ -25,6 +25,7 @@ function GamePage() {
   const [authorName, setAuthorName] = useState(null);
   const [screenshots, setScreenshots] = useState([]);
   const [screenshotInput, setScreenshotInput] = useState("");
+  const [activeScreenshot, setActiveScreenshot] = useState(null);
 
   useEffect(() => {
     async function loadGame() {
@@ -43,6 +44,7 @@ function GamePage() {
         setBannerUrl(data.bannerUrl || "");
         setTags(data.gameTags || []);
         setScreenshots(data.screenshots || []);
+        setActiveScreenshot(null);
       } catch (err) {
         setError(err.message || "Не удалось загрузить игру");
       } finally {
@@ -141,7 +143,6 @@ function GamePage() {
             ← Назад к каталогу
           </Link>
           <h1 className="page-title">{game.title}</h1>
-          {authorName && <p className="card-author">{authorName}</p>}
         </div>
 
         {game.isOwner && (
@@ -177,37 +178,86 @@ function GamePage() {
       {error ? <ErrorState message={error} /> : null}
 
       {!isEditing ? (
-        <article className="card section-lg">
-          {game.bannerUrl ? (
-            <img src={game.bannerUrl} alt={game.title} />
-          ) : (
-            <div className="state-box">Баннер пока не загружен.</div>
-          )}
-          <div className="section">
-            <h2 className="card-title">Описание</h2>
-            <p className="card-text">{game.description || "Описания нема."}</p>
-
-            {game.gameTags?.length > 0 && (
-              <div className="tag-list">
-                {game.gameTags.map((tag) => (
-                  <span key={tag} className="tag-badge">
-                    {tag}
-                  </span>
-                ))}
+        <div className="game-layout">
+          <div className="game-gallery">
+            {game.screenshots?.length > 0 ? (
+              <>
+                <img
+                  src={activeScreenshot ?? game.screenshots[0]}
+                  alt={game.title}
+                  className="game-gallery-main"
+                />
+                <div className="game-gallery-thumbs">
+                  {game.screenshots.map((url, i) => (
+                    <img
+                      key={i}
+                      src={url}
+                      alt={`Скриншот ${i + 1}`}
+                      className={`game-gallery-thumb ${(activeScreenshot ?? game.screenshots[0]) === url ? "active" : ""}`}
+                      onClick={() => setActiveScreenshot(url)}
+                    />
+                  ))}
+                </div>
+              </>
+            ) : game.bannerUrl ? (
+              <img
+                src={game.bannerUrl}
+                alt={game.title}
+                className="game-gallery-main"
+              />
+            ) : (
+              <div className="state-box game-gallery-main">
+                Скриншоты не загружены.
               </div>
             )}
-            {game.screenshots?.length > 0 && (
-              <div className="section">
-                <h2 className="card-title">Скриншоты</h2>
-                <div className="screenshots-grid">
-                  {game.screenshots.map((url, i) => (
-                    <img key={i} src={url} className="screenshot-img" />
+
+            <div className="game-description">
+              <h2 className="card-title">Описание</h2>
+              <p className="card-text">
+                {game.description || "Описания нема."}
+              </p>
+            </div>
+          </div>
+
+          <aside className="game-sidebar">
+            {game.bannerUrl && (
+              <img
+                src={game.bannerUrl}
+                alt={game.title}
+                className="game-sidebar-cover"
+              />
+            )}
+            {authorName && (
+              <div className="game-sidebar-meta">
+                <span className="game-sidebar-label">Автор</span>
+                <span className="card-author">{authorName}</span>
+              </div>
+            )}
+            {game.createdAt && (
+              <div className="game-sidebar-meta">
+                <span className="game-sidebar-label">Дата создания</span>
+                <span className="card-author">
+                  {new Date(game.createdAt).toLocaleDateString("ru-RU", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </span>
+              </div>
+            )}
+            {game.gameTags?.length > 0 && (
+              <div className="game-sidebar-meta">
+                <div className="tag-list">
+                  {game.gameTags.map((tag) => (
+                    <span key={tag} className="tag-badge">
+                      {tag}
+                    </span>
                   ))}
                 </div>
               </div>
             )}
-          </div>
-        </article>
+          </aside>
+        </div>
       ) : (
         <article className="card create-game-card">
           <form className="form" onSubmit={handleUpdate}>
