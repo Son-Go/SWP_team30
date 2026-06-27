@@ -1,9 +1,11 @@
 package gde.gde_website.games.service;
 
 import gde.gde_website.games.entity.GamesEntity;
+import gde.gde_website.games.entity.GamesScreenshotEntity;
 import gde.gde_website.games.entity.TagEntity;
 import gde.gde_website.games.mapper.GamesMapper;
 import gde.gde_website.games.model.*;
+import gde.gde_website.games.repository.GameScreenshotsRepository;
 import gde.gde_website.games.repository.GameTagRepository;
 import gde.gde_website.games.repository.GamesRepository;
 import gde.gde_website.games.repository.TagRepository;
@@ -35,12 +37,13 @@ public class GamesService {
     private final GameTagRepository gameTagRepository;
     private final GamesMapper mapper;
     private final UsersRepository usersRepository;
+    private final GameScreenshotsRepository gameScreenshotsRepository;
 
     /**
      * This method is used for getting list of all games divided on the groups of specific size request
      * @param pageable - page request
      * @return - returns  sublist of games entity
-     * @Author: Artemii Gorelov
+     * @Author: Artemii Gorelov, Egor Grishin
      */
     @Transactional(readOnly = true)
     public Page<GamesPageResponce> getAllGames(Pageable pageable) {
@@ -78,7 +81,7 @@ public class GamesService {
      * @param tags - list of tag names to filter game by (uses OR logic - game must have at least one of the tags)
      * @param pageable - pagination information including page number, size and sort order,
      * @return paginated list of games that match at least one of the specified tags, or all games if tags list is null or empty
-     * @Author: Artemii Gorelov
+     * @Author: Artemii Gorelov, Egor Grishin
      */
     @Transactional(readOnly = true)
     public Page<GamesPageResponce> getGamesByTags(List<String> tags, Pageable pageable) {
@@ -121,7 +124,7 @@ public class GamesService {
      * @param gameId - id of the game to get
      * @param currentUserId - user id
      * @return game response object
-     * @Author: Egor Grishin
+     * @Author: Egor Grishin, Artemii Gorelov
      */
     @Transactional(readOnly = true)
     public GamesCardResponce getGameById(Long gameId, Long currentUserId) {
@@ -141,7 +144,10 @@ public class GamesService {
             );
         }
 
-        return mapper.entityToResponse(game, currentUserId, authorResponse);
+        List<String> screenshots = gameScreenshotsRepository.findAllByGameId(gameId)
+                .stream().map(GamesScreenshotEntity::getUrl).toList();
+
+        return mapper.entityToResponse(game, currentUserId, authorResponse, screenshots);
     }
 
     /**
@@ -176,16 +182,14 @@ public class GamesService {
             }
         }
 
-        return new Games(
-                savedGame.getId(),
-                savedGame.getAuthorId(),
-                savedGame.getTitle(),
-                savedGame.getDescription(),
-                savedGame.getBannerUrl(),
-                savedGame.getCreatedAt(),
-                savedGame.getUpdatedAt(),
-                request.gameTags()
-        );
+        if (request.screenshots() != null) {
+            List<GamesScreenshotEntity> screenshots = request.screenshots().stream()
+                    .map(url -> new GamesScreenshotEntity(savedGame.getId(), url))
+                    .toList();
+            gameScreenshotsRepository.saveAll(screenshots);
+        }
+
+        return createGamesResponse(savedGame, request.gameTags(), request.screenshots());
     }
 
     /**
@@ -234,19 +238,19 @@ public class GamesService {
             }
         }
 
+        if (request.screenshots() != null) {
+            gameScreenshotsRepository.deleteAllByGameId(gameId);
+            List<GamesScreenshotEntity> screenshots = request.screenshots().stream()
+                    .map(url -> new GamesScreenshotEntity(gameId, url))
+                    .toList();
+            gameScreenshotsRepository.saveAll(screenshots);
+        }
+
         GamesEntity savedGame = gamesRepository.save(gameToUpdate);
         gamesServiceLogger.info("Successfully updated game id={}", gameId);
 
-        return new Games(
-                savedGame.getId(),
-                savedGame.getAuthorId(),
-                savedGame.getTitle(),
-                savedGame.getDescription(),
-                savedGame.getBannerUrl(),
-                savedGame.getCreatedAt(),
-                savedGame.getUpdatedAt(),
-                request.gameTags()
-        );
+
+        return createGamesResponse(savedGame, request.gameTags(), request.screenshots());
     }
 
     /**
@@ -303,5 +307,29 @@ public class GamesService {
                 map(TagEntity::getName).toList();
 
         return new TagsResponse(gameTags);
+    }
+
+    /**
+     * Creates {@link Games} response object from saved game entity and request-derived collections.
+     * Uses scalar fields from provided {@link GamesEntity} and copies tag and screenshot lists
+     * exactly as they were passed to the service method.
+     *
+     * @param game - saved game entity containing persisted scalar fields
+     * @param gameTags - list of tag names passed in create/update request
+     * @param screenshots - list of screenshot urls passed in create/update request
+     * @return response object containing game fields, tags and screenshots
+     * @Author: Egor Grishin
+     */
+    private Games createGamesResponse(GamesEntity game, List<String> gameTags, List<String> screenshots) {
+        return new Games(game.getId(),
+                game.getAuthorId(),
+                game.getTitle(),
+                game.getDescription(),
+                game.getBannerUrl(),
+                game.getCreatedAt(),
+                game.getUpdatedAt(),
+                gameTags,
+                screenshots
+        );
     }
 }

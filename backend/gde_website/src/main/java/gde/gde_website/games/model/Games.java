@@ -22,6 +22,7 @@ public record Games(
         String bannerUrl,
         Instant createdAt,
         Instant updatedAt,
-        List<String> gameTags
+        List<String> gameTags,
+        List<String> screenshots
 ) {
 }
