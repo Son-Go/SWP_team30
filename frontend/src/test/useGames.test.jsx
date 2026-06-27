@@ -38,7 +38,8 @@ describe("useGames", () => {
       { id: 2, title: "Second game" },
     ])
     expect(result.current.hasMore).toBe(true)
-    expect(getGames).toHaveBeenCalledWith(0)
+    expect(getGames).toHaveBeenCalled()
+    expect(getGames.mock.calls[0][0]).toBe(0)
   })
 
   it("appends only unique games when loading more pages", async () => {
@@ -80,7 +81,8 @@ describe("useGames", () => {
       { id: 3, title: "Third game" },
     ])
     expect(result.current.hasMore).toBe(false)
-    expect(getGames).toHaveBeenNthCalledWith(2, 1)
+    expect(getGames).toHaveBeenCalledTimes(2)
+    expect(getGames.mock.calls[1][0]).toBe(1)
   })
 
   it("exposes request errors to the UI", async () => {
