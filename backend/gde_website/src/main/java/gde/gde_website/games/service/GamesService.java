@@ -1,9 +1,11 @@
 package gde.gde_website.games.service;
 
 import gde.gde_website.games.entity.GamesEntity;
+import gde.gde_website.games.entity.GamesScreenshotEntity;
 import gde.gde_website.games.entity.TagEntity;
 import gde.gde_website.games.mapper.GamesMapper;
 import gde.gde_website.games.model.*;
+import gde.gde_website.games.repository.GameScreenshotsRepository;
 import gde.gde_website.games.repository.GameTagRepository;
 import gde.gde_website.games.repository.GamesRepository;
 import gde.gde_website.games.repository.TagRepository;
@@ -35,6 +37,7 @@ public class GamesService {
     private final GameTagRepository gameTagRepository;
     private final GamesMapper mapper;
     private final UsersRepository usersRepository;
+    private final GameScreenshotsRepository gameScreenshotsRepository;
 
     /**
      * This method is used for getting list of all games divided on the groups of specific size request
@@ -141,7 +144,10 @@ public class GamesService {
             );
         }
 
-        return mapper.entityToResponse(game, currentUserId, authorResponse);
+        List<String> screenshots = gameScreenshotsRepository.findAllByGameId(gameId)
+                .stream().map(GamesScreenshotEntity::getUrl).toList();
+
+        return mapper.entityToResponse(game, currentUserId, authorResponse, screenshots);
     }
 
     /**
@@ -176,6 +182,13 @@ public class GamesService {
             }
         }
 
+        if (request.screenshots() != null) {
+            List<GamesScreenshotEntity> screenshots = request.screenshots().stream()
+                    .map(url -> new GamesScreenshotEntity(savedGame.getId(), url))
+                    .toList();
+            gameScreenshotsRepository.saveAll(screenshots);
+        }
+
         return new Games(
                 savedGame.getId(),
                 savedGame.getAuthorId(),
@@ -184,7 +197,8 @@ public class GamesService {
                 savedGame.getBannerUrl(),
                 savedGame.getCreatedAt(),
                 savedGame.getUpdatedAt(),
-                request.gameTags()
+                request.gameTags(),
+                request.screenshots()
         );
     }
 
@@ -234,6 +248,14 @@ public class GamesService {
             }
         }
 
+        if (request.screenshots() != null) {
+            gameScreenshotsRepository.deleteAllByGameId(gameId);
+            List<GamesScreenshotEntity> screenshots = request.screenshots().stream()
+                    .map(url -> new GamesScreenshotEntity(gameId, url))
+                    .toList();
+            gameScreenshotsRepository.saveAll(screenshots);
+        }
+
         GamesEntity savedGame = gamesRepository.save(gameToUpdate);
         gamesServiceLogger.info("Successfully updated game id={}", gameId);
 
@@ -245,7 +267,8 @@ public class GamesService {
                 savedGame.getBannerUrl(),
                 savedGame.getCreatedAt(),
                 savedGame.getUpdatedAt(),
-                request.gameTags()
+                request.gameTags(),
+                request.screenshots()
         );
     }
 

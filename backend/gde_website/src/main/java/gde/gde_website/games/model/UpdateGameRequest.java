@@ -11,11 +11,13 @@ import java.util.List;
  * @param description - new game description or {@code null}
  * @param bannerUrl - new banner url or {@code null}
  * @param gameTags - new list of tag names or {@code null}
+ * @param screenshots - new list of game screenshots links or {@code null}
  */
 public record UpdateGameRequest(
         String title,
         String description,
         String bannerUrl,
-        List<String> gameTags
+        List<String> gameTags,
+        List<String> screenshots
 ) {
 }

@@ -16,6 +16,7 @@ import java.util.List;
  * @param isOwner - whether current authenticated user is the owner of the game
  * @param author - author information, if available
  * @param gameTags - list of tag names linked with the game
+ * @param screenshots - list of screenshots links
  * @Author: Egor Grishin
  */
 public record GamesCardResponce(
@@ -28,6 +29,7 @@ public record GamesCardResponce(
         Instant updatedAt,
         boolean isOwner,
         AuthorResponse author,
-        List<String> gameTags
+        List<String> gameTags,
+        List<String> screenshots
 ) {
 }
