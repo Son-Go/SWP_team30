@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createGame } from "../api/api";
 import ErrorState from "../components/ErrorState";
+import TagSelector from "../components/TagSelector";
 import { useAuth } from "../context/auth-context";
 
 function CreateGamePage() {
@@ -11,25 +12,29 @@ function CreateGamePage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [bannerUrl, setBannerUrl] = useState("");
+  const [tags, setTags] = useState([]);
+  const [screenshots, setScreenshots] = useState([]);
+  const [screenshotInput, setScreenshotInput] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(event) {
     event.preventDefault();
-
     try {
       setSubmitting(true);
       setError("");
 
-      const formData = new FormData();
-      formData.append("title", title);
-      formData.append("description", description);
+      const createdGame = await createGame(
+        {
+          title,
+          description,
+          bannerUrl: bannerUrl || undefined,
+          gameTags: tags,
+          screenshots,
+        },
+        token,
+      );
 
-      if (bannerUrl) {
-        formData.append("bannerUrl", bannerUrl);
-      }
-
-      const createdGame = await createGame(formData, token);
       navigate(`/games/${createdGame.id}`);
     } catch (err) {
       setError(err.message || "Не удалось создать игру(Фух...)");
@@ -44,13 +49,12 @@ function CreateGamePage() {
         <Link to="/games" className="nav-link">
           ← Назад
         </Link>
-
         <div className="section">
-          <h1 className="page-title">Создать игру</h1>
+          <h1 className="page-title">Выложить игру</h1>
         </div>
       </div>
 
-      <article className="card">
+      <article className="card create-game-card">
         {error ? <ErrorState message={error} /> : null}
 
         <form className="form" onSubmit={handleSubmit}>
@@ -63,7 +67,7 @@ function CreateGamePage() {
               className="input"
               type="text"
               value={title}
-              onChange={(event) => setTitle(event.target.value)}
+              onChange={(e) => setTitle(e.target.value)}
               required
             />
           </div>
@@ -76,12 +80,12 @@ function CreateGamePage() {
               id="description"
               className="textarea"
               value={description}
-              onChange={(event) => setDescription(event.target.value)}
+              onChange={(e) => setDescription(e.target.value)}
             />
           </div>
 
           <div className="form-group">
-            <label className="label" htmlFor="banner">
+            <label className="label" htmlFor="bannerUrl">
               Баннер
             </label>
             <input
@@ -90,8 +94,74 @@ function CreateGamePage() {
               type="url"
               placeholder="https://biographe.ru/char/shrek/"
               value={bannerUrl}
-              onChange={(event) => setBannerUrl(event.target.value)}
+              onChange={(e) => setBannerUrl(e.target.value)}
             />
+          </div>
+
+          <div className="form-group">
+            <label className="label">Теги</label>
+            <TagSelector selected={tags} onChange={setTags} />
+          </div>
+
+          <div className="form-group">
+            <label className="label">Скриншоты</label>
+            <div className="tag-input-row">
+              <input
+                className="input"
+                type="url"
+                placeholder="https://example.com/screenshot.png"
+                value={screenshotInput}
+                onChange={(e) => setScreenshotInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    const trimmed = screenshotInput.trim();
+                    if (trimmed && !screenshots.includes(trimmed)) {
+                      setScreenshots([...screenshots, trimmed]);
+                    }
+                    setScreenshotInput("");
+                  }
+                }}
+              />
+              <button
+                type="button"
+                className="button button-ghost"
+                onClick={() => {
+                  const trimmed = screenshotInput.trim();
+                  if (trimmed && !screenshots.includes(trimmed)) {
+                    setScreenshots([...screenshots, trimmed]);
+                  }
+                  setScreenshotInput("");
+                }}
+              >
+                Добавить
+              </button>
+            </div>
+            {screenshots.length > 0 && (
+              <div className="screenshots-edit-list">
+                {screenshots.map((url, i) => (
+                  <div key={i} className="screenshot-edit-item">
+                    <img
+                      src={url}
+                      alt={`Скриншот ${i + 1}`}
+                      className="screenshot-thumb"
+                    />
+                    <span className="screenshot-url">{url}</span>
+                    <button
+                      type="button"
+                      className="button button-danger screenshot-remove"
+                      onClick={() =>
+                        setScreenshots(
+                          screenshots.filter((_, idx) => idx !== i),
+                        )
+                      }
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="card-actions">
@@ -102,7 +172,6 @@ function CreateGamePage() {
             >
               {submitting ? "Создание..." : "Создать"}
             </button>
-
             <Link to="/games" className="button button-ghost">
               Отмена
             </Link>

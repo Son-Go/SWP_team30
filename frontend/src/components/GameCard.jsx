@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 function GameCard({ game }) {
   return (
-    <article className="card section">
+    <Link to={`/games/${game.id}`} className="card card-link">
       {game.bannerUrl ? (
         <img src={game.bannerUrl} alt={game.title} />
       ) : (
@@ -12,18 +12,21 @@ function GameCard({ game }) {
 
       <div className="section">
         <h2 className="card-title">{game.title}</h2>
+        {game.author?.username && (
+          <p className="card-author">{game.author.username}</p>
+        )}
 
-        <p className="card-text">
-          {game.description || "Описание пока отсутствует."}
-        </p>
+        {game.tags?.length > 0 && (
+          <div className="tag-list">
+            {game.tags.map((tag) => (
+              <span key={tag} className="tag-badge">
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
-
-      <div className="card-actions">
-        <Link to={`/games/${game.id}`} className="button">
-          К игре
-        </Link>
-      </div>
-    </article>
+    </Link>
   );
 }
 

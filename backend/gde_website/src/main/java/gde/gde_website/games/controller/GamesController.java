@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +18,11 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 /**
- * This class is used for handling specific HTTP requests which includes /games/ in their paths
+ * Controller for handling HTTP requests related to games.
+ * Provides endpoints for listing games, fetching a game card by id,
+ * creating, updating and deleting games, fetching author information,
+ * and returning the list of all available tags.
+ *
  * @Author: Artemii Gorelov, Egor Grishin
  */
 @RestController
@@ -82,21 +85,19 @@ public class GamesController {
     }
 
     /**
-     * This method is used for handling create new game request
-     * @param title - title of game to be created
-     * @param description - description of game to be created
-     * @param bannerUrl - banner url path of game to be created
-     * @param authentication - user token
-     * @return http status CREATED (code 201) with created game info inside response body
-     * @throws ResponseStatusException with code 401 while user is not authenticated
+     * Handles request for creating a new game.
+     * Accepts a JSON request body with game fields and an optional list of tag names.
+     * The authenticated user becomes the author of the created game.
+     *
+     * @param request - request body containing title, description, banner url and optional tags
+     * @param authentication - authenticated user token
+     * @return HTTP status {@code 201} with created game data in response body
+     * @throws ResponseStatusException with code {@code 401} if user is not authenticated
      * @Author: Artemii Gorelov
      */
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Games> createGame(
-            @RequestParam String title,
-            @RequestParam String description,
-            @RequestParam String bannerUrl,
-            @RequestParam(required = false) List<String> gameTags,
+            @RequestBody GamesCreateRequest request,
             Authentication authentication
     ) {
 
@@ -108,33 +109,27 @@ public class GamesController {
 
         Long currentUserId = (Long) authentication.getPrincipal();
 
-        Games gameWithCurrentAuthor = createNewRawGame(currentUserId, title, description, bannerUrl, gameTags);
-
-        Games createGame = gamesService.createGame(gameWithCurrentAuthor, currentUserId);
+        Games createGame = gamesService.createGame(request, currentUserId);
         return ResponseEntity.status(HttpStatus.CREATED).body(createGame);
     }
 
     /**
-     * This method is used for handling update request for game with specific id
-     * @param gameId - id of game to pe updated
-     * @param title - title to be updated
-     * @param description - description to be updated
-     * @param bannerUrl - banner url path to be updated
-     * @param authentication - user token
-     * @return Http status ok (code 200) with body of updated game
-     * @throws ResponseStatusException with code 401 while user token is invalid
+     * Handles request for updating an existing game.
+     * Accepts a JSON request body. Any non-null field from the request replaces
+     * the corresponding game field. When {@code gameTags} is provided, all current
+     * game-tag relations are removed and replaced with the provided list of tag names.
+     *
+     * @param gameId - id of game to be updated
+     * @param request - request body containing optional title, description, banner url and tags
+     * @param authentication - authenticated user token
+     * @return HTTP status {@code 200} with updated game data in response body
+     * @throws ResponseStatusException with code {@code 401} if user token is invalid
      * @Author: Egor Grishin
      */
-    @PatchMapping(path = "/{id}", consumes = {
-            MediaType.MULTIPART_FORM_DATA_VALUE,
-            MediaType.APPLICATION_FORM_URLENCODED_VALUE
-    })
+    @PatchMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Games> updateGame(
             @PathVariable("id") Long gameId,
-            @RequestParam String title,
-            @RequestParam String description,
-            @RequestParam String bannerUrl,
-            @RequestParam(required = false) List<String> gameTags,
+            @RequestBody UpdateGameRequest request,
             Authentication authentication) {
 
         gamesControllerLogger.info("Called GamesController /games/id (post)");
@@ -144,18 +139,17 @@ public class GamesController {
 
         Long currentUserId = (Long) authentication.getPrincipal();
 
-        Games gameToUpdate = createNewRawGame(currentUserId, title, description, bannerUrl, gameTags);
-
-        Games updatedGame = gamesService.updateGame(gameToUpdate, gameId);
+        Games updatedGame = gamesService.updateGame(request, currentUserId, gameId);
         return ResponseEntity.status(HttpStatus.OK).body(updatedGame);
     }
 
     /**
-     * This function is used for handling delete game request
+     * Handles request for deleting a game by id.
+     *
      * @param id - id of game to be deleted
-     * @param authentication - user token
-     * @return Http status 204 without body
-     * @throws ResponseStatusException with code 401 while user token is invalid
+     * @param authentication - authenticated user token
+     * @return HTTP status {@code 204} without response body
+     * @throws ResponseStatusException with code {@code 401} if user token is invalid
      * @Author: Artemii Gorelov
      */
     @DeleteMapping("/{id}")
@@ -177,10 +171,11 @@ public class GamesController {
     }
 
     /**
-     * This function is used for handling GET /games/author/{id} request to get info about specific author
+     * Handles request for returning information about a specific game author.
+     *
      * @param id - requested author id
-     * @return - returns HTTP status OK with code {@code 200} if successfully returned author info.
-     * code {@code 404} if author with requested id is not present in database
+     * @return HTTP status {@code 200} with author information in response body,
+     * or {@code 404} if author with requested id is not found
      * @Author: Artemii Gorelov
      */
     @GetMapping("/author/{id}")
@@ -199,32 +194,5 @@ public class GamesController {
     public ResponseEntity<TagsResponse> getAllTags() {
         gamesControllerLogger.info("Called /games/tags/all get all tags method");
         return ResponseEntity.status(HttpStatus.OK).body(gamesService.getAllTags());
-    }
-
-
-    /**
-     * This function is used for creating new raw game (without id and creation time for database)
-     * @param currentUserId - id of user which creating game
-     * @param title - title of the game
-     * @param description - game description
-     * @param bannerUrl - game banner url path
-     * @return new Games object
-     * @Author: Egor Grishin
-     */
-    private Games createNewRawGame(Long currentUserId,
-                                   String title,
-                                   String description,
-                                   String bannerUrl,
-                                   List<String> gameTags) {
-        return new Games(
-                null,
-                currentUserId,
-                title,
-                description,
-                bannerUrl,
-                null,
-                null,
-                gameTags
-        );
     }
 }
