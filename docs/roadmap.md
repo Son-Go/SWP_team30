@@ -18,23 +18,24 @@
 
 **Milestone:** [Sprint 2](https://github.com/Son-Go/SWP_team30/milestone/2)
 
-**Goal** develop /games page, game creation, addition, editing
+**Goal** finalize /game page, add filtering and tags system
 
 | ID | Summary | Issue |
 |---|---|---|
-| US-03 | event parsing from telegram | [#3](https://github.com/Son-Go/SWP_team30/issues/46) |
+| US-145 | game tags functionality | [#145](https://github.com/Son-Go/SWP_team30/issues/145) |
+| PBI | backend tags functionality | [#154](https://github.com/Son-Go/SWP_team30/issues/154) |
+| PBI | CI/CD workflow (testing) | [#158](https://github.com/Son-Go/SWP_team30/issues/158) |
+| PBI | logging system | [#144](https://github.com/Son-Go/SWP_team30/issues/144) |
 
 
 ## Sprint 3 (29.06.2026 - 05.07.2025)
 
 **Milestone:** [Sprint 3](https://github.com/Son-Go/SWP_team30/milestone/3)
 
-**Goal** develop /games page, game creation, addition, editing
+**Goal** develop /event page, event parsing and event catalog
 
 | ID | Summary | Issue |
 |---|---|---|
-| US-02 | add games from dev profile | [#02](https://github.com/Son-Go/SWP_team30/issues/45) |
-| US-05 | add user profile | [#05](https://github.com/Son-Go/SWP_team30/issues/48) |
-| US-09 | add new from tatarstan games on welcome page string | [#09](https://github.com/Son-Go/SWP_team30/issues/51) |
-| US-10 | add functional welcome page | [#63](https://github.com/Son-Go/SWP_team30/issues/52) |
+| PBI | frontend event page | [#147](https://github.com/Son-Go/SWP_team30/issues/147) |
+| US-165 | event page | [#165](https://github.com/Son-Go/SWP_team30/issues/165) |
 

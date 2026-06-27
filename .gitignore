@@ -12,6 +12,7 @@
 .vscode/
 
 ### Environment ###
+.env.secret
 .env
 
 ### Generated backups ###
