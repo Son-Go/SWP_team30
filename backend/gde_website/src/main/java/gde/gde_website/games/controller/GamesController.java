@@ -1,8 +1,6 @@
 package gde.gde_website.games.controller;
 
-import gde.gde_website.games.entity.GamesEntity;
-import gde.gde_website.games.model.Games;
-import gde.gde_website.games.model.GamesResponce;
+import gde.gde_website.games.model.*;
 import gde.gde_website.games.service.GamesService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -12,10 +10,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 /**
  * This class is used for handling specific HTTP requests which includes /games/ in their paths
@@ -30,21 +31,32 @@ public class GamesController {
     private final GamesService gamesService;
 
     /**
-     * This method is used for handling get list of all games divided on the groups of specific size request
+     * This method is used for handling get list of all games or games filtered by tags request,
+     * divided on the groups of specific size
      * @param page - initial page
      * @param size - number of elements on each page
+     * @param tags - optional list of tag names to filter games by; if not provided or empty, returns all games
      * @return - returns status OK  (code 200) with sublist of games entity inside response body
-     * @Author: Artemii Gorelov
+     * @Author: Artemii Gorelov, Egor Grishin
      */
     @GetMapping
-    public ResponseEntity<Page<GamesEntity>> getAllGames(
+    public ResponseEntity<Page<GamesPageResponce>> getAllGames(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "24") int size
+            @RequestParam(defaultValue = "24") int size,
+            @RequestParam(required = false) List<String> tags
     ) {
 
         gamesControllerLogger.info("Called GamesController /games method (get)");
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt"));
-        return ResponseEntity.status(HttpStatus.OK).body(gamesService.getAllGames(pageable));
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<GamesPageResponce> games;
+        if (tags != null && !tags.isEmpty()) {
+            games = gamesService.getGamesByTags(tags, pageable);
+        } else {
+            games = gamesService.getAllGames(pageable);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(games);
     }
 
     /**
@@ -55,7 +67,7 @@ public class GamesController {
      * @Author: Egor Grishin
      */
     @GetMapping("/{id}")
-    public ResponseEntity<GamesResponce> getGameById(
+    public ResponseEntity<GamesCardResponce> getGameById(
             @PathVariable("id") Long id,
             Authentication authentication) {
 
@@ -79,11 +91,12 @@ public class GamesController {
      * @throws ResponseStatusException with code 401 while user is not authenticated
      * @Author: Artemii Gorelov
      */
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Games> createGame(
             @RequestParam String title,
             @RequestParam String description,
             @RequestParam String bannerUrl,
+            @RequestParam(required = false) List<String> gameTags,
             Authentication authentication
     ) {
 
@@ -95,7 +108,7 @@ public class GamesController {
 
         Long currentUserId = (Long) authentication.getPrincipal();
 
-        Games gameWithCurrentAuthor = createNewRawGame(currentUserId, title, description, bannerUrl);
+        Games gameWithCurrentAuthor = createNewRawGame(currentUserId, title, description, bannerUrl, gameTags);
 
         Games createGame = gamesService.createGame(gameWithCurrentAuthor, currentUserId);
         return ResponseEntity.status(HttpStatus.CREATED).body(createGame);
@@ -112,12 +125,16 @@ public class GamesController {
      * @throws ResponseStatusException with code 401 while user token is invalid
      * @Author: Egor Grishin
      */
-    @PatchMapping("/{id}")
+    @PatchMapping(path = "/{id}", consumes = {
+            MediaType.MULTIPART_FORM_DATA_VALUE,
+            MediaType.APPLICATION_FORM_URLENCODED_VALUE
+    })
     public ResponseEntity<Games> updateGame(
             @PathVariable("id") Long gameId,
             @RequestParam String title,
             @RequestParam String description,
             @RequestParam String bannerUrl,
+            @RequestParam(required = false) List<String> gameTags,
             Authentication authentication) {
 
         gamesControllerLogger.info("Called GamesController /games/id (post)");
@@ -127,7 +144,7 @@ public class GamesController {
 
         Long currentUserId = (Long) authentication.getPrincipal();
 
-        Games gameToUpdate = createNewRawGame(currentUserId, title, description, bannerUrl);
+        Games gameToUpdate = createNewRawGame(currentUserId, title, description, bannerUrl, gameTags);
 
         Games updatedGame = gamesService.updateGame(gameToUpdate, gameId);
         return ResponseEntity.status(HttpStatus.OK).body(updatedGame);
@@ -160,6 +177,32 @@ public class GamesController {
     }
 
     /**
+     * This function is used for handling GET /games/author/{id} request to get info about specific author
+     * @param id - requested author id
+     * @return - returns HTTP status OK with code {@code 200} if successfully returned author info.
+     * code {@code 404} if author with requested id is not present in database
+     * @Author: Artemii Gorelov
+     */
+    @GetMapping("/author/{id}")
+    public ResponseEntity<AuthorResponse> getGameAuthor(@PathVariable Long id) {
+        gamesControllerLogger.info("Called /games get game author method with id = {}", id);
+        AuthorResponse author = gamesService.getAuthorById(id);
+        return ResponseEntity.ok(author);
+    }
+
+    /**
+     * This method is used for handling GET all tags request
+     * @return Response entity with status {@code 200} and list of tags in body of response
+     * @Author: Egor Grishin
+     */
+    @GetMapping("/tags/all")
+    public ResponseEntity<TagsResponse> getAllTags() {
+        gamesControllerLogger.info("Called /games/tags/all get all tags method");
+        return ResponseEntity.status(HttpStatus.OK).body(gamesService.getAllTags());
+    }
+
+
+    /**
      * This function is used for creating new raw game (without id and creation time for database)
      * @param currentUserId - id of user which creating game
      * @param title - title of the game
@@ -168,7 +211,11 @@ public class GamesController {
      * @return new Games object
      * @Author: Egor Grishin
      */
-    private Games createNewRawGame(Long currentUserId, String title, String description, String bannerUrl) {
+    private Games createNewRawGame(Long currentUserId,
+                                   String title,
+                                   String description,
+                                   String bannerUrl,
+                                   List<String> gameTags) {
         return new Games(
                 null,
                 currentUserId,
@@ -176,7 +223,8 @@ public class GamesController {
                 description,
                 bannerUrl,
                 null,
-                null
+                null,
+                gameTags
         );
     }
 }

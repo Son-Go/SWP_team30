@@ -42,19 +42,6 @@ body:
       required: true
 
   - type: dropdown
-    id: work-status
-    attributes:
-      label: Work Status
-      description: Current state of this PBI
-      options:
-        - To Do
-        - In Progress
-        - In Review
-        - Done
-    validations:
-      required: true
-
-  - type: dropdown
     id: moscow
     attributes:
       label: MoSCoW Priority
@@ -66,29 +53,6 @@ body:
         - Won't Have
     validations:
       required: true
-
-  - type: input
-    id: story-points
-    attributes:
-      label: Story Points
-      description: Estimated effort in story points
-      placeholder: "e.g., 3, 5, 8"
-    validations:
-      required: true
-
-  - type: input
-    id: milestone
-    attributes:
-      label: Milestone
-      description: Sprint milestone when applicable (leave blank if not yet assigned)
-      placeholder: "e.g., Sprint 1"
-
-  - type: input
-    id: assignee
-    attributes:
-      label: Assignee
-      description: Team member assigned to this PBI when in the current Sprint Backlog
-      placeholder: "@username"
 
   - type: textarea
     id: acceptance-criteria
