@@ -23,6 +23,9 @@ function GamePage() {
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
   const [authorName, setAuthorName] = useState(null);
+  const [screenshots, setScreenshots] = useState([]);
+  const [screenshotInput, setScreenshotInput] = useState("");
+  const [activeScreenshot, setActiveScreenshot] = useState(null);
 
   useEffect(() => {
     async function loadGame() {
@@ -40,6 +43,8 @@ function GamePage() {
         setDescription(data.description || "");
         setBannerUrl(data.bannerUrl || "");
         setTags(data.gameTags || []);
+        setScreenshots(data.screenshots || []);
+        setActiveScreenshot(null);
       } catch (err) {
         setError(err.message || "Не удалось загрузить игру");
       } finally {
@@ -90,6 +95,7 @@ function GamePage() {
           description,
           bannerUrl: bannerUrl || undefined,
           gameTags: tags,
+          screenshots,
         },
         token,
       );
@@ -102,6 +108,7 @@ function GamePage() {
       setDescription(updatedGame.description || "");
       setBannerUrl(updatedGame.bannerUrl || "");
       setTags(updatedGame.gameTags || []);
+      setScreenshots(updatedGame.screenshots || []);
       setIsEditing(false);
     } catch (err) {
       setError(err.message || "Не удалось обновить игру");
@@ -136,7 +143,6 @@ function GamePage() {
             ← Назад к каталогу
           </Link>
           <h1 className="page-title">{game.title}</h1>
-          {authorName && <p className="card-author">{authorName}</p>}
         </div>
 
         {game.isOwner && (
@@ -172,27 +178,135 @@ function GamePage() {
       {error ? <ErrorState message={error} /> : null}
 
       {!isEditing ? (
-        <article className="card section-lg">
-          {game.bannerUrl ? (
-            <img src={game.bannerUrl} alt={game.title} />
-          ) : (
-            <div className="state-box">Баннер пока не загружен.</div>
-          )}
-          <div className="section">
-            <h2 className="card-title">Описание</h2>
-            <p className="card-text">{game.description || "Описания нема."}</p>
-
-            {game.gameTags?.length > 0 && (
-              <div className="tag-list">
-                {game.gameTags.map((tag) => (
-                  <span key={tag} className="tag-badge">
-                    {tag}
-                  </span>
-                ))}
+        <div className="game-layout">
+          <div className="game-gallery">
+            {game.screenshots?.length > 0 ? (
+              <>
+                <div className="game-gallery-viewer">
+                  <button
+                    className="gallery-arrow gallery-arrow-left"
+                    onClick={() => {
+                      const idx = game.screenshots.indexOf(
+                        activeScreenshot ?? game.screenshots[0],
+                      );
+                      const prev =
+                        (idx - 1 + game.screenshots.length) %
+                        game.screenshots.length;
+                      setActiveScreenshot(game.screenshots[prev]);
+                    }}
+                  >
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="15 18 9 12 15 6" />
+                    </svg>
+                  </button>
+                  <img
+                    src={activeScreenshot ?? game.screenshots[0]}
+                    alt={game.title}
+                    className="game-gallery-main"
+                  />
+                  <button
+                    className="gallery-arrow gallery-arrow-right"
+                    onClick={() => {
+                      const idx = game.screenshots.indexOf(
+                        activeScreenshot ?? game.screenshots[0],
+                      );
+                      const next = (idx + 1) % game.screenshots.length;
+                      setActiveScreenshot(game.screenshots[next]);
+                    }}
+                  >
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  </button>
+                </div>
+                <div className="game-gallery-thumbs">
+                  {game.screenshots.map((url, i) => (
+                    <img
+                      key={i}
+                      src={url}
+                      className={`game-gallery-thumb ${(activeScreenshot ?? game.screenshots[0]) === url ? "active" : ""}`}
+                      onClick={() => setActiveScreenshot(url)}
+                    />
+                  ))}
+                </div>
+              </>
+            ) : game.bannerUrl ? (
+              <img
+                src={game.bannerUrl}
+                alt={game.title}
+                className="game-gallery-main"
+              />
+            ) : (
+              <div className="state-box game-gallery-main">
+                Скриншоты не загружены.
               </div>
             )}
+
+            <div className="game-description">
+              <h2 className="card-title">Описание</h2>
+              <p className="card-text">
+                {game.description || "Описания нема."}
+              </p>
+            </div>
           </div>
-        </article>
+
+          <aside className="game-sidebar">
+            {game.bannerUrl && (
+              <img
+                src={game.bannerUrl}
+                alt={game.title}
+                className="game-sidebar-cover"
+              />
+            )}
+            {authorName && (
+              <div className="game-sidebar-meta">
+                <span className="game-sidebar-label">Автор</span>
+                <span className="card-author">{authorName}</span>
+              </div>
+            )}
+            {game.createdAt && (
+              <div className="game-sidebar-meta">
+                <span className="game-sidebar-label">Дата создания</span>
+                <span className="card-author">
+                  {new Date(game.createdAt).toLocaleDateString("ru-RU", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </span>
+              </div>
+            )}
+            {game.gameTags?.length > 0 && (
+              <div className="game-sidebar-meta">
+                <div className="tag-list">
+                  {game.gameTags.map((tag) => (
+                    <span key={tag} className="tag-badge">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </aside>
+        </div>
       ) : (
         <article className="card create-game-card">
           <form className="form" onSubmit={handleUpdate}>
@@ -239,6 +353,66 @@ function GamePage() {
             <div className="form-group">
               <label className="label">Теги</label>
               <TagSelector selected={tags} onChange={setTags} />
+            </div>
+            <div className="form-group">
+              <label className="label">Скриншоты</label>
+              <div className="tag-input-row">
+                <input
+                  className="input"
+                  type="url"
+                  placeholder="https://example.com/screenshot.png"
+                  value={screenshotInput}
+                  onChange={(e) => setScreenshotInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      const trimmed = screenshotInput.trim();
+                      if (trimmed && !screenshots.includes(trimmed)) {
+                        setScreenshots([...screenshots, trimmed]);
+                      }
+                      setScreenshotInput("");
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  className="button button-ghost"
+                  onClick={() => {
+                    const trimmed = screenshotInput.trim();
+                    if (trimmed && !screenshots.includes(trimmed)) {
+                      setScreenshots([...screenshots, trimmed]);
+                    }
+                    setScreenshotInput("");
+                  }}
+                >
+                  Добавить
+                </button>
+              </div>
+              {screenshots.length > 0 && (
+                <div className="screenshots-edit-list">
+                  {screenshots.map((url, i) => (
+                    <div key={i} className="screenshot-edit-item">
+                      <img
+                        src={url}
+                        alt={`Скриншот ${i + 1}`}
+                        className="screenshot-thumb"
+                      />
+                      <span className="screenshot-url">{url}</span>
+                      <button
+                        type="button"
+                        className="button button-danger screenshot-remove"
+                        onClick={() =>
+                          setScreenshots(
+                            screenshots.filter((_, idx) => idx !== i),
+                          )
+                        }
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="card-actions">
               <button
