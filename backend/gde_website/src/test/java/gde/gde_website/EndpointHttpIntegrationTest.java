@@ -156,6 +156,28 @@ class EndpointHttpIntegrationTest {
     }
 
     @Test
+    void updateGameRequiresJwtOverHttp() throws Exception {
+        mockMvc.perform(patch("/games/5")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "title": "Updated Game",
+                                  "description": "Updated description",
+                                  "bannerUrl": "https://example.com/banner.png",
+                                  "gameTags": ["indie"],
+                                  "screenshots": []
+                                }
+                                """))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void deleteGameRequiresJwtOverHttp() throws Exception {
+        mockMvc.perform(delete("/games/5"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void createGameUsesAuthenticatedUserFromJwt() throws Exception {
         when(gamesService.createGame(any(), eq(42L))).thenReturn(game());
 
@@ -213,6 +235,18 @@ class EndpointHttpIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.gameTags[0]").value("puzzle"))
                 .andExpect(jsonPath("$.gameTags[1]").value("indie"));
+    }
+
+    @Test
+    void authorEndpointReturnsPublicAuthorContractOverHttp() throws Exception {
+        when(gamesService.getAuthorById(15L))
+                .thenReturn(new AuthorResponse("supergiant", null, "studio@example.com"));
+
+        mockMvc.perform(get("/games/author/15"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("supergiant"))
+                .andExpect(jsonPath("$.profile_image_url").doesNotExist())
+                .andExpect(jsonPath("$.email").value("studio@example.com"));
     }
 
     private String bearerToken(Long userId) {
