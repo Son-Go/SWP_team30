@@ -5,6 +5,7 @@
 - Google Gemini/Chat-GPT/Qwen - used to understand how to implement tricky parts, gain knowledge about backend/fronted architecture
 - Codex/other agents - used to restructure assignment plan according to our workflow, write tests and DevOps scripts
 - soundwise.ai - used to transcibe meeting recording to text
+- notebookLM - generated presentation from presentation description
 
 ## Usage Details
 
@@ -19,3 +20,6 @@
 
 ### soundwise.ai
 - transcribed all audio recorings to text (then Gemini generated summaries)
+
+### notebookLM
+- generated presentation from slide by slide text presentation description
