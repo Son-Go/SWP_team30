@@ -2,15 +2,26 @@
 
 **Version notation logic:**
 
-- vX.Y.Z - general version format
-- X - production version (for all MVP versions X is 0)
-- Y - MVP version of newly added feature (if project already in production, X keeps it original number, Y defines new feature version)
-- Z - spint number (sprints are indexed from last Y release)
-- For clean new major releases Y.Z are 0.0
+- All mvp versions starts with v0.x.x
+- Changes inside MVP will result in changing PATCH number
+- If patch number suddenly increases on several points, then major patch was released
 
 ## [Unreleased](https://github.com/Son-Go/SWP_team30)
 
-- Documentation updates, readme updates and other non-functional changes
+Additional documentations, readme updates, images for v0.1.5
+
+## [v0.1.5](https://github.com/Son-Go/SWP_team30/releases/tag/MVP-v1.5)
+
+### Added
+
+- New visual style
+- [US-145](https://github.com/Son-Go/SWP_team30/issues/145) Tags for games
+- [PBI](https://github.com/Son-Go/SWP_team30/issues/174) Filtering by tags
+- [PBI](https://github.com/Son-Go/SWP_team30/issues/179) Game cards support screenshots gallery
+
+## [v0.1.1](https://github.com/Son-Go/SWP_team30/releases/tag/MVP-v1.1)
+
+- Documentation updates, readme updates and other non-functional changes for v0.1.0
 
 ## [v0.1.0](https://github.com/Son-Go/SWP_team30/releases/tag/MVP-v1)
 
