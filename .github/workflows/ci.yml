@@ -262,6 +262,19 @@ jobs:
         working-directory: .
         run: docker rm -f ci-postgres
 
+  additional-qa-checks:
+    name: Additional QA checks
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true' || needs.changes.outputs.backend == 'true' || needs.changes.outputs.infra == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run additional QA checks
+        shell: pwsh
+        run: ./scripts/qa-checks.ps1
+
   docker-compose-smoke:
     name: Docker Compose smoke
     needs:
@@ -270,6 +283,7 @@ jobs:
       - frontend-test
       - frontend-build
       - backend-build-test
+      - additional-qa-checks
     if: always() && (needs.changes.outputs.frontend == 'true' || needs.changes.outputs.backend == 'true' || needs.changes.outputs.infra == 'true') && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
     runs-on: ubuntu-latest
     steps:

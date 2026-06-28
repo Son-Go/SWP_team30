@@ -30,7 +30,8 @@ The main CI pipeline is split into these jobs:
 3. `Frontend test`
 4. `Frontend build`
 5. `Backend build and test`
-6. `Docker Compose smoke`
+6. `Additional QA checks`
+7. `Docker Compose smoke`
 
 There is also a separate `Lychee link check` workflow for documentation links.
 
@@ -244,6 +245,84 @@ These tests mock the service layer, so they do not require seeded database data.
 - Spring Security access rules
 
 They do not test repository queries or real database persistence.
+
+## Additional QA Checks
+
+Job name: `Additional QA checks`
+
+Runs when frontend, backend, or infrastructure files changed.
+
+What it does:
+
+```powershell
+./scripts/qa-checks.ps1
+```
+
+These checks are intentionally separate from unit tests, integration tests, quality requirement tests, linting, formatting, type checking, build checks, coverage, and link checking. They are lightweight repository-level quality gates for risks that can slip through the normal test suite.
+
+### AQA-1: Authorization Header Proxy Check
+
+Quality risk:
+
+- Authenticated frontend requests can fail in production if nginx does not forward the `Authorization` header to the backend.
+
+Automated check:
+
+- Verifies [`frontend/nginx/default.conf`](../frontend/nginx/default.conf) contains:
+
+```nginx
+proxy_set_header Authorization $http_authorization;
+```
+
+Why this is distinct:
+
+- Unit and HTTP integration tests can pass even if the deployed frontend proxy drops JWT tokens.
+- This check validates deployment proxy configuration directly.
+
+### AQA-2: Mock Authentication Disabled Check
+
+Quality risk:
+
+- Mock authentication could accidentally be enabled in the production frontend API client.
+
+Automated check:
+
+- Verifies [`frontend/src/api/api.js`](../frontend/src/api/api.js) keeps:
+
+```js
+const USE_MOCK_AUTH = false;
+```
+
+Why this is distinct:
+
+- Normal frontend tests can pass with mocked behavior.
+- This check prevents a production build from bypassing real backend authentication.
+
+### AQA-3: Frontend/Backend API Route Contract Check
+
+Quality risk:
+
+- Frontend API paths and backend controller mappings can drift apart without a full browser end-to-end test noticing early.
+
+Automated check:
+
+- Verifies the frontend API client still contains calls for the core routes.
+- Verifies backend controllers still expose the corresponding route mappings.
+
+Routes checked include:
+
+- `/auth/register`
+- `/auth/login`
+- `/auth/me`
+- `/games`
+- `/games/{id}`
+- `/games/author/{id}`
+- `/games/tags/all`
+
+Why this is distinct:
+
+- It is a static API contract check, not a unit test or integration test.
+- It catches route-name drift before runtime smoke testing.
 
 ## Quality Requirements Tests
 
@@ -524,6 +603,7 @@ The CI pipeline currently gives confidence that:
 - frontend code lints
 - frontend API client and `useGames` hook behave as expected
 - frontend production build succeeds
+- additional QA checks catch proxy, mock-auth, and route-contract risks
 - backend compiles
 - backend controller unit tests pass
 - key backend endpoints work through real HTTP routing and security checks
