@@ -1,13 +1,13 @@
-## QRT-001 game loading time
+## QRT-001 PATCH /games/{id} security enforcement
 
-requirement test link and info
-
-
-## QRT-002 game loading time
-
-requirement test link and info
+Ensures the `updateGameRequiresJwtOverHttp` test rejects unauthenticated PATCH /games/{id} requests.
 
 
-## QRT-003 game loading time
+## QRT-002 DELETE /games/{id} security enforcement
 
-requirement test link and info
+Ensures the `deleteGameRequiresJwtOverHttp` test rejects unauthenticated DELETE /games/{id} requests.
+
+
+## QRT-003 Public author endpoint contract
+
+Ensures the `authorEndpointReturnsPublicAuthorContractOverHttp` test keeps GET /games/author/{id} publicly reachable and returns the expected author JSON contract.
