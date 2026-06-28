@@ -2,6 +2,8 @@
 
 This document describes the current GitHub Actions CI pipeline, what each job checks, and what the automated tests verify.
 
+> Manual endporoint testing [endpoint-testing.md](./endpoint-testing.md)
+
 ## Workflow Files
 
 - Main CI workflow: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml)
