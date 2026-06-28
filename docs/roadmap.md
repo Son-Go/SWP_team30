@@ -32,10 +32,11 @@
 
 **Milestone:** [Sprint 3](https://github.com/Son-Go/SWP_team30/milestone/3)
 
-**Goal** develop /event page, event parsing and event catalog
+**Goal** re finalize /games page with additional sections, wider tags functionality and other
 
 | ID | Summary | Issue |
 |---|---|---|
-| PBI | frontend event page | [#147](https://github.com/Son-Go/SWP_team30/issues/147) |
-| US-165 | event page | [#165](https://github.com/Son-Go/SWP_team30/issues/165) |
+| PBI | add video player | [#184](https://github.com/Son-Go/SWP_team30/issues/184) |
+| PBI | Login by login | [#183](https://github.com/Son-Go/SWP_team30/issues/183) |
+| PBI | Different tag types | [#185](https://github.com/Son-Go/SWP_team30/issues/185) |
 
