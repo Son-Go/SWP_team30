@@ -30,7 +30,8 @@ The main CI pipeline is split into these jobs:
 3. `Frontend test`
 4. `Frontend build`
 5. `Backend build and test`
-6. `Docker Compose smoke`
+6. `Additional QA checks`
+7. `Docker Compose smoke`
 
 There is also a separate `Lychee link check` workflow for documentation links.
 
@@ -227,9 +228,12 @@ They verify real HTTP behavior for key endpoints:
 - `GET /games/{id}` is public and returns detailed game JSON
 - `POST /games` returns `401` without a JWT
 - `POST /games` returns `201` and uses the user id from the JWT
+- `PATCH /games/{id}` returns `401` without a JWT
 - `PATCH /games/{id}` returns `200` and uses the user id from the JWT
+- `DELETE /games/{id}` returns `401` without a JWT
 - `DELETE /games/{id}` returns `204` and uses the user id from the JWT
 - `GET /games/tags/all` returns available tags as JSON
+- `GET /games/author/{id}` is public and returns author JSON
 
 These tests mock the service layer, so they do not require seeded database data. They are intended to catch mistakes in:
 
@@ -241,6 +245,156 @@ These tests mock the service layer, so they do not require seeded database data.
 - Spring Security access rules
 
 They do not test repository queries or real database persistence.
+
+## Additional QA Checks
+
+Job name: `Additional QA checks`
+
+Runs when frontend, backend, or infrastructure files changed.
+
+What it does:
+
+```powershell
+./scripts/qa-checks.ps1
+```
+
+These checks are intentionally separate from unit tests, integration tests, quality requirement tests, linting, formatting, type checking, build checks, coverage, and link checking. They are lightweight repository-level quality gates for risks that can slip through the normal test suite.
+
+### AQA-1: Authorization Header Proxy Check
+
+Quality risk:
+
+- Authenticated frontend requests can fail in production if nginx does not forward the `Authorization` header to the backend.
+
+Automated check:
+
+- Verifies [`frontend/nginx/default.conf`](../frontend/nginx/default.conf) contains:
+
+```nginx
+proxy_set_header Authorization $http_authorization;
+```
+
+Why this is distinct:
+
+- Unit and HTTP integration tests can pass even if the deployed frontend proxy drops JWT tokens.
+- This check validates deployment proxy configuration directly.
+
+### AQA-2: Mock Authentication Disabled Check
+
+Quality risk:
+
+- Mock authentication could accidentally be enabled in the production frontend API client.
+
+Automated check:
+
+- Verifies [`frontend/src/api/api.js`](../frontend/src/api/api.js) keeps:
+
+```js
+const USE_MOCK_AUTH = false;
+```
+
+Why this is distinct:
+
+- Normal frontend tests can pass with mocked behavior.
+- This check prevents a production build from bypassing real backend authentication.
+
+### AQA-3: Frontend/Backend API Route Contract Check
+
+Quality risk:
+
+- Frontend API paths and backend controller mappings can drift apart without a full browser end-to-end test noticing early.
+
+Automated check:
+
+- Verifies the frontend API client still contains calls for the core routes.
+- Verifies backend controllers still expose the corresponding route mappings.
+
+Routes checked include:
+
+- `/auth/register`
+- `/auth/login`
+- `/auth/me`
+- `/games`
+- `/games/{id}`
+- `/games/author/{id}`
+- `/games/tags/all`
+
+Why this is distinct:
+
+- It is a static API contract check, not a unit test or integration test.
+- It catches route-name drift before runtime smoke testing.
+
+## Quality Requirements Tests
+
+The following tests are written as explicit quality requirement checks. They are part of [`EndpointHttpIntegrationTest.java`](../backend/gde_website/src/test/java/gde/gde_website/EndpointHttpIntegrationTest.java), so they run automatically in the `Backend build and test` CI job through `./mvnw -B verify`.
+
+### QR-1: Game Updates Require Authentication
+
+Quality requirement:
+
+- A user must not be able to update a game unless they provide a valid JWT.
+
+Automated test:
+
+- `updateGameRequiresJwtOverHttp`
+
+What the test does:
+
+- Sends `PATCH /games/5`
+- Includes a valid JSON update body
+- Does not include an `Authorization` header
+- Expects HTTP `401 Unauthorized`
+
+What this protects:
+
+- prevents anonymous users from editing game content
+- verifies Spring Security blocks unauthenticated update requests before they are accepted
+
+### QR-2: Game Deletion Requires Authentication
+
+Quality requirement:
+
+- A user must not be able to delete a game unless they provide a valid JWT.
+
+Automated test:
+
+- `deleteGameRequiresJwtOverHttp`
+
+What the test does:
+
+- Sends `DELETE /games/5`
+- Does not include an `Authorization` header
+- Expects HTTP `401 Unauthorized`
+
+What this protects:
+
+- prevents anonymous users from deleting games
+- verifies destructive operations are protected by the security configuration
+
+### QR-3: Public Author Endpoint Keeps Its API Contract
+
+Quality requirement:
+
+- Public game author information must remain reachable and return a stable JSON response.
+
+Automated test:
+
+- `authorEndpointReturnsPublicAuthorContractOverHttp`
+
+What the test does:
+
+- Mocks author data for author id `15`
+- Sends `GET /games/author/15`
+- Expects HTTP `200 OK`
+- Verifies the response contains:
+  - `username`
+  - `email`
+  - no non-null `profile_image_url` when the profile image is absent
+
+What this protects:
+
+- keeps the public author endpoint available for frontend pages
+- catches accidental route, status code, or JSON field-name changes
 
 ## Docker Compose Smoke
 
@@ -449,6 +603,7 @@ The CI pipeline currently gives confidence that:
 - frontend code lints
 - frontend API client and `useGames` hook behave as expected
 - frontend production build succeeds
+- additional QA checks catch proxy, mock-auth, and route-contract risks
 - backend compiles
 - backend controller unit tests pass
 - key backend endpoints work through real HTTP routing and security checks
