@@ -3,6 +3,7 @@ package gde.gde_website.games.controller;
 import gde.gde_website.games.model.AuthorResponse;
 import gde.gde_website.games.model.Games;
 import gde.gde_website.games.model.GamesCardResponce;
+import gde.gde_website.games.model.GamesCreateRequest;
 import gde.gde_website.games.model.GamesPageResponce;
 import gde.gde_website.games.service.GamesService;
 import org.junit.jupiter.api.Test;
@@ -70,7 +71,8 @@ class GamesControllerTest {
                 Instant.parse("2026-01-02T00:00:00Z"),
                 true,
                 new AuthorResponse("supergiant", null, "studio@example.com"),
-                List.of("action")
+                List.of("action"),
+                List.of("https://example.com/screenshot.png")
         );
         Authentication authentication =
                 new UsernamePasswordAuthenticationToken(99L, null, List.of());
@@ -86,15 +88,17 @@ class GamesControllerTest {
 
     @Test
     void createGameRequiresAuthentication() {
+        GamesCreateRequest request = new GamesCreateRequest(
+                "New Game",
+                "Description",
+                "https://example.com/banner.png",
+                List.of("indie"),
+                List.of("https://example.com/screenshot.png")
+        );
+
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
-                () -> gamesController.createGame(
-                        "New Game",
-                        "Description",
-                        "https://example.com/banner.png",
-                        List.of("indie"),
-                        null
-                )
+                () -> gamesController.createGame(request, null)
         );
 
         assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatusCode());
@@ -104,6 +108,13 @@ class GamesControllerTest {
     void createGameReturnsCreatedGameForAuthenticatedUser() {
         Authentication authentication =
                 new UsernamePasswordAuthenticationToken(42L, null, List.of());
+        GamesCreateRequest request = new GamesCreateRequest(
+                "New Game",
+                "Description",
+                "https://example.com/banner.png",
+                List.of("indie"),
+                List.of("https://example.com/screenshot.png")
+        );
         Games expected = new Games(
                 5L,
                 42L,
@@ -112,22 +123,17 @@ class GamesControllerTest {
                 "https://example.com/banner.png",
                 Instant.parse("2026-01-01T00:00:00Z"),
                 Instant.parse("2026-01-02T00:00:00Z"),
-                List.of("indie")
+                List.of("indie"),
+                List.of("https://example.com/screenshot.png")
         );
 
-        when(gamesService.createGame(org.mockito.ArgumentMatchers.any(Games.class), org.mockito.ArgumentMatchers.eq(42L)))
+        when(gamesService.createGame(request, 42L))
                 .thenReturn(expected);
 
-        ResponseEntity<Games> response = gamesController.createGame(
-                "New Game",
-                "Description",
-                "https://example.com/banner.png",
-                List.of("indie"),
-                authentication
-        );
+        ResponseEntity<Games> response = gamesController.createGame(request, authentication);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(expected, response.getBody());
-        verify(gamesService).createGame(org.mockito.ArgumentMatchers.any(Games.class), org.mockito.ArgumentMatchers.eq(42L));
+        verify(gamesService).createGame(request, 42L);
     }
 }
