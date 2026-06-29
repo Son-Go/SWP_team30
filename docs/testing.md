@@ -33,7 +33,8 @@ The main CI pipeline is split into these jobs:
 4. `Frontend build`
 5. `Backend build and test`
 6. `Additional QA checks`
-7. `Docker Compose smoke`
+7. `Frontend-backend integration`
+8. `Docker Compose smoke`
 
 There is also a separate `Lychee link check` workflow for documentation links.
 
@@ -326,6 +327,50 @@ Why this is distinct:
 - It is a static API contract check, not a unit test or integration test.
 - It catches route-name drift before runtime smoke testing.
 
+## Frontend-Backend Integration
+
+Job name: `Frontend-backend integration`
+
+Runs when frontend, backend, or infrastructure files changed and the earlier frontend, backend, and QA jobs have not failed.
+
+What it does:
+
+1. Installs frontend dependencies.
+2. Installs the Playwright Chromium browser.
+3. Recreates `.env.secret` from the `ENV_SECRET_FILE` GitHub secret.
+4. Starts the full app stack with Docker Compose.
+5. Waits for the backend and frontend containers.
+6. Runs Playwright against the real frontend URL.
+7. Uploads Playwright reports and Docker Compose logs.
+8. Shuts down the stack.
+
+Command run inside the frontend workspace:
+
+```bash
+npm run test:e2e
+```
+
+Test file:
+
+- [`frontend/e2e/frontend-backend.spec.js`](../frontend/e2e/frontend-backend.spec.js)
+
+What the integration test verifies:
+
+- the browser can open the real frontend through `http://127.0.0.1`
+- the user can register through the UI
+- the user can log in through the UI
+- the authenticated frontend can call the backend through the `/api` nginx proxy
+- the user can create a game through the UI
+- the created game page is loaded from the real backend
+- the created game appears in the games catalog
+
+Why it exists:
+
+- frontend unit tests mock backend requests
+- backend HTTP tests do not load the real frontend
+- Docker Compose smoke only checks startup
+- this job verifies one real user flow across frontend, nginx proxy, backend, and database
+
 ## Quality Requirements Tests
 
 The following tests are written as explicit quality requirement checks. They are part of [`EndpointHttpIntegrationTest.java`](../backend/gde_website/src/test/java/gde/gde_website/EndpointHttpIntegrationTest.java), so they run automatically in the `Backend build and test` CI job through `./mvnw -B verify`.
@@ -506,6 +551,28 @@ docker compose logs frontend
 docker compose down -v
 ```
 
+### Frontend-Backend Integration Tests
+
+Install frontend dependencies and Playwright browser:
+
+```powershell
+cd frontend
+npm ci
+npx playwright install chromium
+cd ..
+```
+
+Start the stack and run the E2E test:
+
+```powershell
+docker compose up -d --build
+cd frontend
+$env:E2E_BASE_URL="http://127.0.0.1"
+npm run test:e2e
+cd ..
+docker compose down -v
+```
+
 ## Reading Failures
 
 ### Frontend Lint Failed
@@ -584,6 +651,23 @@ Inspect:
 - `compose.yaml`
 - backend and frontend Dockerfiles
 
+### Frontend-Backend Integration Failed
+
+Likely causes:
+
+- frontend cannot reach backend through `/api`
+- nginx proxy configuration is wrong
+- registration, login, or game creation is broken
+- database migrations or backend persistence failed
+- the UI changed and the Playwright selectors need updating
+
+Inspect:
+
+- `Frontend-backend integration` workflow logs
+- uploaded `playwright-report`
+- uploaded `playwright-test-results`
+- uploaded `integration-compose-logs`
+
 ### Lychee Failed
 
 Likely causes:
@@ -606,6 +690,7 @@ The CI pipeline currently gives confidence that:
 - frontend API client and `useGames` hook behave as expected
 - frontend production build succeeds
 - additional QA checks catch proxy, mock-auth, and route-contract risks
+- one real frontend-backend browser flow works through Docker Compose
 - backend compiles
 - backend controller unit tests pass
 - key backend endpoints work through real HTTP routing and security checks
@@ -614,9 +699,8 @@ The CI pipeline currently gives confidence that:
 
 The CI pipeline does not currently include:
 
-- browser-based end-to-end tests with Playwright or Cypress
 - visual regression tests
-- real frontend-to-backend user-flow tests
+- broad frontend-to-backend user-flow coverage beyond the register/login/create-game path
 - full repository/database integration tests for every backend service method
 - load, performance, or security scanning
 
