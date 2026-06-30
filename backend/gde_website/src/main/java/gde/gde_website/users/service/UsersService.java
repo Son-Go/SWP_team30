@@ -34,7 +34,7 @@ public class UsersService {
      *                password,
      *                profileImageUrl
      * @return - New registered user session token
-     * @throws ResponseStatusException with code 409 if in registration request user include email which is already registered.
+     * @throws ResponseStatusException with code 409 if in registration request user include email or username which is already registered.
      *
      * @Author: Egor Grishin
      */
@@ -43,6 +43,10 @@ public class UsersService {
         if (userRepository.existsByEmail(request.email())) {
             userServiceLogger.error("Entered email is already used");
             throw new ResponseStatusException(HttpStatus.CONFLICT, "User with such email is already registered");
+        }
+        if (userRepository.existsByUsername(request.username())) {
+            userServiceLogger.error("Entered username is already used");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "User with such username is already registered");
         }
 
         String hashedPassword = passwordEncoder.encode(request.password());
@@ -65,19 +69,31 @@ public class UsersService {
     /**
      *
      * @param request - user login request which contains following information:
-     *                email,
+     *                authInfo,
+     *                isEmail,
      *                password
+     * authInfo can be either email or username depending on isEmail flag value.
      * @return - session token of successfully log-inned user
      * @throws  ResponseStatusException with:
      * Code 401 if user with requested email does not find in database
+     * Code 401 if user with requested username does not find in database
      * Code 401 if user requested incorrect password
      *
      * @Author: Egor Grishin
      */
     public LoginResponse login(LoginRequest request) {
         userServiceLogger.info("Called UsersService login method");
-        UserEntity user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No user with such email exists"));
+
+        UserEntity user;
+
+        if (request.isEmail()) {
+            user = userRepository.findByEmail(request.authInfo())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No user with such email exists"));
+        } else {
+            user = userRepository.findByUsername(request.authInfo())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No user with such username exists"));
+        }
+
         if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
             userServiceLogger.error("Entered password is incorrect");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Incorrect password");
