@@ -15,7 +15,9 @@ public record User(
         Long id,
         String username,
         String email,
+        String profileImageUrl,
         String passwordHash,
+        Boolean isFromTatarstan,
         Instant createdAt
 ) {
 }

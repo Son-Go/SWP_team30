@@ -55,7 +55,8 @@ public class UsersService {
                 request.username(),
                 request.email(),
                 hashedPassword,
-                request.profileImageUrl()
+                request.profileImageUrl(),
+                request.isFromTatarstan()
         );
 
         UserEntity savedUser = userRepository.save(newUser);
@@ -126,7 +127,8 @@ public class UsersService {
                 userEntity.getId(),
                 userEntity.getUsername(),
                 userEntity.getEmail(),
-                userEntity.getProfileImageUrl()
+                userEntity.getProfileImageUrl(),
+                userEntity.getIsFromTatarstan()
         );
     }
 }

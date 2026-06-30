@@ -53,7 +53,7 @@ class UsersControllerTest {
     void meReturnsCurrentUserWhenAuthenticated() {
         Authentication authentication =
                 new UsernamePasswordAuthenticationToken(42L, null, List.of());
-        MeResponse expected = new MeResponse(42L, "andrey", "andrey@example.com", null);
+        MeResponse expected = new MeResponse(42L, "andrey", "andrey@example.com", null, false);
 
         when(usersService.me(42L)).thenReturn(expected);
 
