@@ -1,5 +1,6 @@
 package gde.gde_website.users.entity;
 
+import gde.gde_website.users.model.UserRole;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -34,6 +35,10 @@ public class UserEntity {
     @Column(name = "is_from_tatarstan", nullable = false)
     private Boolean isFromTatarstan = false;
 
+    @Enumerated(EnumType.STRING)
+    @Column(length = 50, nullable = false)
+    private UserRole role = UserRole.DEVELOPER;
+
     @Column(length = 255, nullable = false)
     private String passwordHash;
 
@@ -59,6 +64,9 @@ public class UserEntity {
         }
         if (isFromTatarstan == null) {
             isFromTatarstan = false;
+        }
+        if (role == null) {
+            role = UserRole.DEVELOPER;
         }
         if (createdAt == null) {
             createdAt = Instant.now();
