@@ -31,7 +31,7 @@ class UsersControllerTest {
 
     @Test
     void loginReturnsToken() {
-        LoginRequest request = new LoginRequest("user@example.com", "secret");
+        LoginRequest request = new LoginRequest("user@example.com", true,"secret");
         LoginResponse expected = new LoginResponse("jwt-token");
 
         when(usersService.login(request)).thenReturn(expected);
@@ -53,7 +53,7 @@ class UsersControllerTest {
     void meReturnsCurrentUserWhenAuthenticated() {
         Authentication authentication =
                 new UsernamePasswordAuthenticationToken(42L, null, List.of());
-        MeResponse expected = new MeResponse(42L, "andrey", "andrey@example.com", null);
+        MeResponse expected = new MeResponse(42L, "andrey", "andrey@example.com", null, false);
 
         when(usersService.me(42L)).thenReturn(expected);
 

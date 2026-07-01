@@ -33,6 +33,7 @@ public class UsersController {
      * @return - HTTP status CREATED (code 201) with LoginResponse in body
      * LoginResponse contains following information:
      * token - current authenticated session token
+     * @throws org.springframework.web.server.ResponseStatusException with code 409 if email or username is already registered
      *
      * @Author: Egor Grishin
      */
@@ -49,8 +50,9 @@ public class UsersController {
      * This function is used for handling user login request
      * @param request - Login user request
      * It contains following user information:
-     *                email,
-     *                password
+     *                authInfo - user email or username,
+     *                isEmail - true if authInfo contains email, false if authInfo contains username,
+     *                password - user password
      * @return - HTTP status OK (code 200) with userService.login(request) in body
      * userService.login(request) function returns following information:
      * token - current authenticated session token

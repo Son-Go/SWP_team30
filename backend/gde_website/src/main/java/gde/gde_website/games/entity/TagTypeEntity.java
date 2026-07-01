@@ -1,4 +1,4 @@
-package gde.gde_website.users.entity;
+package gde.gde_website.games.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -7,22 +7,22 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "role", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "name")
+@Table(name = "tag_type", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "type")
 })
 @Getter
 @Setter
 @NoArgsConstructor
-public class RoleEntity {
+public class TagTypeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
     private Integer id;
 
     @Column(length = 50, nullable = false)
-    private String name;
+    private String type;
 
-    public RoleEntity(String name) {
-        this.name = name;
+    public TagTypeEntity(String type) {
+        this.type = type;
     }
 }

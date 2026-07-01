@@ -84,7 +84,6 @@ function GamePage() {
       if (bannerUrl) formData.append("bannerUrl", bannerUrl);
       tags.forEach((tag) => formData.append("tags", tag));
 
-      // ЛОГ 1 — что уходит на бэк
       console.log("Отправляем теги:", tags);
       for (let [k, v] of formData.entries()) console.log(k, v);
 
@@ -99,9 +98,6 @@ function GamePage() {
         },
         token,
       );
-
-      // ЛОГ 2 — что вернул бэк
-      // console.log("Ответ бэка:", updatedGame);
 
       setGame(updatedGame);
       setTitle(updatedGame.title || "");
