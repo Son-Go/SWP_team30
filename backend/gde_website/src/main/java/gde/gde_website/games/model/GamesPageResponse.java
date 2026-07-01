@@ -11,7 +11,7 @@ import java.util.List;
  * @param description - game description
  * @param bannerUrl - game banner url
  * @param author - author information, if available
- * @param tags - list of tag sections linked with the game
+ * @param tags - list of tag names linked with the game
  */
 public record GamesPageResponse(
         Long id,

@@ -1,10 +1,6 @@
 package gde.gde_website.games.controller;
 
-import gde.gde_website.games.model.AuthorResponse;
-import gde.gde_website.games.model.Games;
-import gde.gde_website.games.model.GamesCardResponse;
-import gde.gde_website.games.model.GamesCreateRequest;
-import gde.gde_website.games.model.GamesPageResponse;
+import gde.gde_website.games.model.*;
 import gde.gde_website.games.service.GamesService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +16,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -38,6 +36,10 @@ class GamesControllerTest {
 
     @Test
     void getAllGamesReturnsPagedGames() {
+        Map<String, List<String>> tags = new LinkedHashMap<>();
+        tags.put("GENRE", List.of("puzzle", "coop"));
+        tags.put("MODE", List.of());
+
         Page<GamesPageResponse> expectedPage = new PageImpl<>(List.of(
                 new GamesPageResponse(
                         1L,
