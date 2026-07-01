@@ -294,9 +294,13 @@ function GamePage() {
               <div className="game-sidebar-meta">
                 <div className="tag-list">
                   {game.gameTags.map((tag) => (
-                    <span key={tag} className="tag-badge">
+                    <Link
+                      key={tag}
+                      to={`/games?tags=${encodeURIComponent(tag)}`}
+                      className="tag-badge tag-badge-selectable"
+                    >
                       {tag}
-                    </span>
+                    </Link>
                   ))}
                 </div>
               </div>
