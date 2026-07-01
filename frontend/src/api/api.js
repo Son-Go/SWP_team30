@@ -85,13 +85,16 @@ export async function loginUser(credentials) {
     return { token: "mock-session-token" };
   }
 
+  const isEmail = credentials.authInfo.includes("@"); // автоопределение
+
   return request("/auth/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      email: credentials.email,
+      authInfo: credentials.authInfo, // email или username
+      isEmail, // true / false
       password: credentials.password,
     }),
   });
