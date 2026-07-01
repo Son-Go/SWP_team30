@@ -7,6 +7,7 @@ import gde.gde_website.security.JwtUtils;
 import gde.gde_website.security.config.SecurityConfig;
 import gde.gde_website.users.model.LoginResponse;
 import gde.gde_website.users.model.MeResponse;
+import gde.gde_website.users.model.UserRole;
 import gde.gde_website.users.service.UsersService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,10 +96,10 @@ class EndpointHttpIntegrationTest {
     @Test
     void meReturnsCurrentUserWhenJwtIsValid() throws Exception {
         when(usersService.me(42L))
-                .thenReturn(new MeResponse(42L, "andrey", "andrey@example.com", null, false));
+                .thenReturn(new MeResponse(42L, "andrey", "andrey@example.com", null, false, UserRole.DEVELOPER));
 
         mockMvc.perform(get("/auth/me")
-                        .header("Authorization", bearerToken(42L)))
+                        .header("Authorization", bearerToken(42L, UserRole.DEVELOPER)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(42))
                 .andExpect(jsonPath("$.username").value("andrey"))
@@ -181,7 +182,7 @@ class EndpointHttpIntegrationTest {
         when(gamesService.createGame(any(), eq(42L))).thenReturn(game());
 
         mockMvc.perform(post("/games")
-                        .header("Authorization", bearerToken(42L))
+                        .header("Authorization", bearerToken(42L, UserRole.DEVELOPER))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(createGameJson()))
                 .andExpect(status().isCreated())
@@ -197,7 +198,7 @@ class EndpointHttpIntegrationTest {
         when(gamesService.updateGame(any(), eq(42L), eq(5L))).thenReturn(game());
 
         mockMvc.perform(patch("/games/5")
-                        .header("Authorization", bearerToken(42L))
+                        .header("Authorization", bearerToken(42L, UserRole.DEVELOPER))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -220,7 +221,7 @@ class EndpointHttpIntegrationTest {
         when(gamesService.deleteGame(5L, 42L)).thenReturn(game());
 
         mockMvc.perform(delete("/games/5")
-                        .header("Authorization", bearerToken(42L)))
+                        .header("Authorization", bearerToken(42L, UserRole.DEVELOPER)))
                 .andExpect(status().isNoContent());
 
         verify(gamesService).deleteGame(5L, 42L);
@@ -248,8 +249,8 @@ class EndpointHttpIntegrationTest {
                 .andExpect(jsonPath("$.email").value("studio@example.com"));
     }
 
-    private String bearerToken(Long userId) {
-        return "Bearer " + jwtUtils.generateToken(userId);
+    private String bearerToken(Long userId, UserRole userRole) {
+        return "Bearer " + jwtUtils.generateToken(userId, userRole);
     }
 
     private String createGameJson() {

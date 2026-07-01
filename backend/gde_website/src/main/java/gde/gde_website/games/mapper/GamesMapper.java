@@ -25,6 +25,8 @@ public class GamesMapper {
      * This method is used to transform game response entity to response
      * @param entity - entity to be transformed
      * @param currentUserId - current user id
+     * @param author - game author
+     * @param screenshots - list of screenshots links
      * @return returns game response object
      * @Author: Egor Grishin
      */

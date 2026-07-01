@@ -5,6 +5,7 @@ import gde.gde_website.games.mapper.GamesMapper;
 import gde.gde_website.games.model.*;
 import gde.gde_website.games.repository.*;
 import gde.gde_website.users.entity.UserEntity;
+import gde.gde_website.users.model.UserRole;
 import gde.gde_website.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class is implementing business logic of requests handlers
@@ -34,6 +36,39 @@ public class GamesService {
     private final UsersRepository usersRepository;
     private final GameScreenshotsRepository gameScreenshotsRepository;
     private final TagTypeRepository tagTypeRepository;
+
+    /**
+     * This method is used for mapping one game
+     * @param game - game card
+     * @param authorsMap - map of authors instead of database requests
+     * @return - new games page response
+     * @Author: Artemii Gorelov
+     */
+    private GamesPageResponse mapToResponse(GamesEntity game, Map<Long, UserEntity> authorsMap) {
+        List<String> tagNames = game.getGameTags().stream()
+                .map(gameTag -> gameTag.getTag().getName()).toList();
+
+        UserEntity author = authorsMap.get(game.getAuthorId());
+
+        AuthorResponse authorResp = null;
+        if (author != null) {
+            authorResp = new AuthorResponse(
+                    author.getUsername(),
+                    author.getProfileImageUrl(),
+                    author.getEmail()
+            );
+        }
+
+        return new GamesPageResponse(
+                game.getId(),
+                game.getAuthorId(),
+                game.getTitle(),
+                game.getDescription(),
+                game.getBannerUrl(),
+                authorResp,
+                tagNames
+        );
+    }
 
     /**
      * This method is used for getting list of all games divided on the groups of specific size request
@@ -159,6 +194,9 @@ public class GamesService {
     @Transactional
     public Games updateGame(UpdateGameRequest request, Long currentUserId, Long gameId) {
         gamesServiceLogger.info("Called GamesService updateGame method");
+
+        checkOwnerOrAdmin(gameId, currentUserId);
+
         GamesEntity gameToUpdate = gamesRepository.findById(gameId).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
@@ -221,6 +259,9 @@ public class GamesService {
     @Transactional
     public Games deleteGame(Long gameId, Long currentUserId) {
         gamesServiceLogger.info("Called GamesService deleteGame method");
+
+        checkOwnerOrAdmin(gameId, currentUserId);
+
         GamesEntity gameToDelete = gamesRepository.findById(gameId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
 
@@ -262,6 +303,71 @@ public class GamesService {
                 map(TagEntity::getName).toList();
 
         return new TagsResponse(gameTags);
+    }
+
+    /**
+     * This method is used for admin to approving games
+     * @param gameId - id of game to be approved
+     * @param adminId - id of admin who is approving game
+     * @Author: Artemii Gorelov
+     */
+    @Transactional
+    public void approveGame(Long gameId, Long adminId) {
+        UserEntity admin = usersRepository.findById(adminId).orElseThrow();
+
+        if (admin.getRole() != UserRole.ADMIN) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+
+        GamesEntity game = gamesRepository.findById(gameId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game with such id not found"));
+        game.setApproved(true);
+        gamesRepository.save(game);
+        gamesServiceLogger.info("Game {} approved by admin {}", gameId, adminId);
+    }
+
+    /**
+     * This method is used for admin to rejecting games
+     * @param gameId - if of game to be rejected
+     * @param adminId - id of admin who is rejecting
+     * @Author: Artemii Gorelov
+     */
+    @Transactional
+    public void rejectGame(Long gameId, Long adminId) {
+        UserEntity admin = usersRepository.findById(adminId).orElseThrow();
+        if (admin.getRole() != UserRole.ADMIN) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+
+        GamesEntity game = gamesRepository.findById(gameId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
+        game.setApproved(false);
+        gamesRepository.save(game);
+        gamesServiceLogger.info("Game {} rejected by admin {}", gameId, adminId);
+    }
+
+    /**
+     * This method is used for updating game description by admin
+     * @param gameId - id of game whoos description would be changed
+     * @param description - new description
+     * @param adminId - id of admin who is changing description of the game
+     * @Author: Artemii Gorelov
+     */
+    @Transactional
+    public void updateGameDescriptionAdmin(Long gameId, String description, Long adminId) {
+        UserEntity admin = usersRepository.findById(adminId).orElseThrow();
+        if (admin.getRole() != UserRole.ADMIN) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+
+        GamesEntity game = gamesRepository.findById(gameId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
+        game.setDescription(description);
+        gamesRepository.save(game);
+    }
+
+    /**
+     * This method is used for deleting all games from author after author was deleted
+     * @param authorId - author id
+     * @Author: Artemii Gorelov
+     */
+    @Transactional
+    public void deleteGamesByAuthor(Long authorId) {
+        gamesRepository.deleteAllByAuthorId(authorId);
     }
 
     /**

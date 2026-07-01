@@ -33,6 +33,9 @@ public class GamesEntity {
     @Column(name = "banner_url", length = 500)
     private String bannerUrl;
 
+    @Column(name = "is_approved", nullable = false)
+    private boolean isApproved = true;
+
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT now()")
     private Instant createdAt;
 
