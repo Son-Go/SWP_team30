@@ -31,7 +31,7 @@ class UsersControllerTest {
 
     @Test
     void loginReturnsToken() {
-        LoginRequest request = new LoginRequest("user@example.com", "secret");
+        LoginRequest request = new LoginRequest("user@example.com", true,"secret");
         LoginResponse expected = new LoginResponse("jwt-token");
 
         when(usersService.login(request)).thenReturn(expected);

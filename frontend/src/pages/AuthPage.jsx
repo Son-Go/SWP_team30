@@ -9,6 +9,11 @@ function AuthPage() {
   const { login } = useAuth();
 
   const [mode, setMode] = useState("login");
+
+  // При входе — одно поле: email или username
+  const [authInfo, setAuthInfo] = useState("");
+
+  // При регистрации — отдельные поля
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,6 +21,26 @@ function AuthPage() {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  // Блокируем @ в поле username при регистрации
+  function handleUsernameChange(event) {
+    const value = event.target.value;
+    if (value.includes("@")) {
+      setError("Username не может содержать символ @");
+      return; // не обновляем state — символ не проходит
+    }
+    setError("");
+    setUsername(value);
+  }
+
+  function resetForm() {
+    setAuthInfo("");
+    setUsername("");
+    setEmail("");
+    setPassword("");
+    setError("");
+    setSuccessMessage("");
+  }
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -26,7 +51,8 @@ function AuthPage() {
       setSuccessMessage("");
 
       if (mode === "login") {
-        await login({ email, password });
+        // передаём authInfo — api.js сам определит isEmail
+        await login({ authInfo, password });
         navigate("/games");
       } else {
         await registerUser({
@@ -39,9 +65,7 @@ function AuthPage() {
           "Регистрация прошла успешно. Теперь войдите в аккаунт.",
         );
         setMode("login");
-        setUsername("");
-        setEmail("");
-        setPassword("");
+        resetForm();
       }
     } catch (err) {
       if (err.message.includes("401")) {
@@ -82,35 +106,54 @@ function AuthPage() {
           ) : null}
 
           <form className="form" onSubmit={handleSubmit}>
-            {mode === "register" ? (
+            {mode === "login" ? (
+              // ВХОД: одно поле — принимает email или username
               <div className="form-group">
-                <label className="label" htmlFor="username">
-                  Логин
+                <label className="label" htmlFor="authInfo">
+                  Логин или Почта
                 </label>
                 <input
-                  id="username"
+                  id="authInfo"
                   className="input"
                   type="text"
-                  value={username}
-                  onChange={(event) => setUsername(event.target.value)}
+                  value={authInfo}
+                  onChange={(event) => setAuthInfo(event.target.value)}
                   required
                 />
               </div>
-            ) : null}
+            ) : (
+              // РЕГИСТРАЦИЯ: отдельные поля username и email
+              <>
+                <div className="form-group">
+                  <label className="label" htmlFor="username">
+                    Логин
+                  </label>
+                  <input
+                    id="username"
+                    className="input"
+                    type="text"
+                    value={username}
+                    onChange={handleUsernameChange}
+                    placeholder="Без символа @"
+                    required
+                  />
+                </div>
 
-            <div className="form-group">
-              <label className="label" htmlFor="email">
-                Почта
-              </label>
-              <input
-                id="email"
-                className="input"
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                required
-              />
-            </div>
+                <div className="form-group">
+                  <label className="label" htmlFor="email">
+                    Почта
+                  </label>
+                  <input
+                    id="email"
+                    className="input"
+                    type="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    required
+                  />
+                </div>
+              </>
+            )}
 
             <div className="form-group">
               <label className="label" htmlFor="password">
@@ -146,16 +189,10 @@ function AuthPage() {
                 className="button button-ghost"
                 onClick={() => {
                   setMode(mode === "login" ? "register" : "login");
-                  setUsername("");
-                  setEmail("");
-                  setPassword("");
-                  setError("");
-                  setSuccessMessage("");
+                  resetForm();
                 }}
               >
-                {mode === "login"
-                  ? "Создать аккаунт"
-                  : "Уже есть аккаунт?(удаляй)"}
+                {mode === "login" ? "Создать аккаунт" : "Уже есть аккаунт?"}
               </button>
             </div>
           </form>
