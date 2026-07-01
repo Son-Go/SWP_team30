@@ -61,7 +61,7 @@ public class GamesService {
         List<String> tagTypeNames = allTagTypeNames();
 
         return gamesRepository.findAllByOrderByCreatedAtDesc(pageable).map(
-                game -> mapper.gamesEntityToGamesPageResponse(game, tagTypeNames)
+                game -> mapper.gamesEntityToGamesPageResponse(game, tagTypeNames, authorsMap)
         );
     }
 
@@ -92,7 +92,7 @@ public class GamesService {
         }
 
         return gamesRepository.findByTagNames(tagsRequest, pageable).map(
-                game -> mapper.gamesEntityToGamesPageResponse(game, tagTypeNames)
+                game -> mapper.gamesEntityToGamesPageResponse(game, tagTypeNames, authorsMap)
         );
     }
 
