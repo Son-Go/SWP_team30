@@ -4,7 +4,6 @@ import gde.gde_website.games.entity.*;
 import gde.gde_website.games.model.*;
 import gde.gde_website.games.repository.GameScreenshotsRepository;
 import gde.gde_website.users.entity.UserEntity;
-import gde.gde_website.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +21,6 @@ import java.util.Map;
 public class GamesMapper {
 
     private final GameScreenshotsRepository gameScreenshotsRepository;
-    private final UsersRepository usersRepository;
 
     /**
      * This method is used to transform game response entity to response
