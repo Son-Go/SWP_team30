@@ -1,6 +1,7 @@
 package gde.gde_website.games.model;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Response body for a single game item in paginated games list.
@@ -20,6 +21,6 @@ public record GamesPageResponse(
         String description,
         String bannerUrl,
         AuthorResponse author,
-        List<String> tags
+        Map<String, List<String>> tags
 ) {
 }

@@ -8,7 +8,10 @@ import gde.gde_website.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This is a class responsible for transformations between objects
@@ -46,21 +49,6 @@ public class GamesMapper {
                 entity.getGameTags().stream().map(gameTagEntity ->
                         gameTagEntity.getTag().getName()).toList(),
                 screenshots
-        );
-    }
-
-    /**
-     * This method is used for transforming game to entity
-     * @param games - game to be transformed
-     * @return new games entity object
-     * @Author: Artemii Gorelov
-     */
-    public GamesEntity gamesToEntity(Games games) {
-        return new GamesEntity(
-                games.authorId(),
-                games.title(),
-                games.description(),
-                games.bannerUrl()
         );
     }
 
