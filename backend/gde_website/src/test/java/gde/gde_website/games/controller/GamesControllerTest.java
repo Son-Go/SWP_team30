@@ -2,9 +2,9 @@ package gde.gde_website.games.controller;
 
 import gde.gde_website.games.model.AuthorResponse;
 import gde.gde_website.games.model.Games;
-import gde.gde_website.games.model.GamesCardResponce;
+import gde.gde_website.games.model.GamesCardResponse;
 import gde.gde_website.games.model.GamesCreateRequest;
-import gde.gde_website.games.model.GamesPageResponce;
+import gde.gde_website.games.model.GamesPageResponse;
 import gde.gde_website.games.service.GamesService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,8 +38,8 @@ class GamesControllerTest {
 
     @Test
     void getAllGamesReturnsPagedGames() {
-        Page<GamesPageResponce> expectedPage = new PageImpl<>(List.of(
-                new GamesPageResponce(
+        Page<GamesPageResponse> expectedPage = new PageImpl<>(List.of(
+                new GamesPageResponse(
                         1L,
                         11L,
                         "Portal",
@@ -53,7 +53,7 @@ class GamesControllerTest {
         when(gamesService.getAllGames(org.springframework.data.domain.PageRequest.of(0, 24)))
                 .thenReturn(expectedPage);
 
-        ResponseEntity<Page<GamesPageResponce>> response = gamesController.getAllGames(0, 24, null);
+        ResponseEntity<Page<GamesPageResponse>> response = gamesController.getAllGames(0, 24, null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedPage, response.getBody());
@@ -61,7 +61,7 @@ class GamesControllerTest {
 
     @Test
     void getGameByIdPassesAuthenticatedUserToService() {
-        GamesCardResponce expected = new GamesCardResponce(
+        GamesCardResponse expected = new GamesCardResponse(
                 7L,
                 15L,
                 "Hades",
@@ -79,7 +79,7 @@ class GamesControllerTest {
 
         when(gamesService.getGameById(7L, 99L)).thenReturn(expected);
 
-        ResponseEntity<GamesCardResponce> response = gamesController.getGameById(7L, authentication);
+        ResponseEntity<GamesCardResponse> response = gamesController.getGameById(7L, authentication);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expected, response.getBody());

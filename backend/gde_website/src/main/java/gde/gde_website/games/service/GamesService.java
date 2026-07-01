@@ -45,7 +45,7 @@ public class GamesService {
      * @return - new games page response
      * @Author: Artemii Gorelov
      */
-    private GamesPageResponce mapToResponse(GamesEntity game, Map<Long, UserEntity> authorsMap) {
+    private GamesPageResponse mapToResponse(GamesEntity game, Map<Long, UserEntity> authorsMap) {
         List<String> tagNames = game.getGameTags().stream()
                 .map(gameTag -> gameTag.getTag().getName()).toList();
 
@@ -60,7 +60,7 @@ public class GamesService {
             );
         }
 
-        return new GamesPageResponce(
+        return new GamesPageResponse(
                 game.getId(),
                 game.getAuthorId(),
                 game.getTitle(),
@@ -78,7 +78,7 @@ public class GamesService {
      * @Author: Artemii Gorelov, Egor Grishin
      */
     @Transactional(readOnly = true)
-    public Page<GamesPageResponce> getAllGames(Pageable pageable) {
+    public Page<GamesPageResponse> getAllGames(Pageable pageable) {
         gamesServiceLogger.info("Called getAllGames method");
         return gamesRepository.findAllByOrderByCreatedAtDesc(pageable)
                 .map(game -> {
@@ -96,7 +96,7 @@ public class GamesService {
                         );
                     }
 
-                    return new GamesPageResponce(
+                    return new GamesPageResponse(
                             game.getId(),
                             game.getAuthorId(),
                             game.getTitle(),
@@ -116,7 +116,7 @@ public class GamesService {
      * @Author: Artemii Gorelov, Egor Grishin
      */
     @Transactional(readOnly = true)
-    public Page<GamesPageResponce> getGamesByTags(List<String> tags, Pageable pageable) {
+    public Page<GamesPageResponse> getGamesByTags(List<String> tags, Pageable pageable) {
         gamesServiceLogger.info("Called getAllGames method with tags {}", tags);
 
         if (tags == null || tags.isEmpty()) {
@@ -139,7 +139,7 @@ public class GamesService {
                         );
                     }
 
-                    return new GamesPageResponce(
+                    return new GamesPageResponse(
                             game.getId(),
                             game.getAuthorId(),
                             game.getTitle(),
@@ -159,7 +159,7 @@ public class GamesService {
      * @Author: Egor Grishin, Artemii Gorelov
      */
     @Transactional(readOnly = true)
-    public GamesCardResponce getGameById(Long gameId, Long currentUserId) {
+    public GamesCardResponse getGameById(Long gameId, Long currentUserId) {
         gamesServiceLogger.info("Called GamesService getGameById method");
         GamesEntity game = gamesRepository.findDetailedById(gameId).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
