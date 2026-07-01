@@ -87,7 +87,7 @@ public class GamesMapper {
      * @param tagTypesNames - ordered list of all tag type names that must appear in response
      * @return paginated game response item with grouped tags and author info
      */
-    public GamesPageResponse gamesEntityToGamesPageResponse(GamesEntity game, List<String> tagTypesNames) {
+    public GamesPageResponse gamesEntityToGamesPageResponse(GamesEntity game, List<String> tagTypesNames, Map<Long, UserEntity> authorsMap) {
         List<TagEntity> tags = game.getGameTags().stream()
                 .map(GameTagEntity::getTag).toList();
 
@@ -101,7 +101,7 @@ public class GamesMapper {
             separatedTags.get(tag.getTagType().getType()).add(tag.getName());
         }
 
-        UserEntity author = usersRepository.findById(game.getAuthorId()).orElse(null);
+        UserEntity author = authorsMap.get(game.getAuthorId());
 
         AuthorResponse authorResp = null;
         if (author != null) {

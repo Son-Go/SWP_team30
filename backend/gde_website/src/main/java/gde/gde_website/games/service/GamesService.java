@@ -18,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This class is implementing business logic of requests handlers
@@ -46,6 +49,15 @@ public class GamesService {
     public Page<GamesPageResponse> getAllGames(Pageable pageable) {
         gamesServiceLogger.info("Called getAllGames method");
 
+        Page<GamesEntity> gamesPage = gamesRepository.findAllByOrderByCreatedAtDesc(pageable);
+
+        Set<Long> authorIds = gamesPage.getContent().stream()
+                .map(GamesEntity::getAuthorId)
+                .collect(Collectors.toSet());
+
+        Map<Long, UserEntity> authorsMap = usersRepository.findAllById(authorIds).stream()
+                .collect(Collectors.toMap(UserEntity::getId, user -> user));
+
         List<String> tagTypeNames = allTagTypeNames();
 
         return gamesRepository.findAllByOrderByCreatedAtDesc(pageable).map(
@@ -63,6 +75,15 @@ public class GamesService {
     @Transactional(readOnly = true)
     public Page<GamesPageResponse> getGamesByTags(List<String> tagsRequest, Pageable pageable) {
         gamesServiceLogger.info("Called getGamesByTags method with tags {}", tagsRequest);
+
+        Page<GamesEntity> gamesPage = gamesRepository.findByTagNames(tagsRequest, pageable);
+
+        Set<Long> authorIds = gamesPage.getContent().stream()
+                .map(GamesEntity::getAuthorId)
+                .collect(Collectors.toSet());
+
+        Map<Long, UserEntity> authorsMap = usersRepository.findAllById(authorIds).stream()
+                .collect(Collectors.toMap(UserEntity::getId, user -> user));
 
         List<String> tagTypeNames = allTagTypeNames();
 
@@ -166,11 +187,6 @@ public class GamesService {
         GamesEntity gameToUpdate = gamesRepository.findById(gameId).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        if (!gameToUpdate.getAuthorId().equals(currentUserId)) {
-            gamesServiceLogger.error("User permissions error");
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not the owner of this game");
-        }
-
         if (request.title() != null) {
             gameToUpdate.setTitle(request.title());
         }
@@ -230,11 +246,6 @@ public class GamesService {
 
         GamesEntity gameToDelete = gamesRepository.findById(gameId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
-
-        if (!gameToDelete.getAuthorId().equals(currentUserId)) {
-            gamesServiceLogger.error("User permissions error");
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not the owner of this game");
-        }
 
         gamesRepository.delete(gameToDelete);
 
@@ -369,5 +380,24 @@ public class GamesService {
      */
     private List<String> allTagTypeNames() {
         return tagTypeRepository.findAll().stream().map(TagTypeEntity::getType).toList();
+    }
+
+    /**
+     * This method is used for checking user rights
+     * @param gameId - id of game
+     * @param userId - id of user
+     * @Author: Artemii Gorelov
+     */
+    private void checkOwnerOrAdmin(Long gameId, Long userId) {
+        gamesServiceLogger.info("Called checkOwnerOrAdmin games service method");
+        GamesEntity game = gamesRepository.findById(gameId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
+
+        UserEntity user = usersRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+
+        if (!game.getAuthorId().equals(userId) && user.getRole() != UserRole.ADMIN) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to modify this game");
+        }
     }
 }
