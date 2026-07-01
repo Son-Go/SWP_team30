@@ -110,7 +110,7 @@ function AuthPage() {
               // ВХОД: одно поле — принимает email или username
               <div className="form-group">
                 <label className="label" htmlFor="authInfo">
-                  Email или Username
+                  Логин или Почта
                 </label>
                 <input
                   id="authInfo"
@@ -118,7 +118,6 @@ function AuthPage() {
                   type="text"
                   value={authInfo}
                   onChange={(event) => setAuthInfo(event.target.value)}
-                  placeholder="username или email@example.com"
                   required
                 />
               </div>
@@ -127,7 +126,7 @@ function AuthPage() {
               <>
                 <div className="form-group">
                   <label className="label" htmlFor="username">
-                    Username
+                    Логин
                   </label>
                   <input
                     id="username"
@@ -142,7 +141,7 @@ function AuthPage() {
 
                 <div className="form-group">
                   <label className="label" htmlFor="email">
-                    Email
+                    Почта
                   </label>
                   <input
                     id="email"
@@ -158,7 +157,7 @@ function AuthPage() {
 
             <div className="form-group">
               <label className="label" htmlFor="password">
-                Password
+                Пароль
               </label>
               <input
                 id="password"
