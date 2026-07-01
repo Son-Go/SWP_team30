@@ -217,6 +217,7 @@ public class UsersService {
      * This method is used for unbanning users
      * @param userId - user to be unbanned
      * @param adminId - admin who is unbanning user
+     * @Author: Artemii Gorelov
      */
     @Transactional
     public void unbanUser(Long userId, Long adminId) {
@@ -227,6 +228,12 @@ public class UsersService {
         userRepository.save(targetUser);
     }
 
+    /**
+     * This method is used for deleting user
+     * @param userId - user to be deleted
+     * @param adminId - admin who deleting user
+     * @Author: Artemii Gorelov
+     */
     @Transactional
     public void deleteUser(Long userId, Long adminId) {
         checkAdminRights(adminId);
