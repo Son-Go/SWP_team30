@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import GameCard from "../components/GameCard";
 import Loader from "../components/Loader";
 import ErrorState from "../components/ErrorState";
@@ -8,10 +8,13 @@ import { useGames } from "../hooks/useGames";
 import { getAllTags } from "../api/api";
 
 function GamesPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [filterOpen, setFilterOpen] = useState(false);
   const [allTags, setAllTags] = useState([]);
-  const [pendingTags, setPendingTags] = useState([]); // выбранные до Apply
-  const [activeTags, setActiveTags] = useState([]); // применённые
+
+  // Читаем теги прямо из URL (?tags=RPG&tags=Action)
+  const activeTags = searchParams.getAll("tags");
+  const [pendingTags, setPendingTags] = useState(activeTags);
 
   const {
     games,
@@ -30,6 +33,10 @@ function GamesPage() {
       .then((data) => setAllTags(data.gameTags || []))
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    setFilterTags(activeTags);
+  }, [searchParams]);
 
   useEffect(() => {
     const target = sentinelRef.current;
@@ -51,15 +58,15 @@ function GamesPage() {
   }
 
   function handleApply() {
-    setActiveTags(pendingTags);
-    setFilterTags(pendingTags);
+    setSearchParams(
+      pendingTags.length > 0 ? pendingTags.map((t) => ["tags", t]) : {},
+    );
     setFilterOpen(false);
   }
 
   function handleReset() {
     setPendingTags([]);
-    setActiveTags([]);
-    setFilterTags([]);
+    setSearchParams({});
     setFilterOpen(false);
   }
 
