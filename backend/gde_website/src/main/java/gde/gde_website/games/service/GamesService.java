@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class is implementing business logic of requests handlers
@@ -36,6 +37,39 @@ public class GamesService {
     private final GamesMapper mapper;
     private final UsersRepository usersRepository;
     private final GameScreenshotsRepository gameScreenshotsRepository;
+
+    /**
+     * This method is used for mapping one game
+     * @param game - game card
+     * @param authorsMap - map of authors instead of database requests
+     * @return - new games page response
+     * @Author: Artemii Gorelov
+     */
+    private GamesPageResponce mapToResponse(GamesEntity game, Map<Long, UserEntity> authorsMap) {
+        List<String> tagNames = game.getGameTags().stream()
+                .map(gameTag -> gameTag.getTag().getName()).toList();
+
+        UserEntity author = authorsMap.get(game.getAuthorId());
+
+        AuthorResponse authorResp = null;
+        if (author != null) {
+            authorResp = new AuthorResponse(
+                    author.getUsername(),
+                    author.getProfileImageUrl(),
+                    author.getEmail()
+            );
+        }
+
+        return new GamesPageResponce(
+                game.getId(),
+                game.getAuthorId(),
+                game.getTitle(),
+                game.getDescription(),
+                game.getBannerUrl(),
+                authorResp,
+                tagNames
+        );
+    }
 
     /**
      * This method is used for getting list of all games divided on the groups of specific size request

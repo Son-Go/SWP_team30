@@ -13,7 +13,7 @@ import java.util.List;
  * @param author - author information, if available
  * @param tags - list of tag sections linked with the game
  */
-public record GamesPageResponce(
+public record GamesPageResponse(
         Long id,
         Long authorId,
         String title,
