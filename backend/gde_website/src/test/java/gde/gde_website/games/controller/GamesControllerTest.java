@@ -36,9 +36,9 @@ class GamesControllerTest {
 
     @Test
     void getAllGamesReturnsPagedGames() {
-        Map<String, List<String>> tags = new LinkedHashMap<>();
-        tags.put("GENRE", List.of("puzzle", "coop"));
-        tags.put("MODE", List.of());
+        Map<String, List<String>> tagsMap = new LinkedHashMap<>();
+        tagsMap.put("GENRE", List.of("puzzle", "coop"));
+        tagsMap.put("MODE", List.of());
 
         Page<GamesPageResponse> expectedPage = new PageImpl<>(List.of(
                 new GamesPageResponse(
@@ -48,7 +48,7 @@ class GamesControllerTest {
                         "Puzzle platformer",
                         "https://example.com/portal.png",
                         new AuthorResponse("valve", null, "valve@example.com"),
-                        List.of("puzzle", "coop")
+                        tagsMap
                 )
         ));
 
