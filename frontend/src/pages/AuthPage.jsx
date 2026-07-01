@@ -38,9 +38,6 @@ function AuthPage() {
         setSuccessMessage(
           "Регистрация прошла успешно. Теперь войдите в аккаунт.",
         );
-        setSuccessMessage(
-          "Регистрация прошла успешно. Теперь войдите в аккаунт.",
-        );
         setMode("login");
         setUsername("");
         setEmail("");
@@ -88,7 +85,7 @@ function AuthPage() {
             {mode === "register" ? (
               <div className="form-group">
                 <label className="label" htmlFor="username">
-                  Username
+                  Логин
                 </label>
                 <input
                   id="username"
@@ -103,7 +100,7 @@ function AuthPage() {
 
             <div className="form-group">
               <label className="label" htmlFor="email">
-                Email
+                Почта
               </label>
               <input
                 id="email"
@@ -117,7 +114,7 @@ function AuthPage() {
 
             <div className="form-group">
               <label className="label" htmlFor="password">
-                Password
+                Пароль
               </label>
               <input
                 id="password"
