@@ -21,8 +21,18 @@ public class GamesScreenshotEntity {
     @Column(name = "url", nullable = false, length = 2000)
     private String url;
 
+    @Column(name = "is_video", nullable = false)
+    private boolean isVideo = false;
+
     public GamesScreenshotEntity(Long gameId, String url) {
         this.gameId = gameId;
         this.url = url;
+        this.isVideo = false;
+    }
+
+    public GamesScreenshotEntity(Long gameId, String url, boolean isVideo) {
+        this.gameId = gameId;
+        this.url = url;
+        this.isVideo = isVideo;
     }
 }

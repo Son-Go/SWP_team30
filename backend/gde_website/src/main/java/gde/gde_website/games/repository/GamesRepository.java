@@ -53,4 +53,11 @@ public interface GamesRepository extends JpaRepository<GamesEntity, Long> {
             "WHERE t.name IN :tagNames " + "ORDER BY g.createdAt DESC")
     @EntityGraph(attributePaths = {"gameTags", "gameTags.tag"})
     Page<GamesEntity> findByTagNames(List<String> tagNames, Pageable pageable);
+
+    /**
+     * This method is used for deleting all games by author after author was deleted
+     * @param authorId - author id
+     * @Author: Artemii Gorelov
+     */
+    void deleteAllByAuthorId(Long authorId);
 }

@@ -21,7 +21,7 @@ public interface GameScreenshotsRepository extends JpaRepository<GamesScreenshot
 
     /**
      * This function is used for quick deleting of all screenshots links
-     * @param gameId
+     * @param gameId - id of requested game
      */
     void deleteAllByGameId(Long gameId);
 }

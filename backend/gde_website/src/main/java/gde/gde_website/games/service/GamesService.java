@@ -5,11 +5,9 @@ import gde.gde_website.games.entity.GamesScreenshotEntity;
 import gde.gde_website.games.entity.TagEntity;
 import gde.gde_website.games.mapper.GamesMapper;
 import gde.gde_website.games.model.*;
-import gde.gde_website.games.repository.GameScreenshotsRepository;
-import gde.gde_website.games.repository.GameTagRepository;
-import gde.gde_website.games.repository.GamesRepository;
-import gde.gde_website.games.repository.TagRepository;
+import gde.gde_website.games.repository.*;
 import gde.gde_website.users.entity.UserEntity;
+import gde.gde_website.users.model.UserRole;
 import gde.gde_website.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -204,6 +202,9 @@ public class GamesService {
     @Transactional
     public Games updateGame(UpdateGameRequest request, Long currentUserId, Long gameId) {
         gamesServiceLogger.info("Called GamesService updateGame method");
+
+        checkOwnerOrAdmin(gameId, currentUserId);
+
         GamesEntity gameToUpdate = gamesRepository.findById(gameId).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
@@ -266,6 +267,9 @@ public class GamesService {
     @Transactional
     public Games deleteGame(Long gameId, Long currentUserId) {
         gamesServiceLogger.info("Called GamesService deleteGame method");
+
+        checkOwnerOrAdmin(gameId, currentUserId);
+
         GamesEntity gameToDelete = gamesRepository.findById(gameId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
 
@@ -310,6 +314,71 @@ public class GamesService {
     }
 
     /**
+     * This method is used for admin to approving games
+     * @param gameId - id of game to be approved
+     * @param adminId - id of admin who is approving game
+     * @Author: Artemii Gorelov
+     */
+    @Transactional
+    public void approveGame(Long gameId, Long adminId) {
+        UserEntity admin = usersRepository.findById(adminId).orElseThrow();
+
+        if (admin.getRole() != UserRole.ADMIN) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+
+        GamesEntity game = gamesRepository.findById(gameId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game with such id not found"));
+        game.setApproved(true);
+        gamesRepository.save(game);
+        gamesServiceLogger.info("Game {} approved by admin {}", gameId, adminId);
+    }
+
+    /**
+     * This method is used for admin to rejecting games
+     * @param gameId - if of game to be rejected
+     * @param adminId - id of admin who is rejecting
+     * @Author: Artemii Gorelov
+     */
+    @Transactional
+    public void rejectGame(Long gameId, Long adminId) {
+        UserEntity admin = usersRepository.findById(adminId).orElseThrow();
+        if (admin.getRole() != UserRole.ADMIN) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+
+        GamesEntity game = gamesRepository.findById(gameId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
+        game.setApproved(false);
+        gamesRepository.save(game);
+        gamesServiceLogger.info("Game {} rejected by admin {}", gameId, adminId);
+    }
+
+    /**
+     * This method is used for updating game description by admin
+     * @param gameId - id of game whoos description would be changed
+     * @param description - new description
+     * @param adminId - id of admin who is changing description of the game
+     * @Author: Artemii Gorelov
+     */
+    @Transactional
+    public void updateGameDescriptionAdmin(Long gameId, String description, Long adminId) {
+        UserEntity admin = usersRepository.findById(adminId).orElseThrow();
+        if (admin.getRole() != UserRole.ADMIN) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+
+        GamesEntity game = gamesRepository.findById(gameId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
+        game.setDescription(description);
+        gamesRepository.save(game);
+    }
+
+    /**
+     * This method is used for deleting all games from author after author was deleted
+     * @param authorId - author id
+     * @Author: Artemii Gorelov
+     */
+    @Transactional
+    public void deleteGamesByAuthor(Long authorId) {
+        gamesRepository.deleteAllByAuthorId(authorId);
+    }
+
+    /**
      * Creates {@link Games} response object from saved game entity and request-derived collections.
      * Uses scalar fields from provided {@link GamesEntity} and copies tag and screenshot lists
      * exactly as they were passed to the service method.
@@ -331,5 +400,24 @@ public class GamesService {
                 gameTags,
                 screenshots
         );
+    }
+
+    /**
+     * This method is used for checking is user have permissions to update or delete games
+     * @param gameId - requested game id
+     * @param userId - requested user id
+     * @Author: Artemii Gorelov
+     */
+    private void checkOwnerOrAdmin(Long gameId, Long userId) {
+        gamesServiceLogger.info("Called checkOwnerOrAdmin games service method");
+        GamesEntity game = gamesRepository.findById(gameId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
+
+        UserEntity user = usersRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+
+        if (!game.getAuthorId().equals(userId) && user.getRole() != UserRole.ADMIN) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to modify this game");
+        }
     }
 }

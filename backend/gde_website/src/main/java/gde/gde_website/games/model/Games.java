@@ -12,6 +12,8 @@ import java.util.List;
  * @param bannerUrl - game banner path
  * @param createdAt - date in which game was created
  * @param updatedAt - date in which game was updated
+ * @param gameTags - list of game tags
+ * @param screenshots - list of screenshots links
  * @Author: Artemii Gorelov, Egor Grishin
  */
 public record Games(

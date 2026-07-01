@@ -53,7 +53,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/games/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/games/**").authenticated()
 
-                        // Debug endpoints
+                        // Admin endpoints
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
 
                         // All other endpoints
                         .anyRequest().denyAll()
