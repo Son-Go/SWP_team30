@@ -1,14 +1,9 @@
 package gde.gde_website.games.service;
 
-import gde.gde_website.games.entity.GamesEntity;
-import gde.gde_website.games.entity.GamesScreenshotEntity;
-import gde.gde_website.games.entity.TagEntity;
+import gde.gde_website.games.entity.*;
 import gde.gde_website.games.mapper.GamesMapper;
 import gde.gde_website.games.model.*;
-import gde.gde_website.games.repository.GameScreenshotsRepository;
-import gde.gde_website.games.repository.GameTagRepository;
-import gde.gde_website.games.repository.GamesRepository;
-import gde.gde_website.games.repository.TagRepository;
+import gde.gde_website.games.repository.*;
 import gde.gde_website.users.entity.UserEntity;
 import gde.gde_website.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class is implementing business logic of requests handlers
@@ -38,6 +35,7 @@ public class GamesService {
     private final GamesMapper mapper;
     private final UsersRepository usersRepository;
     private final GameScreenshotsRepository gameScreenshotsRepository;
+    private final TagTypeRepository tagTypeRepository;
 
     /**
      * This method is used for getting list of all games divided on the groups of specific size request
@@ -46,77 +44,36 @@ public class GamesService {
      * @Author: Artemii Gorelov, Egor Grishin
      */
     @Transactional(readOnly = true)
-    public Page<GamesPageResponce> getAllGames(Pageable pageable) {
+    public Page<GamesPageResponse> getAllGames(Pageable pageable) {
         gamesServiceLogger.info("Called getAllGames method");
-        return gamesRepository.findAllByOrderByCreatedAtDesc(pageable)
-                .map(game -> {
-                    List<String> tagNames = game.getGameTags().stream()
-                            .map(gameTag -> gameTag.getTag().getName()).toList();
 
-                    UserEntity author = usersRepository.findById(game.getAuthorId()).orElse(null);
+        List<String> tagTypeNames = allTagTypeNames();
 
-                    AuthorResponse authorResp = null;
-                    if (author != null) {
-                        authorResp = new AuthorResponse(
-                                author.getUsername(),
-                                author.getProfileImageUrl(),
-                                author.getEmail()
-                        );
-                    }
-
-                    return new GamesPageResponce(
-                            game.getId(),
-                            game.getAuthorId(),
-                            game.getTitle(),
-                            game.getDescription(),
-                            game.getBannerUrl(),
-                            authorResp,
-                            tagNames
-                    );
-                });
+        return gamesRepository.findAllByOrderByCreatedAtDesc(pageable).map(
+                game -> mapper.gamesEntityToGamesPageResponse(game, tagTypeNames)
+        );
     }
 
     /**
      * This method is used for getting list of games filtered by specific tags
-     * @param tags - list of tag names to filter game by (uses OR logic - game must have at least one of the tags)
+     * @param tagsRequest - list of tag names to filter game by (uses OR logic - game must have at least one of the tags)
      * @param pageable - pagination information including page number, size and sort order,
      * @return paginated list of games that match at least one of the specified tags, or all games if tags list is null or empty
      * @Author: Artemii Gorelov, Egor Grishin
      */
     @Transactional(readOnly = true)
-    public Page<GamesPageResponce> getGamesByTags(List<String> tags, Pageable pageable) {
-        gamesServiceLogger.info("Called getAllGames method with tags {}", tags);
+    public Page<GamesPageResponse> getGamesByTags(List<String> tagsRequest, Pageable pageable) {
+        gamesServiceLogger.info("Called getGamesByTags method with tags {}", tagsRequest);
 
-        if (tags == null || tags.isEmpty()) {
+        List<String> tagTypeNames = allTagTypeNames();
+
+        if (tagsRequest == null || tagsRequest.isEmpty()) {
             return getAllGames(pageable);
         }
 
-        return gamesRepository.findByTagNames(tags, pageable)
-                .map(game -> {
-                    List<String> tagNames = game.getGameTags().stream()
-                            .map(gameTag -> gameTag.getTag().getName()).toList();
-
-                    UserEntity author = usersRepository.findById(game.getAuthorId()).orElse(null);
-
-                    AuthorResponse authorResp = null;
-                    if (author != null) {
-                        authorResp = new AuthorResponse(
-                                author.getUsername(),
-                                author.getProfileImageUrl(),
-                                author.getEmail()
-                        );
-                    }
-
-                    return new GamesPageResponce(
-                            game.getId(),
-                            game.getAuthorId(),
-                            game.getTitle(),
-                            game.getDescription(),
-                            game.getBannerUrl(),
-                            authorResp,
-                            tagNames
-                    );
-                });
+        return gamesRepository.findByTagNames(tagsRequest, pageable).map(
+                game -> mapper.gamesEntityToGamesPageResponse(game, tagTypeNames)
+        );
     }
 
     /**
@@ -331,5 +288,16 @@ public class GamesService {
                 gameTags,
                 screenshots
         );
+    }
+
+    /**
+     * Returns all existing tag type names.
+     * The resulting list is used to pre-initialize paginated game response tags map,
+     * so each game item contains every known tag type even when some groups are empty.
+     *
+     * @return ordered list of all tag type names from storage
+     */
+    private List<String> allTagTypeNames() {
+        return tagTypeRepository.findAll().stream().map(TagTypeEntity::getType).toList();
     }
 }

@@ -3,7 +3,7 @@ package gde.gde_website;
 import gde.gde_website.games.model.AuthorResponse;
 import gde.gde_website.games.model.Games;
 import gde.gde_website.games.model.GamesCardResponce;
-import gde.gde_website.games.model.GamesPageResponce;
+import gde.gde_website.games.model.GamesPageResponse;
 import gde.gde_website.games.model.TagsResponse;
 import gde.gde_website.games.service.GamesService;
 import gde.gde_website.security.JwtFilter;
@@ -80,7 +80,8 @@ class EndpointHttpIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  "email": "user@example.com",
+                                  "authInfo": "user@example.com",
+                                  "isEmail": true,
                                   "password": "secret"
                                 }
                                 """))
@@ -114,14 +115,14 @@ class EndpointHttpIntegrationTest {
     void gamesListIsPublicAndReturnsPagedJson() throws Exception {
         when(gamesService.getAllGames(PageRequest.of(0, 24)))
                 .thenReturn(new PageImpl<>(List.of(
-                        new GamesPageResponce(
+                        new GamesPageResponse(
                                 1L,
                                 11L,
                                 "Portal",
                                 "Puzzle platformer",
                                 "https://example.com/portal.png",
                                 new AuthorResponse("valve", null, "valve@example.com"),
-                                List.of("puzzle", "coop")
+                                pageTags()
                         )
                 )));
 
@@ -131,7 +132,9 @@ class EndpointHttpIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].id").value(1))
                 .andExpect(jsonPath("$.content[0].title").value("Portal"))
-                .andExpect(jsonPath("$.content[0].tags[0]").value("puzzle"));
+                .andExpect(jsonPath("$.content[0].tags.GENRE[0]").value("puzzle"))
+                .andExpect(jsonPath("$.content[0].tags.GENRE[1]").value("coop"))
+                .andExpect(jsonPath("$.content[0].tags.MODE").isArray());
     }
 
     @Test
@@ -277,6 +280,13 @@ class EndpointHttpIntegrationTest {
                 List.of("indie"),
                 List.of("https://example.com/screenshot.png")
         );
+    }
+
+    private java.util.Map<String, java.util.List<String>> pageTags() {
+        java.util.Map<String, java.util.List<String>> tags = new java.util.LinkedHashMap<>();
+        tags.put("GENRE", java.util.List.of("puzzle", "coop"));
+        tags.put("MODE", java.util.List.of());
+        return tags;
     }
 
     private GamesCardResponce gameCard(boolean isOwner) {

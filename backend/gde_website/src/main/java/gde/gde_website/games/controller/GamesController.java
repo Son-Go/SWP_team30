@@ -43,7 +43,7 @@ public class GamesController {
      * @Author: Artemii Gorelov, Egor Grishin
      */
     @GetMapping
-    public ResponseEntity<Page<GamesPageResponce>> getAllGames(
+    public ResponseEntity<Page<GamesPageResponse>> getAllGames(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "24") int size,
             @RequestParam(required = false) List<String> tags
@@ -52,7 +52,7 @@ public class GamesController {
         gamesControllerLogger.info("Called GamesController /games method (get)");
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<GamesPageResponce> games;
+        Page<GamesPageResponse> games;
         if (tags != null && !tags.isEmpty()) {
             games = gamesService.getGamesByTags(tags, pageable);
         } else {

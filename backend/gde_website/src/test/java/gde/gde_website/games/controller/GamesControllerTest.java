@@ -1,10 +1,6 @@
 package gde.gde_website.games.controller;
 
-import gde.gde_website.games.model.AuthorResponse;
-import gde.gde_website.games.model.Games;
-import gde.gde_website.games.model.GamesCardResponce;
-import gde.gde_website.games.model.GamesCreateRequest;
-import gde.gde_website.games.model.GamesPageResponce;
+import gde.gde_website.games.model.*;
 import gde.gde_website.games.service.GamesService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +16,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -38,22 +36,26 @@ class GamesControllerTest {
 
     @Test
     void getAllGamesReturnsPagedGames() {
-        Page<GamesPageResponce> expectedPage = new PageImpl<>(List.of(
-                new GamesPageResponce(
+        Map<String, List<String>> tags = new LinkedHashMap<>();
+        tags.put("GENRE", List.of("puzzle", "coop"));
+        tags.put("MODE", List.of());
+
+        Page<GamesPageResponse> expectedPage = new PageImpl<>(List.of(
+                new GamesPageResponse(
                         1L,
                         11L,
                         "Portal",
                         "Puzzle platformer",
                         "https://example.com/portal.png",
                         new AuthorResponse("valve", null, "valve@example.com"),
-                        List.of("puzzle", "coop")
+                        tags
                 )
         ));
 
         when(gamesService.getAllGames(org.springframework.data.domain.PageRequest.of(0, 24)))
                 .thenReturn(expectedPage);
 
-        ResponseEntity<Page<GamesPageResponce>> response = gamesController.getAllGames(0, 24, null);
+        ResponseEntity<Page<GamesPageResponse>> response = gamesController.getAllGames(0, 24, null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedPage, response.getBody());
