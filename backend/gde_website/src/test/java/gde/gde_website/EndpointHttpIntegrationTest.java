@@ -1,10 +1,6 @@
 package gde.gde_website;
 
-import gde.gde_website.games.model.AuthorResponse;
-import gde.gde_website.games.model.Games;
-import gde.gde_website.games.model.GamesCardResponce;
-import gde.gde_website.games.model.GamesPageResponse;
-import gde.gde_website.games.model.TagsResponse;
+import gde.gde_website.games.model.*;
 import gde.gde_website.games.service.GamesService;
 import gde.gde_website.security.JwtFilter;
 import gde.gde_website.security.JwtUtils;
@@ -289,8 +285,8 @@ class EndpointHttpIntegrationTest {
         return tags;
     }
 
-    private GamesCardResponce gameCard(boolean isOwner) {
-        return new GamesCardResponce(
+    private GamesCardResponse gameCard(boolean isOwner) {
+        return new GamesCardResponse(
                 7L,
                 15L,
                 "Hades",

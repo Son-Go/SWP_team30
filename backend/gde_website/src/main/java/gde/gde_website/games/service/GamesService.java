@@ -82,7 +82,7 @@ public class GamesService {
      * @Author: Egor Grishin, Artemii Gorelov
      */
     @Transactional(readOnly = true)
-    public GamesCardResponce getGameById(Long gameId, Long currentUserId) {
+    public GamesCardResponse getGameById(Long gameId, Long currentUserId) {
         gamesServiceLogger.info("Called GamesService getGameById method");
         GamesEntity game = gamesRepository.findDetailedById(gameId).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));

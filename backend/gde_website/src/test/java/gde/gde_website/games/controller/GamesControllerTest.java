@@ -63,7 +63,7 @@ class GamesControllerTest {
 
     @Test
     void getGameByIdPassesAuthenticatedUserToService() {
-        GamesCardResponce expected = new GamesCardResponce(
+        GamesCardResponse expected = new GamesCardResponse(
                 7L,
                 15L,
                 "Hades",
@@ -81,7 +81,7 @@ class GamesControllerTest {
 
         when(gamesService.getGameById(7L, 99L)).thenReturn(expected);
 
-        ResponseEntity<GamesCardResponce> response = gamesController.getGameById(7L, authentication);
+        ResponseEntity<GamesCardResponse> response = gamesController.getGameById(7L, authentication);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expected, response.getBody());

@@ -70,7 +70,7 @@ public class GamesController {
      * @Author: Egor Grishin
      */
     @GetMapping("/{id}")
-    public ResponseEntity<GamesCardResponce> getGameById(
+    public ResponseEntity<GamesCardResponse> getGameById(
             @PathVariable("id") Long id,
             Authentication authentication) {
 

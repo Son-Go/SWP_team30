@@ -1,10 +1,7 @@
 package gde.gde_website.games.mapper;
 
 import gde.gde_website.games.entity.*;
-import gde.gde_website.games.model.AuthorResponse;
-import gde.gde_website.games.model.Games;
-import gde.gde_website.games.model.GamesCardResponce;
-import gde.gde_website.games.model.GamesPageResponse;
+import gde.gde_website.games.model.*;
 import gde.gde_website.games.repository.GameScreenshotsRepository;
 import gde.gde_website.users.entity.UserEntity;
 import gde.gde_website.users.repository.UsersRepository;
@@ -31,10 +28,10 @@ public class GamesMapper {
      * @return returns game response object
      * @Author: Egor Grishin
      */
-    public GamesCardResponce entityToResponse(GamesEntity entity, Long currentUserId, AuthorResponse author, List<String> screenshots) {
+    public GamesCardResponse entityToResponse(GamesEntity entity, Long currentUserId, AuthorResponse author, List<String> screenshots) {
         boolean isOwner = currentUserId != null && currentUserId.equals(entity.getAuthorId());
 
-        return new GamesCardResponce(
+        return new GamesCardResponse(
                 entity.getId(),
                 entity.getAuthorId(),
                 entity.getTitle(),

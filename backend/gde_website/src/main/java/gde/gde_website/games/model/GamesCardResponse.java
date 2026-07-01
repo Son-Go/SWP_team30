@@ -19,7 +19,7 @@ import java.util.List;
  * @param screenshots - list of screenshots links
  * @Author: Egor Grishin
  */
-public record GamesCardResponce(
+public record GamesCardResponse(
         Long id,
         Long authorId,
         String title,
