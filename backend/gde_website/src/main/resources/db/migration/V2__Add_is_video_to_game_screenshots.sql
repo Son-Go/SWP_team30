@@ -1,0 +1,2 @@
+ALTER TABLE game_screenshots
+ADD COLUMN IF NOT EXISTS is_video BOOLEAN NOT NULL DEFAULT false;
