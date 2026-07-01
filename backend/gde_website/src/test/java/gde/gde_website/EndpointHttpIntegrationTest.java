@@ -99,7 +99,7 @@ class EndpointHttpIntegrationTest {
     @Test
     void meReturnsCurrentUserWhenJwtIsValid() throws Exception {
         when(usersService.me(42L))
-                .thenReturn(new MeResponse(42L, "andrey", "andrey@example.com", null, false));
+                .thenReturn(new MeResponse(42L, "andrey", "andrey@example.com", null, false, UserRole.DEVELOPER));
 
         mockMvc.perform(get("/auth/me")
                         .header("Authorization", bearerToken(42L, UserRole.DEVELOPER)))
