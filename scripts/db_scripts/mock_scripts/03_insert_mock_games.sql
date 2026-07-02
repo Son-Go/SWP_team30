@@ -32,12 +32,13 @@ BEGIN
         v_description := 'Mock game generated for local development and UI testing. ' ||
                          'This title was created to populate the catalogue with varied content.';
 
-        INSERT INTO games (author_id, title, description, banner_url)
+        INSERT INTO games (author_id, title, description, banner_url, is_approved)
         VALUES (
             v_user_id,
             v_title,
             v_description,
-            'https://loremflickr.com/1200/675/abstract?random=' || i
+            'https://loremflickr.com/1200/675/abstract?random=' || i,
+            true
         )
         RETURNING id INTO v_game_id;
 
@@ -59,10 +60,11 @@ BEGIN
 
         v_screenshot_count := 1 + floor(random() * 3)::int;
         FOR k IN 1..v_screenshot_count LOOP
-            INSERT INTO game_screenshots (game_id, url)
+            INSERT INTO game_screenshots (game_id, url, is_video)
             VALUES (
                 v_game_id,
-                'https://loremflickr.com/1200/675/landscape?random=' || (i * 10 + k)
+                'https://loremflickr.com/1200/675/landscape?random=' || (i * 10 + k),
+                false
             )
             ON CONFLICT DO NOTHING;
         END LOOP;
