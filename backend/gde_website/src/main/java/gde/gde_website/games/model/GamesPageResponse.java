@@ -21,6 +21,7 @@ public record GamesPageResponse(
         String description,
         String bannerUrl,
         AuthorResponse author,
+        boolean isApproved,
         Map<String, List<String>> gameTags
 ) {
 }

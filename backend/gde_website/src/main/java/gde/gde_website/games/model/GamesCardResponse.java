@@ -29,6 +29,7 @@ public record GamesCardResponse(
         Instant createdAt,
         Instant updatedAt,
         boolean isOwner,
+        boolean isApproved,
         AuthorResponse author,
         Map<String, List<String>> gameTags,
         List<String> screenshots

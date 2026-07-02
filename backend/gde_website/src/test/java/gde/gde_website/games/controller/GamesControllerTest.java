@@ -48,6 +48,7 @@ class GamesControllerTest {
                         "Puzzle platformer",
                         "https://example.com/portal.png",
                         new AuthorResponse("valve", null, "valve@example.com"),
+                        true,
                         tagsMap
                 )
         ));
@@ -71,6 +72,7 @@ class GamesControllerTest {
                 "https://example.com/hades.png",
                 Instant.parse("2026-01-01T00:00:00Z"),
                 Instant.parse("2026-01-02T00:00:00Z"),
+                true,
                 true,
                 new AuthorResponse("supergiant", null, "studio@example.com"),
                 groupedTags("action"),

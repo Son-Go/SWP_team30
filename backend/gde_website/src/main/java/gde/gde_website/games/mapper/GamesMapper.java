@@ -42,6 +42,8 @@ public class GamesMapper {
                                                             List<String> tagTypesNames) {
         boolean isOwner = currentUserId != null && currentUserId.equals(game.getAuthorId());
 
+        boolean isApproved = game.isApproved();
+
         List<TagEntity> tags = getTagsEntitiesByGamesEntity(game);
 
         Map<String, List<String>> separatedTags = getSeparatedTags(tagTypesNames, tags);
@@ -55,6 +57,7 @@ public class GamesMapper {
                 game.getCreatedAt(),
                 game.getUpdatedAt(),
                 isOwner,
+                isApproved,
                 author,
                 separatedTags,
                 screenshots
@@ -122,6 +125,7 @@ public class GamesMapper {
                 game.getDescription(),
                 game.getBannerUrl(),
                 authorResp,
+                game.isApproved(),
                 separatedTags
         );
     }
