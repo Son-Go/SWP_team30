@@ -40,9 +40,13 @@ public class GamesService {
     private final TagTypeRepository tagTypeRepository;
 
     /**
-     * This method is used for getting list of all games divided on the groups of specific size request
+     * Returns a page of all games ordered by creation date descending.
+     * For the current page, loads authors in batch and maps each game to response DTO
+     * with tags grouped by tag type. Every known tag type is present in response,
+     * even if the game has no tags of that type.
+     *
      * @param pageable - page request
-     * @return - returns  sublist of games entity
+     * @return paginated list of games with grouped tags and author info
      * @Author: Artemii Gorelov, Egor Grishin
      */
     @Transactional(readOnly = true)
@@ -51,56 +55,56 @@ public class GamesService {
 
         Page<GamesEntity> gamesPage = gamesRepository.findAllByOrderByCreatedAtDesc(pageable);
 
-        Set<Long> authorIds = gamesPage.getContent().stream()
-                .map(GamesEntity::getAuthorId)
-                .collect(Collectors.toSet());
+        Set<Long> authorIds = allAuthorsIdsOnPage(gamesPage);
 
         Map<Long, UserEntity> authorsMap = usersRepository.findAllById(authorIds).stream()
                 .collect(Collectors.toMap(UserEntity::getId, user -> user));
 
         List<String> tagTypeNames = allTagTypeNames();
 
-        return gamesRepository.findAllByOrderByCreatedAtDesc(pageable).map(
-                game -> mapper.gamesEntityToGamesPageResponse(game, tagTypeNames, authorsMap)
-        );
+        return gamesPage.map(game -> mapper.gamesEntityToGamesPageResponse(game, tagTypeNames, authorsMap));
     }
 
     /**
-     * This method is used for getting list of games filtered by specific tags
-     * @param tagsRequest - list of tag names to filter game by (uses OR logic - game must have at least one of the tags)
-     * @param pageable - pagination information including page number, size and sort order,
-     * @return paginated list of games that match at least one of the specified tags, or all games if tags list is null or empty
+     * Returns games filtered by tag names using OR logic.
+     * A game is included when it has at least one tag from {@code tagsRequest}.
+     * When {@code tagsRequest} is {@code null} or empty, falls back to {@link #getAllGames(Pageable)}.
+     * For the current page, authors are loaded in batch and tags are grouped by tag type.
+     *
+     * @param tagsRequest - list of tag names used for filtering
+     * @param pageable - pagination information including page number, size and sort order
+     * @return paginated list of matching games, or all games if filter list is empty
      * @Author: Artemii Gorelov, Egor Grishin
      */
     @Transactional(readOnly = true)
     public Page<GamesPageResponse> getGamesByTags(List<String> tagsRequest, Pageable pageable) {
         gamesServiceLogger.info("Called getGamesByTags method with tags {}", tagsRequest);
 
+        if (tagsRequest == null || tagsRequest.isEmpty()) {
+            return getAllGames(pageable);
+        }
+
         Page<GamesEntity> gamesPage = gamesRepository.findByTagNames(tagsRequest, pageable);
 
-        Set<Long> authorIds = gamesPage.getContent().stream()
-                .map(GamesEntity::getAuthorId)
-                .collect(Collectors.toSet());
+        Set<Long> authorIds = allAuthorsIdsOnPage(gamesPage);
 
         Map<Long, UserEntity> authorsMap = usersRepository.findAllById(authorIds).stream()
                 .collect(Collectors.toMap(UserEntity::getId, user -> user));
 
         List<String> tagTypeNames = allTagTypeNames();
 
-        if (tagsRequest == null || tagsRequest.isEmpty()) {
-            return getAllGames(pageable);
-        }
-
-        return gamesRepository.findByTagNames(tagsRequest, pageable).map(
-                game -> mapper.gamesEntityToGamesPageResponse(game, tagTypeNames, authorsMap)
-        );
+        return gamesPage.map(game -> mapper.gamesEntityToGamesPageResponse(game, tagTypeNames, authorsMap));
     }
 
     /**
-     * This function is used for getting game by requested id
+     * Returns detailed game card by id.
+     * In addition to scalar game fields, includes author information, screenshots,
+     * ownership flag for current user, and tags grouped by tag type.
+     * Every known tag type is present in response even if the game has no tags of that type.
+     *
      * @param gameId - id of the game to get
-     * @param currentUserId - user id
-     * @return game response object
+     * @param currentUserId - current authenticated user id, or {@code null} for anonymous request
+     * @return detailed game response object
      * @Author: Egor Grishin, Artemii Gorelov
      */
     @Transactional(readOnly = true)
@@ -124,13 +128,21 @@ public class GamesService {
         List<String> screenshots = gameScreenshotsRepository.findAllByGameId(gameId)
                 .stream().map(GamesScreenshotEntity::getUrl).toList();
 
-        return mapper.entityToResponse(game, currentUserId, authorResponse, screenshots);
+        return mapper.gamesEntityToGamesCardResponse(game,
+                currentUserId,
+                authorResponse,
+                screenshots,
+                allTagTypeNames()
+        );
     }
 
     /**
-     * This function is used to create new game in database
-     * @param authorId - id of author that creating game
-     * @return new games object
+     * Creates a new game and persists tag and screenshot relations from the request.
+     * Tag names from request are validated against existing tags and deduplicated before insertion.
+     *
+     * @param request - create request with scalar fields, optional flat tag names list and optional screenshots list
+     * @param authorId - id of author that creates the game
+     * @return created game response preserving flat create/update contract
      * @Author: Artemii Gorelov, Egor Grishin
      */
     @Transactional
@@ -170,12 +182,18 @@ public class GamesService {
     }
 
     /**
-     * This function is used for updating game with requested id
+     * Updates an existing game.
+     * Only non-null scalar fields from request are applied. When {@code gameTags} is provided,
+     * existing game-tag relations are fully replaced with validated and deduplicated request values.
+     * When {@code screenshots} is provided, existing screenshots are fully replaced as well.
+     *
+     * @param request - update request with optional scalar fields, tags and screenshots
+     * @param currentUserId - current authenticated user id
      * @param gameId - id of game to be updated
-     * @return updated game object
+     * @return updated game response preserving flat create/update contract
      * @throws ResponseStatusException with codes:
-     * 404 when id of game to be created does not found inside database
-     * 401 when user who wants to update game is not its author or admin
+     * 404 when game does not exist
+     * 403 when user is neither author nor admin
      * @Author: Egor Grishin
      */
     @Transactional
@@ -229,13 +247,14 @@ public class GamesService {
     }
 
     /**
-     * This method is used for deleting game with requested id
+     * Deletes game with requested id after ownership or admin permission check.
+     *
      * @param gameId - id of game to be deleted
      * @param currentUserId - id of user who wants to delete game
-     * @return new object of deleted game
+     * @return flat deleted game response
      * @throws ResponseStatusException with codes:
-     * 404 when game with requested id does not found
-     * 401 when user who wants to delete the game is not game author or admin
+     * 404 when game with requested id is not found
+     * 403 when user is neither game author nor admin
      * @Author: Artemii Gorelov, Egor Grishin
      */
     @Transactional
@@ -254,9 +273,10 @@ public class GamesService {
     }
 
     /**
-     * This function is used for getting author info by requested specific id
-     * @param id - author id, we want info about
-     * @return returns object of AuthorResponse which contains author username, profile image, and email
+     * Returns author information by author id.
+     *
+     * @param id - author id to look up
+     * @return author response containing username, profile image and email
      * @Author: Artemii Gorelov
      */
     public AuthorResponse getAuthorById(Long id) {
@@ -271,8 +291,10 @@ public class GamesService {
     }
 
     /**
-     * This function is used for returning list of all tags
-     * @return new TagsResponse Object which contains list of tags
+     * Returns flat list of all available tag names.
+     * This endpoint exposes tag names only and does not group them by tag type.
+     *
+     * @return new {@link TagsResponse} object containing all tag names
      * @Author: Egor Grishin
      */
     public TagsResponse getAllTags() {
@@ -283,7 +305,9 @@ public class GamesService {
     }
 
     /**
-     * This method is used for admin to approving games
+     * Marks game as approved.
+     * Only admin user may perform this operation.
+     *
      * @param gameId - id of game to be approved
      * @param adminId - id of admin who is approving game
      * @Author: Artemii Gorelov
@@ -302,9 +326,11 @@ public class GamesService {
     }
 
     /**
-     * This method is used for admin to rejecting games
-     * @param gameId - if of game to be rejected
-     * @param adminId - id of admin who is rejecting
+     * Marks game as rejected.
+     * Only admin user may perform this operation.
+     *
+     * @param gameId - id of game to be rejected
+     * @param adminId - id of admin who is rejecting game
      * @Author: Artemii Gorelov
      */
     @Transactional
@@ -320,10 +346,12 @@ public class GamesService {
     }
 
     /**
-     * This method is used for updating game description by admin
-     * @param gameId - id of game whoos description would be changed
+     * Updates game description using admin privileges.
+     * Only admin user may perform this operation.
+     *
+     * @param gameId - id of game whose description should be changed
      * @param description - new description
-     * @param adminId - id of admin who is changing description of the game
+     * @param adminId - id of admin who is changing game description
      * @Author: Artemii Gorelov
      */
     @Transactional
@@ -338,7 +366,8 @@ public class GamesService {
     }
 
     /**
-     * This method is used for deleting all games from author after author was deleted
+     * Deletes all games created by the specified author.
+     *
      * @param authorId - author id
      * @Author: Artemii Gorelov
      */
@@ -383,7 +412,21 @@ public class GamesService {
     }
 
     /**
-     * This method is used for checking user rights
+     * Collects unique author ids for games contained in the current page.
+     * Used to load all page authors in batch instead of querying per item.
+     *
+     * @param gamesPage - page of games
+     * @return set of unique author ids referenced by games on the page
+     */
+    private Set<Long> allAuthorsIdsOnPage(Page<GamesEntity> gamesPage) {
+        return gamesPage.getContent().stream()
+                .map(GamesEntity::getAuthorId)
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * Checks whether the specified user is game owner or admin.
+     *
      * @param gameId - id of game
      * @param userId - id of user
      * @Author: Artemii Gorelov

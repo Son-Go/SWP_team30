@@ -23,35 +23,48 @@ public class GamesMapper {
     private final GameScreenshotsRepository gameScreenshotsRepository;
 
     /**
-     * This method is used to transform game response entity to response
-     * @param entity - entity to be transformed
+     * This method is used to transform game response entity to response.
+     * Groups tags by tag type and keeps all provided tag types in the result map,
+     * even when the current game has no tags of some type.
+     *
+     * @param game - game to be transformed
      * @param currentUserId - current user id
      * @param author - game author
      * @param screenshots - list of screenshots links
+     * @param tagTypesNames - ordered list of all tag type names that must appear in response
      * @return returns game response object
      * @Author: Egor Grishin
      */
-    public GamesCardResponse entityToResponse(GamesEntity entity, Long currentUserId, AuthorResponse author, List<String> screenshots) {
-        boolean isOwner = currentUserId != null && currentUserId.equals(entity.getAuthorId());
+    public GamesCardResponse gamesEntityToGamesCardResponse(GamesEntity game,
+                                                            Long currentUserId,
+                                                            AuthorResponse author,
+                                                            List<String> screenshots,
+                                                            List<String> tagTypesNames) {
+        boolean isOwner = currentUserId != null && currentUserId.equals(game.getAuthorId());
+
+        List<TagEntity> tags = getTagsEntitiesByGamesEntity(game);
+
+        Map<String, List<String>> separatedTags = getSeparatedTags(tagTypesNames, tags);
 
         return new GamesCardResponse(
-                entity.getId(),
-                entity.getAuthorId(),
-                entity.getTitle(),
-                entity.getDescription(),
-                entity.getBannerUrl(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt(),
+                game.getId(),
+                game.getAuthorId(),
+                game.getTitle(),
+                game.getDescription(),
+                game.getBannerUrl(),
+                game.getCreatedAt(),
+                game.getUpdatedAt(),
                 isOwner,
                 author,
-                entity.getGameTags().stream().map(gameTagEntity ->
-                        gameTagEntity.getTag().getName()).toList(),
+                separatedTags,
                 screenshots
         );
     }
 
     /**
-     * This method is used to transform entity to games
+     * This method is used to transform entity to games.
+     * Keeps create/update response contract unchanged and returns a flat list of tag names.
+     *
      * @param entity - entity to be transformed
      * @return new game object
      */
@@ -83,21 +96,13 @@ public class GamesMapper {
      *
      * @param game - game entity to transform
      * @param tagTypesNames - ordered list of all tag type names that must appear in response
+     * @param authorsMap - map of authors indexed by author id for page items on current result page
      * @return paginated game response item with grouped tags and author info
      */
     public GamesPageResponse gamesEntityToGamesPageResponse(GamesEntity game, List<String> tagTypesNames, Map<Long, UserEntity> authorsMap) {
-        List<TagEntity> tags = game.getGameTags().stream()
-                .map(GameTagEntity::getTag).toList();
+        List<TagEntity> tags = getTagsEntitiesByGamesEntity(game);
 
-        Map<String, List<String>> separatedTags = new LinkedHashMap<>();
-
-        for (String tagTypeName : tagTypesNames) {
-            separatedTags.put(tagTypeName, new ArrayList<>());
-        }
-
-        for (TagEntity tag : tags) {
-            separatedTags.get(tag.getTagType().getType()).add(tag.getName());
-        }
+        Map<String, List<String>> separatedTags = getSeparatedTags(tagTypesNames, tags);
 
         UserEntity author = authorsMap.get(game.getAuthorId());
 
@@ -119,5 +124,36 @@ public class GamesMapper {
                 authorResp,
                 separatedTags
         );
+    }
+
+    /**
+     * Extracts tag entities linked with the provided game entity.
+     *
+     * @param game - game entity with loaded game-tag relations
+     * @return list of tag entities linked with the game
+     */
+    private List<TagEntity> getTagsEntitiesByGamesEntity(GamesEntity game) {
+        return game.getGameTags().stream().map(GameTagEntity::getTag).toList();
+    }
+
+    /**
+     * Groups provided tags by tag type name and pre-initializes all known tag types with empty lists.
+     *
+     * @param tagTypesNames - ordered list of all tag type names that must appear in response
+     * @param tags - tag entities linked with a game
+     * @return ordered map where key is tag type name and value is list of tag names of that type
+     */
+    private Map<String, List<String>> getSeparatedTags(List<String> tagTypesNames, List<TagEntity> tags) {
+        Map<String, List<String>> separatedTags = new LinkedHashMap<>();
+
+        for (String tagTypeName : tagTypesNames) {
+            separatedTags.put(tagTypeName, new ArrayList<>());
+        }
+
+        for (TagEntity tag : tags) {
+            separatedTags.get(tag.getTagType().getType()).add(tag.getName());
+        }
+
+        return separatedTags;
     }
 }

@@ -12,7 +12,7 @@ import java.util.Map;
  * @param description - game description
  * @param bannerUrl - game banner url
  * @param author - author information, if available
- * @param tags - list of tag names linked with the game
+ * @param gameTags - tag names grouped by tag type; every key is a tag type name and every value is a list of tag names of that type
  */
 public record GamesPageResponse(
         Long id,
@@ -21,6 +21,6 @@ public record GamesPageResponse(
         String description,
         String bannerUrl,
         AuthorResponse author,
-        Map<String, List<String>> tags
+        Map<String, List<String>> gameTags
 ) {
 }
