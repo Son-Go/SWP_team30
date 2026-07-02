@@ -73,7 +73,7 @@ class GamesControllerTest {
                 Instant.parse("2026-01-02T00:00:00Z"),
                 true,
                 new AuthorResponse("supergiant", null, "studio@example.com"),
-                List.of("action"),
+                groupedTags("action"),
                 List.of("https://example.com/screenshot.png")
         );
         Authentication authentication =
@@ -137,5 +137,12 @@ class GamesControllerTest {
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(expected, response.getBody());
         verify(gamesService).createGame(request, 42L);
+    }
+
+    private Map<String, List<String>> groupedTags(String... values) {
+        Map<String, List<String>> tagsMap = new LinkedHashMap<>();
+        tagsMap.put("GENRE", List.of(values));
+        tagsMap.put("MODE", List.of());
+        return tagsMap;
     }
 }

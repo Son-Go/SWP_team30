@@ -129,9 +129,9 @@ class EndpointHttpIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].id").value(1))
                 .andExpect(jsonPath("$.content[0].title").value("Portal"))
-                .andExpect(jsonPath("$.content[0].tags.GENRE[0]").value("puzzle"))
-                .andExpect(jsonPath("$.content[0].tags.GENRE[1]").value("coop"))
-                .andExpect(jsonPath("$.content[0].tags.MODE").isArray());
+                .andExpect(jsonPath("$.content[0].gameTags.GENRE[0]").value("puzzle"))
+                .andExpect(jsonPath("$.content[0].gameTags.GENRE[1]").value("coop"))
+                .andExpect(jsonPath("$.content[0].gameTags.MODE").isArray());
     }
 
     @Test
@@ -286,6 +286,13 @@ class EndpointHttpIntegrationTest {
         return tags;
     }
 
+    private java.util.Map<String, java.util.List<String>> groupedTags(String... values) {
+        java.util.Map<String, java.util.List<String>> tags = new java.util.LinkedHashMap<>();
+        tags.put("GENRE", java.util.List.of(values));
+        tags.put("MODE", java.util.List.of());
+        return tags;
+    }
+
     private GamesCardResponse gameCard(boolean isOwner) {
         return new GamesCardResponse(
                 7L,
@@ -297,7 +304,7 @@ class EndpointHttpIntegrationTest {
                 Instant.parse("2026-01-02T00:00:00Z"),
                 isOwner,
                 new AuthorResponse("supergiant", null, "studio@example.com"),
-                List.of("action"),
+                groupedTags("action"),
                 List.of("https://example.com/screenshot.png")
         );
     }
