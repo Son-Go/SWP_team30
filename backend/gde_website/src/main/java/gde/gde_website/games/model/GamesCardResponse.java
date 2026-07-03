@@ -17,7 +17,7 @@ import java.util.Map;
  * @param isOwner - whether current authenticated user is the owner of the game
  * @param author - author information, if available
  * @param gameTags - tag names grouped by tag type; every key is a tag type name and every value is a list of tag names of that type
- * @param screenshots - list of screenshots links
+ * @param screenshots - screenshots grouped into {@code videos} and {@code pictures} lists
  * @Author: Egor Grishin
  */
 public record GamesCardResponse(
@@ -32,6 +32,6 @@ public record GamesCardResponse(
         boolean isApproved,
         AuthorResponse author,
         Map<String, List<String>> gameTags,
-        List<String> screenshots
+        Map<String, List<String>> screenshots
 ) {
 }

@@ -19,9 +19,6 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 public class GamesMapper {
-
-    private final GameScreenshotsRepository gameScreenshotsRepository;
-
     /**
      * This method is used to transform game response entity to response.
      * Groups tags by tag type and keeps all provided tag types in the result map,
@@ -30,7 +27,7 @@ public class GamesMapper {
      * @param game - game to be transformed
      * @param currentUserId - current user id
      * @param author - game author
-     * @param screenshots - list of screenshots links
+     * @param screenshots - screenshots grouped into {@code videos} and {@code pictures} lists
      * @param tagTypesNames - ordered list of all tag type names that must appear in response
      * @return returns game response object
      * @Author: Egor Grishin
@@ -38,7 +35,7 @@ public class GamesMapper {
     public GamesCardResponse gamesEntityToGamesCardResponse(GamesEntity game,
                                                             Long currentUserId,
                                                             AuthorResponse author,
-                                                            List<String> screenshots,
+                                                            Map<String, List<String>> screenshots,
                                                             List<String> tagTypesNames) {
         boolean isOwner = currentUserId != null && currentUserId.equals(game.getAuthorId());
 
@@ -66,28 +63,26 @@ public class GamesMapper {
 
     /**
      * This method is used to transform entity to games.
-     * Keeps create/update response contract unchanged and returns a flat list of tag names.
+     * Keeps create/update response contract unchanged and returns tags grouped by tag type
+     * together with screenshots grouped into {@code videos} and {@code pictures}.
      *
-     * @param entity - entity to be transformed
+     * @param game - entity to be transformed
      * @return new game object
      */
-    public Games entityToGames(GamesEntity entity) {
-
-        List<String> screenshots = gameScreenshotsRepository.findAllByGameId(entity.getId())
-                .stream()
-                .map(GamesScreenshotEntity::getUrl)
-                .toList();
+    public Games entityToGames(GamesEntity game,
+                               List<String> tagTypesNames,
+                               Map<String, List<String>> screenshots) {
+        List<TagEntity> tags = getTagsEntitiesByGamesEntity(game);
 
         return new Games(
-                entity.getId(),
-                entity.getAuthorId(),
-                entity.getTitle(),
-                entity.getDescription(),
-                entity.getBannerUrl(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt(),
-                entity.getGameTags().stream().
-                        map(gameTagEntity -> gameTagEntity.getTag().getName()).toList(),
+                game.getId(),
+                game.getAuthorId(),
+                game.getTitle(),
+                game.getDescription(),
+                game.getBannerUrl(),
+                game.getCreatedAt(),
+                game.getUpdatedAt(),
+                getSeparatedTags(tagTypesNames, tags),
                 screenshots
         );
     }

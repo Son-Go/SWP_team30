@@ -45,6 +45,9 @@ public class GamesEntity {
     @OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<GameTagEntity> gameTags = new ArrayList<>();
 
+    @OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<GamesScreenshotEntity> gameScreenshots = new ArrayList<>();
+
     public GamesEntity(Long authorId, String title, String description, String bannerUrl) {
         this.authorId = authorId;
         this.title = title;

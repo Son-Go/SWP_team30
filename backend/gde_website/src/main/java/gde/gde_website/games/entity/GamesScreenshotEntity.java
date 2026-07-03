@@ -18,6 +18,10 @@ public class GamesScreenshotEntity {
     @Column(name = "game_id", nullable = false)
     private Long gameId;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "game_id", insertable = false, updatable = false)
+    private GamesEntity game;
+
     @Column(name = "url", nullable = false, length = 2000)
     private String url;
 

@@ -123,22 +123,21 @@ public class GamesService {
             );
         }
 
-        List<String> screenshots = gameScreenshotsRepository.findAllByGameId(gameId)
-                .stream().map(GamesScreenshotEntity::getUrl).toList();
-
         return mapper.gamesEntityToGamesCardResponse(game,
                 currentUserId,
                 authorResponse,
-                screenshots,
+                getScreenshotsByGameId(gameId),
                 allTagTypeNames()
         );
     }
 
     /**
-     * Creates a new game and persists tag and screenshot relations from the request.
+     * Creates a new game and persists tag and categorized screenshot relations from the request.
      * Tag names from request are validated against existing tags and deduplicated before insertion.
+     * Screenshots are stored as separate records and grouped by {@code videos} and {@code pictures}
+     * in the response contract.
      *
-     * @param request - create request with scalar fields, optional flat tag names list and optional screenshots list
+     * @param request - create request with scalar fields, optional flat tag names list and optional grouped screenshots
      * @param authorId - id of author that creates the game
      * @return created game response preserving flat create/update contract
      * @Author: Artemii Gorelov, Egor Grishin
@@ -170,20 +169,18 @@ public class GamesService {
         }
 
         if (request.screenshots() != null) {
-            List<GamesScreenshotEntity> screenshots = request.screenshots().stream()
-                    .map(url -> new GamesScreenshotEntity(savedGame.getId(), url))
-                    .toList();
-            gameScreenshotsRepository.saveAll(screenshots);
+            saveScreenshots(request.screenshots(), savedGame);
         }
 
-        return createGamesResponse(savedGame, request.gameTags(), request.screenshots());
+        return mapper.entityToGames(savedGame, allTagTypeNames(), getScreenshotsByGameId(savedGame.getId()));
     }
 
     /**
      * Updates an existing game.
      * Only non-null scalar fields from request are applied. When {@code gameTags} is provided,
      * existing game-tag relations are fully replaced with validated and deduplicated request values.
-     * When {@code screenshots} is provided, existing screenshots are fully replaced as well.
+     * When {@code screenshots} is provided, existing screenshots are fully replaced as well,
+     * preserving separation into {@code videos} and {@code pictures} groups.
      *
      * @param request - update request with optional scalar fields, tags and screenshots
      * @param currentUserId - current authenticated user id
@@ -229,19 +226,18 @@ public class GamesService {
             }
         }
 
+        GamesEntity savedGame = gamesRepository.save(gameToUpdate);
+
         if (request.screenshots() != null) {
             gameScreenshotsRepository.deleteAllByGameId(gameId);
-            List<GamesScreenshotEntity> screenshots = request.screenshots().stream()
-                    .map(url -> new GamesScreenshotEntity(gameId, url))
-                    .toList();
-            gameScreenshotsRepository.saveAll(screenshots);
+
+            saveScreenshots(request.screenshots(), savedGame);
         }
 
-        GamesEntity savedGame = gamesRepository.save(gameToUpdate);
         gamesServiceLogger.info("Successfully updated game id={}", gameId);
 
 
-        return createGamesResponse(savedGame, request.gameTags(), request.screenshots());
+        return mapper.entityToGames(savedGame, allTagTypeNames(), getScreenshotsByGameId(gameId));
     }
 
     /**
@@ -264,10 +260,12 @@ public class GamesService {
         GamesEntity gameToDelete = gamesRepository.findById(gameId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
 
+        Map<String, List<String>> screenshots = getScreenshotsByGameId(gameId);
+
         gamesRepository.delete(gameToDelete);
 
         gamesServiceLogger.info("Successfully deleted game id={}", gameId);
-        return mapper.entityToGames(gameToDelete);
+        return mapper.entityToGames(gameToDelete, allTagTypeNames(), screenshots);
     }
 
     /**
@@ -385,30 +383,6 @@ public class GamesService {
     }
 
     /**
-     * Creates {@link Games} response object from saved game entity and request-derived collections.
-     * Uses scalar fields from provided {@link GamesEntity} and copies tag and screenshot lists
-     * exactly as they were passed to the service method.
-     *
-     * @param game - saved game entity containing persisted scalar fields
-     * @param gameTags - list of tag names passed in create/update request
-     * @param screenshots - list of screenshot urls passed in create/update request
-     * @return response object containing game fields, tags and screenshots
-     * @Author: Egor Grishin
-     */
-    private Games createGamesResponse(GamesEntity game, List<String> gameTags, List<String> screenshots) {
-        return new Games(game.getId(),
-                game.getAuthorId(),
-                game.getTitle(),
-                game.getDescription(),
-                game.getBannerUrl(),
-                game.getCreatedAt(),
-                game.getUpdatedAt(),
-                gameTags,
-                screenshots
-        );
-    }
-
-    /**
      * Returns all existing tag type names.
      * The resulting list is used to pre-initialize grouped tags maps,
      * so each response contains every known tag type even when some groups are empty.
@@ -450,5 +424,52 @@ public class GamesService {
         if (!game.getAuthorId().equals(userId) && user.getRole() != UserRole.ADMIN) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to modify this game");
         }
+    }
+
+    /**
+     * Loads screenshots for a game directly from storage and groups them into
+     * {@code videos} and {@code pictures} lists for response models.
+     *
+     * @param gameId - id of the requested game
+     * @return ordered screenshots map with {@code videos} and {@code pictures} keys
+     */
+    private Map<String, List<String>> getScreenshotsByGameId(Long gameId) {
+        Map<String, List<String>> screenshots = new LinkedHashMap<>();
+        screenshots.put("videos", new ArrayList<>());
+        screenshots.put("pictures", new ArrayList<>());
+
+        for (GamesScreenshotEntity screenshot : gameScreenshotsRepository.findAllByGameId(gameId)) {
+            if (screenshot.isVideo()) {
+                screenshots.get("videos").add(screenshot.getUrl());
+            } else {
+                screenshots.get("pictures").add(screenshot.getUrl());
+            }
+        }
+
+        return screenshots;
+    }
+
+    /**
+     * Persists categorized screenshots for a game using the fixed request contract
+     * with {@code videos} and {@code pictures} keys.
+     *
+     * @param screenshotsToSave - screenshots grouped by media type
+     * @param game - game that owns the screenshots
+     */
+    private void saveScreenshots(Map<String, List<String>> screenshotsToSave, GamesEntity game) {
+        List<GamesScreenshotEntity> videos = screenshotsToSave
+                .get("videos")
+                .stream()
+                .map(url -> new GamesScreenshotEntity(game.getId(), url, true))
+                .toList();
+
+        List<GamesScreenshotEntity> pictures = screenshotsToSave
+                .get("pictures")
+                .stream()
+                .map(url -> new GamesScreenshotEntity(game.getId(), url, false))
+                .toList();
+
+        gameScreenshotsRepository.saveAll(videos);
+        gameScreenshotsRepository.saveAll(pictures);
     }
 }
