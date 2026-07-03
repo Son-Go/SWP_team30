@@ -7,20 +7,24 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * Repository for working with game screenshots links
+ * Repository for working with stored game screenshot records.
+ * Each record contains a media URL and a flag indicating whether it belongs
+ * to the {@code videos} or {@code pictures} response group.
  * @Author: Artemii Gorelov
  */
 @Repository
 public interface GameScreenshotsRepository extends JpaRepository<GamesScreenshotEntity, Long> {
     /**
-     * This function is used to find all game screenshots links for game with requested id
+     * Loads all stored screenshot records for the requested game.
+     *
      * @param gameId - id of requested game
-     * @return - list of screenshots links
+     * @return list of screenshot entities for the game
      */
     List<GamesScreenshotEntity> findAllByGameId(Long gameId);
 
     /**
-     * This function is used for quick deleting of all screenshots links
+     * Deletes all stored screenshot records for the requested game.
+     *
      * @param gameId - id of requested game
      */
     void deleteAllByGameId(Long gameId);
