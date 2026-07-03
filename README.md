@@ -82,6 +82,10 @@ Project supports following function:
 
 [CHANGELOG](./CHANGELOG.md)
 
+## Documentation
+
+* [Development Process & Configuration Management](docs/development-process.md)
+
 ---
 
 ## License
