@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { deleteGame, getGameById, updateGame, getGameAuthor } from "../api/api";
 import ErrorState from "../components/ErrorState";
@@ -26,6 +26,8 @@ function GamePage() {
   const [screenshots, setScreenshots] = useState([]);
   const [screenshotInput, setScreenshotInput] = useState("");
   const [activeScreenshot, setActiveScreenshot] = useState(null);
+  const [showLimit, setShowLimit] = useState(false);
+  const limitTimerRef = useRef(null);
 
   useEffect(() => {
     async function loadGame() {
@@ -258,7 +260,7 @@ function GamePage() {
 
             <div className="game-description">
               <h2 className="card-title">Описание</h2>
-              <p className="card-text">
+              <p className="card-text" style={{ whiteSpace: "pre-wrap" }}>
                 {game.description || "Описания нема."}
               </p>
             </div>
@@ -274,7 +276,7 @@ function GamePage() {
             )}
             {authorName && (
               <div className="game-sidebar-meta">
-                <span className="game-sidebar-label">Автор</span>
+                <span className="game-sidebar-label">Разработчик</span>
                 <span className="card-author">{authorName}</span>
               </div>
             )}
@@ -328,12 +330,32 @@ function GamePage() {
               <label className="label" htmlFor="description">
                 Описание
               </label>
-              <textarea
-                id="description"
-                className="textarea"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
+              <div style={{ position: "relative" }}>
+                <textarea
+                  id="description"
+                  className="textarea"
+                  value={description}
+                  onChange={(e) => {
+                    if (e.target.value.length <= 1500) {
+                      setDescription(e.target.value);
+                      setShowLimit(false);
+                    } else {
+                      clearTimeout(limitTimerRef.current);
+                      setShowLimit(false);
+                      setTimeout(() => setShowLimit(true), 10);
+                      limitTimerRef.current = setTimeout(
+                        () => setShowLimit(false),
+                        3000,
+                      );
+                    }
+                  }}
+                />
+                {showLimit && (
+                  <span className="input-hint-error">
+                    Достигнут лимит в 1500 символов
+                  </span>
+                )}
+              </div>
             </div>
 
             <div className="form-group">
