@@ -7,7 +7,7 @@ COPY .mvn .mvn
 COPY mvnw pom.xml ./
 COPY src ./src
 
-RUN chmod +x mvnw && ./mvnw -B clean package -DskipTests
+RUN chmod +x mvnw && ./mvnw -B clean package -Dmaven.test.skip=true
 
 # Runtime image
 FROM eclipse-temurin:21-jre-jammy
