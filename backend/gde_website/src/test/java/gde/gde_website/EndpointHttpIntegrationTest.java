@@ -143,7 +143,9 @@ class EndpointHttpIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(7))
                 .andExpect(jsonPath("$.title").value("Hades"))
-                .andExpect(jsonPath("$.isOwner").value(false));
+                .andExpect(jsonPath("$.isOwner").value(false))
+                .andExpect(jsonPath("$.screenshots.videos[0]").value("https://example.com/trailer.mp4"))
+                .andExpect(jsonPath("$.screenshots.pictures[0]").value("https://example.com/screenshot.png"));
 
         verify(gamesService).getGameById(7L, null);
     }
@@ -166,7 +168,10 @@ class EndpointHttpIntegrationTest {
                                   "description": "Updated description",
                                   "bannerUrl": "https://example.com/banner.png",
                                   "gameTags": ["indie"],
-                                  "screenshots": []
+                                  "screenshots": {
+                                    "videos": [],
+                                    "pictures": []
+                                  }
                                 }
                                 """))
                 .andExpect(status().isUnauthorized());
@@ -189,7 +194,9 @@ class EndpointHttpIntegrationTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(5))
                 .andExpect(jsonPath("$.authorId").value(42))
-                .andExpect(jsonPath("$.title").value("New Game"));
+                .andExpect(jsonPath("$.title").value("New Game"))
+                .andExpect(jsonPath("$.screenshots.videos[0]").value("https://example.com/trailer.mp4"))
+                .andExpect(jsonPath("$.screenshots.pictures[0]").value("https://example.com/screenshot.png"));
 
         verify(gamesService).createGame(any(), eq(42L));
     }
@@ -207,12 +214,17 @@ class EndpointHttpIntegrationTest {
                                   "description": "Updated description",
                                   "bannerUrl": "https://example.com/banner.png",
                                   "gameTags": ["indie"],
-                                  "screenshots": []
+                                  "screenshots": {
+                                    "videos": [],
+                                    "pictures": []
+                                  }
                                 }
                                 """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(5))
-                .andExpect(jsonPath("$.title").value("New Game"));
+                .andExpect(jsonPath("$.title").value("New Game"))
+                .andExpect(jsonPath("$.screenshots.videos[0]").value("https://example.com/trailer.mp4"))
+                .andExpect(jsonPath("$.screenshots.pictures[0]").value("https://example.com/screenshot.png"));
 
         verify(gamesService).updateGame(any(), eq(42L), eq(5L));
     }
@@ -262,7 +274,10 @@ class EndpointHttpIntegrationTest {
                   "description": "Description",
                   "bannerUrl": "https://example.com/banner.png",
                   "gameTags": ["indie"],
-                  "screenshots": ["https://example.com/screenshot.png"]
+                  "screenshots": {
+                    "videos": ["https://example.com/trailer.mp4"],
+                    "pictures": ["https://example.com/screenshot.png"]
+                  }
                 }
                 """;
     }
@@ -276,8 +291,8 @@ class EndpointHttpIntegrationTest {
                 "https://example.com/banner.png",
                 Instant.parse("2026-01-01T00:00:00Z"),
                 Instant.parse("2026-01-02T00:00:00Z"),
-                List.of("indie"),
-                List.of("https://example.com/screenshot.png")
+                groupedTags("indie"),
+                groupedScreenshots()
         );
     }
 
@@ -295,6 +310,13 @@ class EndpointHttpIntegrationTest {
         return tags;
     }
 
+    private java.util.Map<String, java.util.List<String>> groupedScreenshots() {
+        java.util.Map<String, java.util.List<String>> screenshots = new java.util.LinkedHashMap<>();
+        screenshots.put("videos", java.util.List.of("https://example.com/trailer.mp4"));
+        screenshots.put("pictures", java.util.List.of("https://example.com/screenshot.png"));
+        return screenshots;
+    }
+
     private GamesCardResponse gameCard(boolean isOwner) {
         return new GamesCardResponse(
                 7L,
@@ -308,7 +330,7 @@ class EndpointHttpIntegrationTest {
                 true,
                 new AuthorResponse("supergiant", null, "studio@example.com"),
                 groupedTags("action"),
-                List.of("https://example.com/screenshot.png")
+                groupedScreenshots()
         );
     }
 }

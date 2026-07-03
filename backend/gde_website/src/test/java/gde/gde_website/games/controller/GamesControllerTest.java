@@ -76,7 +76,7 @@ class GamesControllerTest {
                 true,
                 new AuthorResponse("supergiant", null, "studio@example.com"),
                 groupedTags("action"),
-                List.of("https://example.com/screenshot.png")
+                groupedScreenshots()
         );
         Authentication authentication =
                 new UsernamePasswordAuthenticationToken(99L, null, List.of());
@@ -97,7 +97,7 @@ class GamesControllerTest {
                 "Description",
                 "https://example.com/banner.png",
                 List.of("indie"),
-                List.of("https://example.com/screenshot.png")
+                groupedScreenshots()
         );
 
         ResponseStatusException exception = assertThrows(
@@ -117,7 +117,7 @@ class GamesControllerTest {
                 "Description",
                 "https://example.com/banner.png",
                 List.of("indie"),
-                List.of("https://example.com/screenshot.png")
+                groupedScreenshots()
         );
         Games expected = new Games(
                 5L,
@@ -127,8 +127,8 @@ class GamesControllerTest {
                 "https://example.com/banner.png",
                 Instant.parse("2026-01-01T00:00:00Z"),
                 Instant.parse("2026-01-02T00:00:00Z"),
-                List.of("indie"),
-                List.of("https://example.com/screenshot.png")
+                groupedTags("indie"),
+                groupedScreenshots()
         );
 
         when(gamesService.createGame(request, 42L))
@@ -139,6 +139,13 @@ class GamesControllerTest {
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(expected, response.getBody());
         verify(gamesService).createGame(request, 42L);
+    }
+
+    private Map<String, List<String>> groupedScreenshots() {
+        Map<String, List<String>> screenshots = new LinkedHashMap<>();
+        screenshots.put("videos", List.of("https://example.com/trailer.mp4"));
+        screenshots.put("pictures", List.of("https://example.com/screenshot.png"));
+        return screenshots;
     }
 
     private Map<String, List<String>> groupedTags(String... values) {
