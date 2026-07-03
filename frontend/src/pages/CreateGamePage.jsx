@@ -19,6 +19,8 @@ function CreateGamePage() {
   const [submitting, setSubmitting] = useState(false);
   const [showScreenshotLimit, setShowScreenshotLimit] = useState(false);
   const screenshotLimitTimerRef = useRef(null);
+  const [showDescriptionLimit, setShowDescriptionLimit] = useState(false);
+  const descriptionLimitTimerRef = useRef(null);
 
   function triggerScreenshotLimit() {
     clearTimeout(screenshotLimitTimerRef.current);
@@ -26,6 +28,15 @@ function CreateGamePage() {
     setTimeout(() => setShowScreenshotLimit(true), 10);
     screenshotLimitTimerRef.current = setTimeout(() => {
       setShowScreenshotLimit(false);
+    }, 3000);
+  }
+
+  function triggerDescriptionLimit() {
+    clearTimeout(descriptionLimitTimerRef.current);
+    setShowDescriptionLimit(false);
+    setTimeout(() => setShowDescriptionLimit(true), 10);
+    descriptionLimitTimerRef.current = setTimeout(() => {
+      setShowDescriptionLimit(false);
     }, 3000);
   }
 
@@ -106,12 +117,27 @@ function CreateGamePage() {
             <label className="label" htmlFor="description">
               Описание
             </label>
-            <textarea
-              id="description"
-              className="textarea"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
+
+            <div className="description-limit-wrap">
+              <textarea
+                id="description"
+                className="textarea"
+                value={description}
+                onChange={(e) => {
+                  if (e.target.value.length <= 1500) {
+                    setDescription(e.target.value);
+                    setShowDescriptionLimit(false);
+                  } else {
+                    triggerDescriptionLimit();
+                  }
+                }}
+              />
+              {showDescriptionLimit && (
+                <span className="input-hint-error description-limit-hint">
+                  Достигнут лимит в 1500 символов
+                </span>
+              )}
+            </div>
           </div>
 
           <div className="form-group">
