@@ -4,6 +4,7 @@ import { createGame } from "../api/api";
 import ErrorState from "../components/ErrorState";
 import TagSelector from "../components/TagSelector";
 import { useAuth } from "../context/auth-context";
+import { isYoutubeUrl, getTotalMediaCount, isImageUrl } from "../utils/media";
 
 function CreateGamePage() {
   const navigate = useNavigate();
@@ -13,21 +14,52 @@ function CreateGamePage() {
   const [description, setDescription] = useState("");
   const [bannerUrl, setBannerUrl] = useState("");
   const [tags, setTags] = useState([]);
-  const [screenshots, setScreenshots] = useState([]);
-  const [screenshotInput, setScreenshotInput] = useState("");
+
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [showScreenshotLimit, setShowScreenshotLimit] = useState(false);
+
   const screenshotLimitTimerRef = useRef(null);
+
   const [showDescriptionLimit, setShowDescriptionLimit] = useState(false);
   const descriptionLimitTimerRef = useRef(null);
 
-  function triggerScreenshotLimit() {
-    clearTimeout(screenshotLimitTimerRef.current);
-    setShowScreenshotLimit(false);
-    setTimeout(() => setShowScreenshotLimit(true), 10);
-    screenshotLimitTimerRef.current = setTimeout(() => {
-      setShowScreenshotLimit(false);
+  const [screenshots, setScreenshots] = useState({ videos: [], pictures: [] });
+
+  const [videoInput, setVideoInput] = useState("");
+  const [pictureInput, setPictureInput] = useState("");
+
+  const [showMediaLimit, setShowMediaLimit] = useState(false);
+  const [showVideoTypeError, setShowVideoTypeError] = useState(false);
+  const [showPictureTypeError, setShowPictureTypeError] = useState(false);
+
+  const mediaLimitTimerRef = useRef(null);
+  const videoTypeTimerRef = useRef(null);
+  const pictureTypeTimerRef = useRef(null);
+
+  function triggerMediaLimit() {
+    clearTimeout(mediaLimitTimerRef.current);
+    setShowMediaLimit(false);
+    setTimeout(() => setShowMediaLimit(true), 10);
+    mediaLimitTimerRef.current = setTimeout(() => {
+      setShowMediaLimit(false);
+    }, 3000);
+  }
+
+  function triggerVideoTypeError() {
+    clearTimeout(videoTypeTimerRef.current);
+    setShowVideoTypeError(false);
+    setTimeout(() => setShowVideoTypeError(true), 10);
+    videoTypeTimerRef.current = setTimeout(() => {
+      setShowVideoTypeError(false);
+    }, 3000);
+  }
+
+  function triggerPictureTypeError() {
+    clearTimeout(pictureTypeTimerRef.current);
+    setShowPictureTypeError(false);
+    setTimeout(() => setShowPictureTypeError(true), 10);
+    pictureTypeTimerRef.current = setTimeout(() => {
+      setShowPictureTypeError(false);
     }, 3000);
   }
 
@@ -40,22 +72,56 @@ function CreateGamePage() {
     }, 3000);
   }
 
-  function handleAddScreenshot() {
-    const trimmed = screenshotInput.trim();
+  function handleAddVideo() {
+    const trimmed = videoInput.trim();
+    if (!trimmed) return;
 
-    if (!trimmed || screenshots.includes(trimmed)) {
-      setScreenshotInput("");
+    if (!isYoutubeUrl(trimmed)) {
+      triggerVideoTypeError();
       return;
     }
 
-    if (screenshots.length >= 10) {
-      triggerScreenshotLimit();
-      setScreenshotInput("");
+    if (getTotalMediaCount(screenshots) >= 10) {
+      triggerMediaLimit();
       return;
     }
 
-    setScreenshots([...screenshots, trimmed]);
-    setScreenshotInput("");
+    if (screenshots.videos.includes(trimmed)) {
+      setVideoInput("");
+      return;
+    }
+
+    setScreenshots({
+      ...screenshots,
+      videos: [...screenshots.videos, trimmed],
+    });
+    setVideoInput("");
+  }
+
+  function handleAddPicture() {
+    const trimmed = pictureInput.trim();
+    if (!trimmed) return;
+
+    if (!isImageUrl(trimmed)) {
+      triggerPictureTypeError();
+      return;
+    }
+
+    if (getTotalMediaCount(screenshots) >= 10) {
+      triggerMediaLimit();
+      return;
+    }
+
+    if (screenshots.pictures.includes(trimmed)) {
+      setPictureInput("");
+      return;
+    }
+
+    setScreenshots({
+      ...screenshots,
+      pictures: [...screenshots.pictures, trimmed],
+    });
+    setPictureInput("");
   }
 
   async function handleSubmit(event) {
@@ -160,60 +226,123 @@ function CreateGamePage() {
           </div>
 
           <div className="form-group">
-            <label className="label">Скриншоты</label>
+            <label className="label">Видео</label>
 
-            <div style={{ position: "relative" }}>
+            <div className="media-input-wrap">
               <div className="tag-input-row">
                 <input
                   className="input"
                   type="url"
-                  placeholder="https://example.com/screenshot.png"
-                  value={screenshotInput}
-                  onChange={(e) => setScreenshotInput(e.target.value)}
+                  placeholder="https://youtube.com/watch?v=..."
+                  value={videoInput}
+                  onChange={(e) => setVideoInput(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
-                      handleAddScreenshot();
+                      handleAddVideo();
                     }
                   }}
                 />
-
                 <button
                   type="button"
                   className="button button-ghost"
-                  onClick={handleAddScreenshot}
+                  onClick={handleAddVideo}
                 >
-                  Добавить
+                  Добавить видео
                 </button>
               </div>
 
-              {showScreenshotLimit && (
-                <span className="input-hint-error">
+              {showVideoTypeError && (
+                <span className="input-hint-error media-input-hint">
+                  Можно добавить только ссылку на YouTube-видео
+                </span>
+              )}
+
+              {showMediaLimit && (
+                <span className="input-hint-error media-input-hint">
                   Достигнут лимит в 10 медиа
                 </span>
               )}
             </div>
 
-            {screenshots.length > 0 && (
+            {screenshots.videos.length > 0 && (
               <div className="screenshots-edit-list">
-                {screenshots.map((url, i) => (
-                  <div key={i} className="screenshot-edit-item">
-                    <img
-                      src={url}
-                      alt={`Скриншот ${i + 1}`}
-                      className="screenshot-thumb"
-                    />
+                {screenshots.videos.map((url, i) => (
+                  <div key={url} className="screenshot-edit-item">
                     <span className="screenshot-url">{url}</span>
                     <button
                       type="button"
                       className="button button-danger screenshot-remove"
                       onClick={() =>
-                        setScreenshots(
-                          screenshots.filter((_, idx) => idx !== i),
-                        )
+                        setScreenshots({
+                          ...screenshots,
+                          videos: screenshots.videos.filter(
+                            (_, idx) => idx !== i,
+                          ),
+                        })
                       }
                     >
-                      ×
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label className="label">Скриншоты</label>
+
+            <div className="media-input-wrap">
+              <div className="tag-input-row">
+                <input
+                  className="input"
+                  type="url"
+                  placeholder="https://example.com/screenshot.png"
+                  value={pictureInput}
+                  onChange={(e) => setPictureInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleAddPicture();
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  className="button button-ghost"
+                  onClick={handleAddPicture}
+                >
+                  Добавить скриншот
+                </button>
+              </div>
+
+              {showPictureTypeError && (
+                <span className="input-hint-error media-input-hint">
+                  Можно добавить только ссылку на изображение
+                </span>
+              )}
+            </div>
+
+            {screenshots.pictures.length > 0 && (
+              <div className="screenshots-edit-list">
+                {screenshots.pictures.map((url, i) => (
+                  <div key={url} className="screenshot-edit-item">
+                    <img src={url} className="screenshot-thumb" />
+                    <span className="screenshot-url">{url}</span>
+                    <button
+                      type="button"
+                      className="button button-danger screenshot-remove"
+                      onClick={() =>
+                        setScreenshots({
+                          ...screenshots,
+                          pictures: screenshots.pictures.filter(
+                            (_, idx) => idx !== i,
+                          ),
+                        })
+                      }
+                    >
+                      ✕
                     </button>
                   </div>
                 ))}
