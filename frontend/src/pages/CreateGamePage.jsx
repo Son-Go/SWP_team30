@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createGame } from "../api/api";
 import ErrorState from "../components/ErrorState";
@@ -17,9 +17,39 @@ function CreateGamePage() {
   const [screenshotInput, setScreenshotInput] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [showScreenshotLimit, setShowScreenshotLimit] = useState(false);
+  const screenshotLimitTimerRef = useRef(null);
+
+  function triggerScreenshotLimit() {
+    clearTimeout(screenshotLimitTimerRef.current);
+    setShowScreenshotLimit(false);
+    setTimeout(() => setShowScreenshotLimit(true), 10);
+    screenshotLimitTimerRef.current = setTimeout(() => {
+      setShowScreenshotLimit(false);
+    }, 3000);
+  }
+
+  function handleAddScreenshot() {
+    const trimmed = screenshotInput.trim();
+
+    if (!trimmed || screenshots.includes(trimmed)) {
+      setScreenshotInput("");
+      return;
+    }
+
+    if (screenshots.length >= 10) {
+      triggerScreenshotLimit();
+      setScreenshotInput("");
+      return;
+    }
+
+    setScreenshots([...screenshots, trimmed]);
+    setScreenshotInput("");
+  }
 
   async function handleSubmit(event) {
     event.preventDefault();
+
     try {
       setSubmitting(true);
       setError("");
@@ -105,38 +135,39 @@ function CreateGamePage() {
 
           <div className="form-group">
             <label className="label">Скриншоты</label>
-            <div className="tag-input-row">
-              <input
-                className="input"
-                type="url"
-                placeholder="https://example.com/screenshot.png"
-                value={screenshotInput}
-                onChange={(e) => setScreenshotInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    const trimmed = screenshotInput.trim();
-                    if (trimmed && !screenshots.includes(trimmed)) {
-                      setScreenshots([...screenshots, trimmed]);
+
+            <div style={{ position: "relative" }}>
+              <div className="tag-input-row">
+                <input
+                  className="input"
+                  type="url"
+                  placeholder="https://example.com/screenshot.png"
+                  value={screenshotInput}
+                  onChange={(e) => setScreenshotInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleAddScreenshot();
                     }
-                    setScreenshotInput("");
-                  }
-                }}
-              />
-              <button
-                type="button"
-                className="button button-ghost"
-                onClick={() => {
-                  const trimmed = screenshotInput.trim();
-                  if (trimmed && !screenshots.includes(trimmed)) {
-                    setScreenshots([...screenshots, trimmed]);
-                  }
-                  setScreenshotInput("");
-                }}
-              >
-                Добавить
-              </button>
+                  }}
+                />
+
+                <button
+                  type="button"
+                  className="button button-ghost"
+                  onClick={handleAddScreenshot}
+                >
+                  Добавить
+                </button>
+              </div>
+
+              {showScreenshotLimit && (
+                <span className="input-hint-error">
+                  Достигнут лимит в 10 скриншотов
+                </span>
+              )}
             </div>
+
             {screenshots.length > 0 && (
               <div className="screenshots-edit-list">
                 {screenshots.map((url, i) => (

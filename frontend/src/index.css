@@ -657,6 +657,37 @@ textarea:focus-visible {
   border: 1px solid var(--border);
 }
 
+.screenshot-remove {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  padding: 0;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-size: 22px;
+  border-radius: 10px;
+}
+
+.tag-input-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.tag-input-row .input {
+  width: 100%;
+  min-width: 0;
+}
+
+.tag-input-row .button {
+  align-self: flex-start;
+}
+
 .screenshots-edit-list {
   display: flex;
   flex-direction: column;
