@@ -1009,4 +1009,15 @@ textarea:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
+  background: #111;
+  color: #ff4d4f;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 640px) {
+  .game-video-frame {
+    min-height: 240px;
+  }
 }
