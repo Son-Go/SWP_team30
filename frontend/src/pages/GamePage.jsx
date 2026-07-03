@@ -130,12 +130,14 @@ function GamePage() {
         token,
       );
 
-      setGame(updatedGame);
-      setTitle(updatedGame.title || "");
-      setDescription(updatedGame.description || "");
-      setBannerUrl(updatedGame.bannerUrl || "");
-      setTags(updatedGame.gameTags || []);
-      setScreenshots(updatedGame.screenshots || []);
+      const freshGame = await getGameById(id, token);
+
+      setGame(freshGame);
+      setTitle(freshGame.title || "");
+      setDescription(freshGame.description || "");
+      setBannerUrl(freshGame.bannerUrl || "");
+      setTags(freshGame.gameTags || []);
+      setScreenshots(freshGame.screenshots || []);
       setIsEditing(false);
     } catch (err) {
       setError(err.message || "Не удалось обновить игру");
