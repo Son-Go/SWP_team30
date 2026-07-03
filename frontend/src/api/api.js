@@ -1,3 +1,5 @@
+import { normalizeMedia } from "../utils/media";
+
 const API_URL = import.meta.env.VITE_API_URL;
 const USE_MOCK_AUTH = false;
 const TOKEN_KEY = "session_token";
@@ -44,10 +46,15 @@ export function getGames(page = 0, tags = []) {
   return request(`/games?page=${page}${tagsQuery}`);
 }
 
-export function getGameById(id, token) {
-  return request(`/games/${id}`, {
+export async function getGameById(id, token) {
+  const data = await request(`/games/${id}`, {
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
   });
+
+  return {
+    ...data,
+    screenshots: normalizeMedia(data?.screenshots),
+  };
 }
 
 export function createGame(body, token) {
@@ -57,7 +64,10 @@ export function createGame(body, token) {
       "Content-Type": "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify({
+      ...body,
+      screenshots: normalizeMedia(body?.screenshots),
+    }),
   });
 }
 
@@ -68,7 +78,10 @@ export function updateGame(id, body, token) {
       "Content-Type": "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify({
+      ...body,
+      screenshots: normalizeMedia(body?.screenshots),
+    }),
   });
 }
 
