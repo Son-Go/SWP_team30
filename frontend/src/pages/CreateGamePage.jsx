@@ -4,7 +4,12 @@ import { createGame } from "../api/api";
 import ErrorState from "../components/ErrorState";
 import TagSelector from "../components/TagSelector";
 import { useAuth } from "../context/auth-context";
-import { isYoutubeUrl, getTotalMediaCount, isImageUrl } from "../utils/media";
+import {
+  isYoutubeUrl,
+  getTotalMediaCount,
+  isImageUrl,
+  normalizeMedia,
+} from "../utils/media";
 
 function CreateGamePage() {
   const navigate = useNavigate();
@@ -18,13 +23,10 @@ function CreateGamePage() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const screenshotLimitTimerRef = useRef(null);
-
   const [showDescriptionLimit, setShowDescriptionLimit] = useState(false);
   const descriptionLimitTimerRef = useRef(null);
 
   const [screenshots, setScreenshots] = useState({ videos: [], pictures: [] });
-
   const [videoInput, setVideoInput] = useState("");
   const [pictureInput, setPictureInput] = useState("");
 

@@ -1004,3 +1004,9 @@ textarea:focus-visible {
   border-radius: 16px;
   background: #000;
 }
+
+.game-gallery-thumb-video {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
