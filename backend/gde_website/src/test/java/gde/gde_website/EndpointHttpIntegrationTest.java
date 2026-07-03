@@ -230,12 +230,13 @@ class EndpointHttpIntegrationTest {
 
     @Test
     void tagsEndpointReturnsAvailableTagsOverHttp() throws Exception {
-        when(gamesService.getAllTags()).thenReturn(new TagsResponse(List.of("puzzle", "indie")));
+        when(gamesService.getAllTags()).thenReturn(new TagsResponse(groupedTags("puzzle", "indie")));
 
         mockMvc.perform(get("/games/tags/all"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.gameTags[0]").value("puzzle"))
-                .andExpect(jsonPath("$.gameTags[1]").value("indie"));
+                .andExpect(jsonPath("$.gameTags.GENRE[0]").value("puzzle"))
+                .andExpect(jsonPath("$.gameTags.GENRE[1]").value("indie"))
+                .andExpect(jsonPath("$.gameTags.MODE").isArray());
     }
 
     @Test
