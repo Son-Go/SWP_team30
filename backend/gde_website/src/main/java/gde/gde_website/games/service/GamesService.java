@@ -17,9 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -291,17 +289,27 @@ public class GamesService {
     }
 
     /**
-     * Returns flat list of all available tag names.
-     * This endpoint exposes tag names only and does not group them by tag type.
+     * Returns all available tags grouped by tag type.
+     * Every known tag type is present in response even if there are currently no tags of that type.
      *
-     * @return new {@link TagsResponse} object containing all tag names
+     * @return new {@link TagsResponse} object containing tag names grouped by tag type
      * @Author: Egor Grishin
      */
     public TagsResponse getAllTags() {
-        List<String> gameTags = tagRepository.findAll().stream().
-                map(TagEntity::getName).toList();
+        List<TagEntity> gameTags = tagRepository.findAll();
+        List<String> allTagTypeNames = allTagTypeNames();
 
-        return new TagsResponse(gameTags);
+        Map<String, List<String>> separatedTags = new LinkedHashMap<>();
+
+        for (String tagTypeName : allTagTypeNames) {
+            separatedTags.put(tagTypeName, new ArrayList<>());
+        }
+
+        for (TagEntity tag : gameTags) {
+            separatedTags.get(tag.getTagType().getType()).add(tag.getName());
+        }
+
+        return new TagsResponse(separatedTags);
     }
 
     /**
@@ -402,8 +410,8 @@ public class GamesService {
 
     /**
      * Returns all existing tag type names.
-     * The resulting list is used to pre-initialize paginated game response tags map,
-     * so each game item contains every known tag type even when some groups are empty.
+     * The resulting list is used to pre-initialize grouped tags maps,
+     * so each response contains every known tag type even when some groups are empty.
      *
      * @return ordered list of all tag type names from storage
      */

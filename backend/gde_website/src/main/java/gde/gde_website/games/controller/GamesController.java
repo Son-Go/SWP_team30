@@ -186,8 +186,9 @@ public class GamesController {
     }
 
     /**
-     * This method is used for handling GET all tags request
-     * @return Response entity with status {@code 200} and list of tags in body of response
+     * Handles request for returning all available tags grouped by tag type.
+     *
+     * @return response entity with status {@code 200} and grouped tags in response body
      * @Author: Egor Grishin
      */
     @GetMapping("/tags/all")

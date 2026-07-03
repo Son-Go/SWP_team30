@@ -1,13 +1,15 @@
 package gde.gde_website.games.model;
 
 import java.util.List;
+import java.util.Map;
 
 /**
- * This record is used for writing tag responses with game tags
- * @param gameTags - tags of game
+ * Response body containing all available tags grouped by tag type.
+ *
+ * @param gameTags - ordered map where key is tag type name and value is list of all tag names of that type
  * @Author: Egor Grishin
  */
 public record TagsResponse(
-        List<String> gameTags
+        Map<String, List<String>> gameTags
 ) {
 }
