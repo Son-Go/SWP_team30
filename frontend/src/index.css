@@ -968,3 +968,13 @@ textarea:focus-visible {
   pointer-events: none;
   animation: fade-out 3s ease forwards;
 }
+
+.description-limit-wrap {
+  position: relative;
+  /* padding-bottom: 28px; */
+}
+
+.description-limit-hint {
+  top: calc(100% + 6px);
+  left: 0;
+}

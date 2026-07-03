@@ -163,7 +163,7 @@ function CreateGamePage() {
 
               {showScreenshotLimit && (
                 <span className="input-hint-error">
-                  Достигнут лимит в 10 скриншотов
+                  Достигнут лимит в 10 медиа
                 </span>
               )}
             </div>

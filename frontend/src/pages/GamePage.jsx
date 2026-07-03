@@ -359,7 +359,7 @@ function GamePage() {
               <label className="label" htmlFor="description">
                 Описание
               </label>
-              <div style={{ position: "relative" }}>
+              <div className="description-limit-wrap">
                 <textarea
                   id="description"
                   className="textarea"
@@ -380,7 +380,7 @@ function GamePage() {
                   }}
                 />
                 {showLimit && (
-                  <span className="input-hint-error">
+                  <span className="input-hint-error description-limit-hint">
                     Достигнут лимит в 1500 символов
                   </span>
                 )}
@@ -433,7 +433,7 @@ function GamePage() {
 
                 {showScreenshotLimit && (
                   <span className="input-hint-error">
-                    Достигнут лимит в 10 скриншотов
+                    Достигнут лимит в 10 медиа
                   </span>
                 )}
               </div>
