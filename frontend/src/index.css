@@ -1021,3 +1021,32 @@ textarea:focus-visible {
     min-height: 240px;
   }
 }
+
+.tag-badge-genre {
+  background-color: #352f52;
+  color: #cfc6ef;
+  border-color: #4f4680;
+}
+
+.tag-badge-town {
+  background-color: #3b3560;
+  color: #c8bef0;
+  border-color: #6c5fc7;
+}
+
+.tag-badge-stage {
+  background-color: #443c6e;
+  color: #ddd4fa;
+  border-color: #7a6dd8;
+}
+
+.tag-badge-featured {
+  background-color: #4d4380;
+  color: #ede8fb;
+  border-color: #8a7ce8;
+}
+
+.tag-badge-active {
+  opacity: 1;
+  box-shadow: 0 0 0 1px currentColor inset;
+}
