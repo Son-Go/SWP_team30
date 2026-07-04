@@ -188,8 +188,11 @@ function GamesPage() {
     if (!ref.current) return;
 
     const card = ref.current.querySelector(".catalog-row-item");
-    const gap = 24;
-    const step = card ? card.offsetWidth * 3 + gap * 2 : 900;
+    if (!card) return;
+
+    const styles = window.getComputedStyle(ref.current);
+    const gap = parseFloat(styles.columnGap || styles.gap || "0");
+    const step = card.offsetWidth + gap;
 
     ref.current.scrollBy({
       left: direction === "right" ? step : -step,
