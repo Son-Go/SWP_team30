@@ -57,6 +57,27 @@ export async function getGameById(id, token) {
   };
 }
 
+function flattenGameTags(gameTags) {
+  if (Array.isArray(gameTags)) {
+    return gameTags;
+  }
+
+  if (!gameTags || typeof gameTags !== "object") {
+    return [];
+  }
+
+  return Object.values(gameTags).flat().filter(Boolean);
+}
+
+function normalizeGameResponse(game) {
+  if (!game) return game;
+
+  return {
+    ...game,
+    screenshots: normalizeMedia(game?.screenshots),
+  };
+}
+
 export function createGame(body, token) {
   return request("/games", {
     method: "POST",
@@ -66,9 +87,10 @@ export function createGame(body, token) {
     },
     body: JSON.stringify({
       ...body,
+      gameTags: flattenGameTags(body?.gameTags),
       screenshots: normalizeMedia(body?.screenshots),
     }),
-  });
+  }).then(normalizeGameResponse);
 }
 
 export function updateGame(id, body, token) {
@@ -80,9 +102,10 @@ export function updateGame(id, body, token) {
     },
     body: JSON.stringify({
       ...body,
+      gameTags: flattenGameTags(body?.gameTags),
       screenshots: normalizeMedia(body?.screenshots),
     }),
-  });
+  }).then(normalizeGameResponse);
 }
 
 export function deleteGame(id, token) {
