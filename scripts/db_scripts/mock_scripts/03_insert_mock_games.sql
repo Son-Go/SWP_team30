@@ -6,6 +6,9 @@ DECLARE
     v_user_id BIGINT;
     v_game_id BIGINT;
     v_tag_id INTEGER;
+    v_town_tag_id INTEGER;
+    v_stage_tag_id INTEGER;
+    v_featured_tag_id INTEGER;
     v_tag_count INTEGER;
     v_screenshot_count INTEGER;
     v_title TEXT;
@@ -46,10 +49,53 @@ BEGIN
         VALUES (v_user_id, v_game_id, 'OWNED')
         ON CONFLICT (user_id, game_id) DO NOTHING;
 
-        v_tag_count := 1 + floor(random() * 5)::int;
-        FOR j IN 1..v_tag_count LOOP
-            SELECT id INTO v_tag_id
+        SELECT tag.id INTO v_town_tag_id
+        FROM tag
+        INNER JOIN tag_type ON tag.tag_type_id = tag_type.id
+        WHERE tag_type.type = 'town'
+        ORDER BY random()
+        LIMIT 1;
+
+        IF v_town_tag_id IS NOT NULL THEN
+            INSERT INTO game_tag (game_id, tag_id)
+            VALUES (v_game_id, v_town_tag_id)
+            ON CONFLICT DO NOTHING;
+        END IF;
+
+        SELECT tag.id INTO v_stage_tag_id
+        FROM tag
+        INNER JOIN tag_type ON tag.tag_type_id = tag_type.id
+        WHERE tag_type.type = 'stage'
+        ORDER BY random()
+        LIMIT 1;
+
+        IF v_stage_tag_id IS NOT NULL THEN
+            INSERT INTO game_tag (game_id, tag_id)
+            VALUES (v_game_id, v_stage_tag_id)
+            ON CONFLICT DO NOTHING;
+        END IF;
+
+        IF random() < 0.4 THEN
+            SELECT tag.id INTO v_featured_tag_id
             FROM tag
+            INNER JOIN tag_type ON tag.tag_type_id = tag_type.id
+            WHERE tag_type.type = 'featured'
+            ORDER BY random()
+            LIMIT 1;
+
+            IF v_featured_tag_id IS NOT NULL THEN
+                INSERT INTO game_tag (game_id, tag_id)
+                VALUES (v_game_id, v_featured_tag_id)
+                ON CONFLICT DO NOTHING;
+            END IF;
+        END IF;
+
+        v_tag_count := 1 + floor(random() * 4)::int;
+        FOR j IN 1..v_tag_count LOOP
+            SELECT tag.id INTO v_tag_id
+            FROM tag
+            INNER JOIN tag_type ON tag.tag_type_id = tag_type.id
+            WHERE tag_type.type NOT IN ('town', 'stage', 'featured')
             ORDER BY random()
             LIMIT 1;
 

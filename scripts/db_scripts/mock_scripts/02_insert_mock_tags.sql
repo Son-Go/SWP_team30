@@ -49,5 +49,10 @@ VALUES
     ('Demo', (SELECT id FROM tag_type WHERE type = 'stage')),
     ('Release', (SELECT id FROM tag_type WHERE type = 'stage')),
 
+    ('Innopolis', (SELECT id FROM tag_type WHERE type = 'town')),
+    ('Kazan', (SELECT id FROM tag_type WHERE type = 'town')),
+    ('Tatarstan', (SELECT id FROM tag_type WHERE type = 'town')),
+    ('Other', (SELECT id FROM tag_type WHERE type = 'town')),
+
     ('Featured', (SELECT id FROM tag_type WHERE type = 'featured'))
 ON CONFLICT (name) DO NOTHING;
