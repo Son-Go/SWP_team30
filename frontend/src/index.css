@@ -1050,3 +1050,18 @@ textarea:focus-visible {
   opacity: 1;
   box-shadow: 0 0 0 1px currentColor inset;
 }
+
+.filter-category {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.filter-category-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9b93c0;
+}

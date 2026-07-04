@@ -10,7 +10,12 @@ import { getAllTags } from "../api/api";
 function GamesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [filterOpen, setFilterOpen] = useState(false);
-  const [allTags, setAllTags] = useState([]);
+  const [allTags, setAllTags] = useState({
+    genre: [],
+    town: [],
+    stage: [],
+    featured: [],
+  });
 
   // Читаем теги прямо из URL (?tags=RPG&tags=Action)
   const activeTags = searchParams.getAll("tags");
@@ -30,7 +35,15 @@ function GamesPage() {
 
   useEffect(() => {
     getAllTags()
-      .then((data) => setAllTags(data.gameTags || []))
+      .then((data) =>
+        setAllTags({
+          genre: [],
+          town: [],
+          stage: [],
+          featured: [],
+          ...(data.gameTags || {}),
+        }),
+      )
       .catch(() => {});
   }, []);
 
@@ -73,6 +86,12 @@ function GamesPage() {
   if (initialLoading) return <Loader text="Загружаем игры..." />;
   if (error && games.length === 0) return <ErrorState message={error} />;
 
+  const FILTER_CATEGORIES = [
+    { key: "genre", label: "Жанр" },
+    { key: "stage", label: "Статус разработки" },
+    { key: "town", label: "Город" },
+  ];
+
   return (
     <section className="section-lg">
       <div className="page-header">
@@ -102,9 +121,6 @@ function GamesPage() {
               <line x1="11" y1="18" x2="13" y2="18" />
             </svg>
             Фильтры
-            {activeTags.length > 0 && (
-              <span className="filter-badge">{activeTags.length}</span>
-            )}
           </button>
           <Link to="/games/create" className="button button-secondary">
             Выложить игру
@@ -114,17 +130,30 @@ function GamesPage() {
 
       {filterOpen && (
         <div className="filter-panel">
-          <div className="tag-list">
-            {allTags.map((tag) => (
-              <span
-                key={tag}
-                className={`tag-badge tag-badge-selectable ${pendingTags.includes(tag) ? "tag-badge-filter-active" : ""}`}
-                onClick={() => togglePending(tag)}
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
+          {FILTER_CATEGORIES.map(({ key, label }) =>
+            (allTags[key] || []).length > 0 ? (
+              <div className="filter-category" key={key}>
+                <span className="filter-category-label">{label}</span>
+                <div className="tag-list">
+                  {(allTags[key] || []).map((tag) => (
+                    <span
+                      key={tag}
+                      className={`tag-badge tag-badge-selectable ${
+                        key === "genre"
+                          ? "tag-badge-genre"
+                          : key === "stage"
+                            ? "tag-badge-stage"
+                            : "tag-badge-town"
+                      } ${pendingTags.includes(tag) ? "tag-badge-active" : ""}`}
+                      onClick={() => togglePending(tag)}
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : null,
+          )}
           <div className="filter-panel-actions">
             <button className="button button-secondary" onClick={handleApply}>
               Применить
