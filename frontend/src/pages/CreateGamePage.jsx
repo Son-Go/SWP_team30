@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createGame } from "../api/api";
 import ErrorState from "../components/ErrorState";
-import TagSelector from "../components/ elector";
+import TagSelector from "../components/TagSelector";
 import { useAuth } from "../context/auth-context";
 import {
   isYoutubeUrl,
