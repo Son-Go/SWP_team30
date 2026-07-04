@@ -2,6 +2,12 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 function GameCard({ game }) {
+  const visibleTags = Array.isArray(game.tags)
+    ? game.tags
+    : game.gameTags && typeof game.gameTags === "object"
+      ? Object.values(game.gameTags).flat().filter(Boolean)
+      : [];
+
   return (
     <Link to={`/games/${game.id}`} className="card card-link">
       {game.bannerUrl ? (
@@ -36,9 +42,9 @@ function GameCard({ game }) {
           )}
         </div>
 
-        {game.tags?.length > 0 && (
+        {visibleTags.length > 0 && (
           <div className="tag-list">
-            {game.tags.map((tag) => (
+            {visibleTags.map((tag) => (
               <span key={tag} className="tag-badge">
                 {tag}
               </span>
