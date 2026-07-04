@@ -28,4 +28,3 @@ export default defineConfig([
     },
   },
 ]);
-2026-07-03 18:03:08	frontend	src/pages/GamePage.jsx (13:2): "getYoutubeEmbedUrl" is not exported by "src/utils/media.js", imported by "src/pages/GamePage.jsx".
