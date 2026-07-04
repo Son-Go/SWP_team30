@@ -1093,15 +1093,17 @@ textarea:focus-visible {
 }
 
 .catalog-row-viewport {
-  overflow: hidden;
+  overflow: visible;
 }
 
 .catalog-row-track {
   display: flex;
-  gap: var(--catalog-card-gap);
+  gap: 24px;
   overflow-x: auto;
   scroll-behavior: smooth;
   scrollbar-width: none;
+  padding-top: 6px;
+  margin-top: -6px;
   padding-bottom: 4px;
 }
 
