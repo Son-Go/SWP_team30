@@ -126,6 +126,18 @@ The component diagram illustrates the **internal structure** of the GDE Website 
 
 ---
 
+## Architecture Decisions and Traceability
+
+The architecture views in this document are complemented by the ADRs in [adr/ADR-001.md](adr/ADR-001.md), [adr/ADR-002.md](adr/ADR-002.md), [adr/ADR-003.md](adr/ADR-003.md), [adr/ADR-004.md](adr/ADR-004.md), and [adr/ADR-005.md](adr/ADR-005.md). Together, they explain both the structure of the system and the reasoning behind the key choices.
+
+- [ADR-001](adr/ADR-001.md) captures the decision to use JWT-based authentication for the protected write operations that are covered by [QR-001](../quality-requirements.md#qr-001-patch-gamesid-security-enforcement) and [QR-002](../quality-requirements.md#qr-002-delete-gamesid-security-enforcement).
+- [ADR-002](adr/ADR-002.md) and [ADR-003](adr/ADR-003.md) explain the containerized deployment and gateway setup that support a reliable runtime environment and the public interface described in [QR-003](../quality-requirements.md#qr-003-public-author-api-contract).
+- [ADR-004](adr/ADR-004.md) and [ADR-005](adr/ADR-005.md) document the database migration strategy and the layered backend structure that make the implementation of these quality requirements easier to maintain and evolve.
+
+In other words, the component, sequence, and deployment diagrams describe how the system is built and operated, while the ADRs explain why those choices were made and how they relate to the documented quality requirements.
+
+---
+
 ## Dynamic View — Sequence Diagram
 
 ### Diagram Source
