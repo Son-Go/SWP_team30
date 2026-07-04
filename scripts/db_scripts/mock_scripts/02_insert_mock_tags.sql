@@ -54,5 +54,5 @@ VALUES
     ('Tatarstan', (SELECT id FROM tag_type WHERE type = 'town')),
     ('Other', (SELECT id FROM tag_type WHERE type = 'town')),
 
-    ('Featured', (SELECT id FROM tag_type WHERE type = 'featured')),
+    ('Featured', (SELECT id FROM tag_type WHERE type = 'featured'))
 ON CONFLICT (name) DO NOTHING;
