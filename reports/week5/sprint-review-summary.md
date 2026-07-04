@@ -16,22 +16,37 @@
 - Live web application: [link to deployment](http://gde.maxmir.ru/)
 - updated /game page ("featured" and "new" subsections), game tags types, youtube link support and improved UI
 
-## Scope Reviewed
+## Sprint Goal Reviewed
+
+> **Original sprint goal:** Finalize /game page, add tag types and page sections
+
+### Scope Reviewed
 - US-09: Regional emphasis on Tatarstan users
 - [PBI] Add game tags types funtionality
 - [PBI] GamesPage stylization
 - [PBI] add video player
 
-## Implemented Increment
+### Implemented Increment
 - All 4 planned items were demonstrated and functional
 - Change of plans: Customer decided to postpone user and admin profiles again. Plan for next sprint is changed from profiles to visual improvements and setups for profiles.
 - Bug: subsection "Featured" doen't display featured games
 
-## Approvals
+### Approvals
 - Customer accepted the MVP vw increment as demonstrated
 
-## Requested Changes
+### Requested Changes
 - Customer requested mini profiles for games, color coded tags and draft of forum (similar to head hunter for developer teams) (endpoint only)
+
+## UAT Results
+- UAT participants: Customer
+- Scenarios tested: UAT-001 -- UAT-005
+- Results: all passed (except ⚠️ Semi-Pass for UAT-004)
+- Follow-up needed: Customer requested changing tags colors to make them more readable. Customer requested mini-profile for game cards
+
+## Architecture or Workflow Changes Discussed
+- Technical or workflow changes discussed: No major architecture or workflow changes were discussed. But customer asked to add new module in project (forum module draft) 
+- Impact on the solution: Team will develop draft of new module and present it to customer during next meeting
+- Decisions made: Customer decided to firstly see the forum module draft and then decide, will it be in final project or not
 
 ## Risks
 - Customer requested as optimized code as possible, so as cheap as possible server can be used (will affect feature quality and user experience)
@@ -44,6 +59,7 @@
 - @venimu to automate db mock script excecution 
 
 
-## Resulting Backlog Changes
+## Resulting Product Backlog Updates
 - Sprint 4 changed priority from developer and admin profiles to additional /game page finalizing and furum draftng
 - New US should be identified during Sprint-4 planning
+- Backlog refinements from review: new PBI created (described in [UAT](../../docs/user-acceptance-tests.md))
