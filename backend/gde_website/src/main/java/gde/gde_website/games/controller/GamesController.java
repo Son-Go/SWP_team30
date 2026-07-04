@@ -43,7 +43,7 @@ public class GamesController {
      * @Author: Artemii Gorelov, Egor Grishin
      */
     @GetMapping
-    public ResponseEntity<Page<GamesPageResponce>> getAllGames(
+    public ResponseEntity<Page<GamesPageResponse>> getAllGames(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "24") int size,
             @RequestParam(required = false) List<String> tags
@@ -52,7 +52,7 @@ public class GamesController {
         gamesControllerLogger.info("Called GamesController /games method (get)");
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<GamesPageResponce> games;
+        Page<GamesPageResponse> games;
         if (tags != null && !tags.isEmpty()) {
             games = gamesService.getGamesByTags(tags, pageable);
         } else {
@@ -70,7 +70,7 @@ public class GamesController {
      * @Author: Egor Grishin
      */
     @GetMapping("/{id}")
-    public ResponseEntity<GamesCardResponce> getGameById(
+    public ResponseEntity<GamesCardResponse> getGameById(
             @PathVariable("id") Long id,
             Authentication authentication) {
 
@@ -186,8 +186,9 @@ public class GamesController {
     }
 
     /**
-     * This method is used for handling GET all tags request
-     * @return Response entity with status {@code 200} and list of tags in body of response
+     * Handles request for returning all available tags grouped by tag type.
+     *
+     * @return response entity with status {@code 200} and grouped tags in response body
      * @Author: Egor Grishin
      */
     @GetMapping("/tags/all")

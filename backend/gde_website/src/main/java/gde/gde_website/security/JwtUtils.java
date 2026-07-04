@@ -1,5 +1,6 @@
 package gde.gde_website.security;
 
+import gde.gde_website.users.model.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -53,6 +54,17 @@ public class JwtUtils {
     }
 
     /**
+     * This method is used for extracting user role from token
+     * @param token - bearer token of user
+     * @return - user role string extracted from token
+     * @Author: Artemii Gorelov
+     */
+    public UserRole extractUserRole(String token) {
+        String roleStr = extractAllClaims(token).get("role", String.class);
+        return roleStr != null ? UserRole.valueOf(roleStr) : UserRole.DEVELOPER;
+    }
+
+    /**
      * Checks whether the token is valid by attempting to parse it.
      * @param token JWT string
      * @return {@code true} if the token can be parsed and verified; otherwise {@code false}
@@ -71,12 +83,13 @@ public class JwtUtils {
      * @param userId user  identifier to embed into the token
      * @return signed JWT string
      */
-    public String generateToken(Long userId) {
+    public String generateToken(Long userId, UserRole role) {
         Date now = new Date();
         Date expiration = new Date(now.getTime() + 3 * 60 * 60 * 1000L);
 
         return Jwts.builder()
                 .claim("userId", userId)
+                .claim("role", role.name())
                 .issuedAt(now)
                 .expiration(expiration)
                 .signWith(getKey())

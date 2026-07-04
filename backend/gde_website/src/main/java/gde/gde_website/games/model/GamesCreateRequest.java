@@ -1,6 +1,7 @@
 package gde.gde_website.games.model;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Request body for creating a new game.
@@ -10,13 +11,13 @@ import java.util.List;
  * @param description - game description
  * @param bannerUrl - banner url of the game
  * @param gameTags - optional list of tag names to be linked with the game
- * @param screenshots - optional list of game screenshots links
+ * @param screenshots - optional screenshots grouped into {@code videos} and {@code pictures} lists
  */
 public record GamesCreateRequest(
         String title,
         String description,
         String bannerUrl,
         List<String> gameTags,
-        List<String> screenshots
+        Map<String, List<String>> screenshots
 ) {
 }

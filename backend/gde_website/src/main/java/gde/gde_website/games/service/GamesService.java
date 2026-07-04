@@ -1,15 +1,11 @@
 package gde.gde_website.games.service;
 
-import gde.gde_website.games.entity.GamesEntity;
-import gde.gde_website.games.entity.GamesScreenshotEntity;
-import gde.gde_website.games.entity.TagEntity;
+import gde.gde_website.games.entity.*;
 import gde.gde_website.games.mapper.GamesMapper;
 import gde.gde_website.games.model.*;
-import gde.gde_website.games.repository.GameScreenshotsRepository;
-import gde.gde_website.games.repository.GameTagRepository;
-import gde.gde_website.games.repository.GamesRepository;
-import gde.gde_website.games.repository.TagRepository;
+import gde.gde_website.games.repository.*;
 import gde.gde_website.users.entity.UserEntity;
+import gde.gde_website.users.model.UserRole;
 import gde.gde_website.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -21,7 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * This class is implementing business logic of requests handlers
@@ -38,96 +35,78 @@ public class GamesService {
     private final GamesMapper mapper;
     private final UsersRepository usersRepository;
     private final GameScreenshotsRepository gameScreenshotsRepository;
+    private final TagTypeRepository tagTypeRepository;
 
     /**
-     * This method is used for getting list of all games divided on the groups of specific size request
+     * Returns a page of all games ordered by creation date descending.
+     * For the current page, loads authors in batch and maps each game to response DTO
+     * with tags grouped by tag type. Every known tag type is present in response,
+     * even if the game has no tags of that type.
+     *
      * @param pageable - page request
-     * @return - returns  sublist of games entity
+     * @return paginated list of games with grouped tags and author info
      * @Author: Artemii Gorelov, Egor Grishin
      */
     @Transactional(readOnly = true)
-    public Page<GamesPageResponce> getAllGames(Pageable pageable) {
+    public Page<GamesPageResponse> getAllGames(Pageable pageable) {
         gamesServiceLogger.info("Called getAllGames method");
-        return gamesRepository.findAllByOrderByCreatedAtDesc(pageable)
-                .map(game -> {
-                    List<String> tagNames = game.getGameTags().stream()
-                            .map(gameTag -> gameTag.getTag().getName()).toList();
 
-                    UserEntity author = usersRepository.findById(game.getAuthorId()).orElse(null);
+        Page<GamesEntity> gamesPage = gamesRepository.findAllByOrderByCreatedAtDesc(pageable);
 
-                    AuthorResponse authorResp = null;
-                    if (author != null) {
-                        authorResp = new AuthorResponse(
-                                author.getUsername(),
-                                author.getProfileImageUrl(),
-                                author.getEmail()
-                        );
-                    }
+        Set<Long> authorIds = allAuthorsIdsOnPage(gamesPage);
 
-                    return new GamesPageResponce(
-                            game.getId(),
-                            game.getAuthorId(),
-                            game.getTitle(),
-                            game.getDescription(),
-                            game.getBannerUrl(),
-                            authorResp,
-                            tagNames
-                    );
-                });
+        Map<Long, UserEntity> authorsMap = usersRepository.findAllById(authorIds).stream()
+                .collect(Collectors.toMap(UserEntity::getId, user -> user));
+
+        List<String> tagTypeNames = allTagTypeNames();
+
+        return gamesPage.map(game -> mapper.gamesEntityToGamesPageResponse(game, tagTypeNames, authorsMap));
     }
 
     /**
-     * This method is used for getting list of games filtered by specific tags
-     * @param tags - list of tag names to filter game by (uses OR logic - game must have at least one of the tags)
-     * @param pageable - pagination information including page number, size and sort order,
-     * @return paginated list of games that match at least one of the specified tags, or all games if tags list is null or empty
+     * Returns games filtered by tag names using OR logic.
+     * A game is included when it has at least one tag from {@code tagsRequest}.
+     * When {@code tagsRequest} is {@code null} or empty, falls back to {@link #getAllGames(Pageable)}.
+     * For the current page, authors are loaded in batch and tags are grouped by tag type.
+     *
+     * @param tagsRequest - list of tag names used for filtering
+     * @param pageable - pagination information including page number, size and sort order
+     * @return paginated list of matching games, or all games if filter list is empty
      * @Author: Artemii Gorelov, Egor Grishin
      */
     @Transactional(readOnly = true)
-    public Page<GamesPageResponce> getGamesByTags(List<String> tags, Pageable pageable) {
-        gamesServiceLogger.info("Called getAllGames method with tags {}", tags);
+    public Page<GamesPageResponse> getGamesByTags(List<String> tagsRequest, Pageable pageable) {
+        gamesServiceLogger.info("Called getGamesByTags method with tags {}", tagsRequest);
 
-        if (tags == null || tags.isEmpty()) {
+        if (tagsRequest == null || tagsRequest.isEmpty()) {
             return getAllGames(pageable);
         }
 
-        return gamesRepository.findByTagNames(tags, pageable)
-                .map(game -> {
-                    List<String> tagNames = game.getGameTags().stream()
-                            .map(gameTag -> gameTag.getTag().getName()).toList();
+        Page<GamesEntity> gamesPage = gamesRepository.findByTagNames(tagsRequest, pageable);
 
-                    UserEntity author = usersRepository.findById(game.getAuthorId()).orElse(null);
+        Set<Long> authorIds = allAuthorsIdsOnPage(gamesPage);
 
-                    AuthorResponse authorResp = null;
-                    if (author != null) {
-                        authorResp = new AuthorResponse(
-                                author.getUsername(),
-                                author.getProfileImageUrl(),
-                                author.getEmail()
-                        );
-                    }
+        Map<Long, UserEntity> authorsMap = usersRepository.findAllById(authorIds).stream()
+                .collect(Collectors.toMap(UserEntity::getId, user -> user));
 
-                    return new GamesPageResponce(
-                            game.getId(),
-                            game.getAuthorId(),
-                            game.getTitle(),
-                            game.getDescription(),
-                            game.getBannerUrl(),
-                            authorResp,
-                            tagNames
-                    );
-                });
+        List<String> tagTypeNames = allTagTypeNames();
+
+        return gamesPage.map(game -> mapper.gamesEntityToGamesPageResponse(game, tagTypeNames, authorsMap));
     }
 
     /**
-     * This function is used for getting game by requested id
+     * Returns detailed game card by id.
+     * In addition to scalar game fields, includes author information, screenshots,
+     * ownership flag for current user, and tags grouped by tag type.
+     * Every known tag type is present in response even if the game has no tags of that type.
+     *
      * @param gameId - id of the game to get
-     * @param currentUserId - user id
-     * @return game response object
+     * @param currentUserId - current authenticated user id, or {@code null} for anonymous request
+     * @return detailed game response object
      * @Author: Egor Grishin, Artemii Gorelov
      */
     @Transactional(readOnly = true)
-    public GamesCardResponce getGameById(Long gameId, Long currentUserId) {
+    public GamesCardResponse getGameById(Long gameId, Long currentUserId) {
         gamesServiceLogger.info("Called GamesService getGameById method");
         GamesEntity game = gamesRepository.findDetailedById(gameId).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -144,16 +123,23 @@ public class GamesService {
             );
         }
 
-        List<String> screenshots = gameScreenshotsRepository.findAllByGameId(gameId)
-                .stream().map(GamesScreenshotEntity::getUrl).toList();
-
-        return mapper.entityToResponse(game, currentUserId, authorResponse, screenshots);
+        return mapper.gamesEntityToGamesCardResponse(game,
+                currentUserId,
+                authorResponse,
+                getScreenshotsByGameId(gameId),
+                allTagTypeNames()
+        );
     }
 
     /**
-     * This function is used to create new game in database
-     * @param authorId - id of author that creating game
-     * @return new games object
+     * Creates a new game and persists tag and categorized screenshot relations from the request.
+     * Tag names from request are validated against existing tags and deduplicated before insertion.
+     * Screenshots are stored as separate records and grouped by {@code videos} and {@code pictures}
+     * in the response contract.
+     *
+     * @param request - create request with scalar fields, optional flat tag names list and optional grouped screenshots
+     * @param authorId - id of author that creates the game
+     * @return created game response preserving flat create/update contract
      * @Author: Artemii Gorelov, Egor Grishin
      */
     @Transactional
@@ -183,34 +169,36 @@ public class GamesService {
         }
 
         if (request.screenshots() != null) {
-            List<GamesScreenshotEntity> screenshots = request.screenshots().stream()
-                    .map(url -> new GamesScreenshotEntity(savedGame.getId(), url))
-                    .toList();
-            gameScreenshotsRepository.saveAll(screenshots);
+            saveScreenshots(request.screenshots(), savedGame);
         }
 
-        return createGamesResponse(savedGame, request.gameTags(), request.screenshots());
+        return mapper.entityToGames(savedGame, allTagTypeNames(), getScreenshotsByGameId(savedGame.getId()));
     }
 
     /**
-     * This function is used for updating game with requested id
+     * Updates an existing game.
+     * Only non-null scalar fields from request are applied. When {@code gameTags} is provided,
+     * existing game-tag relations are fully replaced with validated and deduplicated request values.
+     * When {@code screenshots} is provided, existing screenshots are fully replaced as well,
+     * preserving separation into {@code videos} and {@code pictures} groups.
+     *
+     * @param request - update request with optional scalar fields, tags and screenshots
+     * @param currentUserId - current authenticated user id
      * @param gameId - id of game to be updated
-     * @return updated game object
+     * @return updated game response preserving flat create/update contract
      * @throws ResponseStatusException with codes:
-     * 404 when id of game to be created does not found inside database
-     * 401 when user who wants to update game is not its author or admin
+     * 404 when game does not exist
+     * 403 when user is neither author nor admin
      * @Author: Egor Grishin
      */
     @Transactional
     public Games updateGame(UpdateGameRequest request, Long currentUserId, Long gameId) {
         gamesServiceLogger.info("Called GamesService updateGame method");
+
+        checkOwnerOrAdmin(gameId, currentUserId);
+
         GamesEntity gameToUpdate = gamesRepository.findById(gameId).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        if (!gameToUpdate.getAuthorId().equals(currentUserId)) {
-            gamesServiceLogger.error("User permissions error");
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not the owner of this game");
-        }
 
         if (request.title() != null) {
             gameToUpdate.setTitle(request.title());
@@ -238,52 +226,53 @@ public class GamesService {
             }
         }
 
+        GamesEntity savedGame = gamesRepository.save(gameToUpdate);
+
         if (request.screenshots() != null) {
             gameScreenshotsRepository.deleteAllByGameId(gameId);
-            List<GamesScreenshotEntity> screenshots = request.screenshots().stream()
-                    .map(url -> new GamesScreenshotEntity(gameId, url))
-                    .toList();
-            gameScreenshotsRepository.saveAll(screenshots);
+
+            saveScreenshots(request.screenshots(), savedGame);
         }
 
-        GamesEntity savedGame = gamesRepository.save(gameToUpdate);
         gamesServiceLogger.info("Successfully updated game id={}", gameId);
 
 
-        return createGamesResponse(savedGame, request.gameTags(), request.screenshots());
+        return mapper.entityToGames(savedGame, allTagTypeNames(), getScreenshotsByGameId(gameId));
     }
 
     /**
-     * This method is used for deleting game with requested id
+     * Deletes game with requested id after ownership or admin permission check.
+     *
      * @param gameId - id of game to be deleted
      * @param currentUserId - id of user who wants to delete game
-     * @return new object of deleted game
+     * @return flat deleted game response
      * @throws ResponseStatusException with codes:
-     * 404 when game with requested id does not found
-     * 401 when user who wants to delete the game is not game author or admin
+     * 404 when game with requested id is not found
+     * 403 when user is neither game author nor admin
      * @Author: Artemii Gorelov, Egor Grishin
      */
     @Transactional
     public Games deleteGame(Long gameId, Long currentUserId) {
         gamesServiceLogger.info("Called GamesService deleteGame method");
+
+        checkOwnerOrAdmin(gameId, currentUserId);
+
         GamesEntity gameToDelete = gamesRepository.findById(gameId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
 
-        if (!gameToDelete.getAuthorId().equals(currentUserId)) {
-            gamesServiceLogger.error("User permissions error");
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not the owner of this game");
-        }
+        Map<String, List<String>> screenshots = getScreenshotsByGameId(gameId);
 
         gamesRepository.delete(gameToDelete);
 
         gamesServiceLogger.info("Successfully deleted game id={}", gameId);
-        return mapper.entityToGames(gameToDelete);
+        return mapper.entityToGames(gameToDelete, allTagTypeNames(), screenshots);
     }
 
     /**
-     * This function is used for getting author info by requested specific id
-     * @param id - author id, we want info about
-     * @return returns object of AuthorResponse which contains author username, profile image, and email
+     * Returns author information by author id.
+     *
+     * @param id - author id to look up
+     * @return author response containing username, profile image and email
      * @Author: Artemii Gorelov
      */
     public AuthorResponse getAuthorById(Long id) {
@@ -298,38 +287,189 @@ public class GamesService {
     }
 
     /**
-     * This function is used for returning list of all tags
-     * @return new TagsResponse Object which contains list of tags
+     * Returns all available tags grouped by tag type.
+     * Every known tag type is present in response even if there are currently no tags of that type.
+     *
+     * @return new {@link TagsResponse} object containing tag names grouped by tag type
      * @Author: Egor Grishin
      */
     public TagsResponse getAllTags() {
-        List<String> gameTags = tagRepository.findAll().stream().
-                map(TagEntity::getName).toList();
+        List<TagEntity> gameTags = tagRepository.findAll();
+        List<String> allTagTypeNames = allTagTypeNames();
 
-        return new TagsResponse(gameTags);
+        Map<String, List<String>> separatedTags = new LinkedHashMap<>();
+
+        for (String tagTypeName : allTagTypeNames) {
+            separatedTags.put(tagTypeName, new ArrayList<>());
+        }
+
+        for (TagEntity tag : gameTags) {
+            separatedTags.get(tag.getTagType().getType()).add(tag.getName());
+        }
+
+        return new TagsResponse(separatedTags);
     }
 
     /**
-     * Creates {@link Games} response object from saved game entity and request-derived collections.
-     * Uses scalar fields from provided {@link GamesEntity} and copies tag and screenshot lists
-     * exactly as they were passed to the service method.
+     * Marks game as approved.
+     * Only admin user may perform this operation.
      *
-     * @param game - saved game entity containing persisted scalar fields
-     * @param gameTags - list of tag names passed in create/update request
-     * @param screenshots - list of screenshot urls passed in create/update request
-     * @return response object containing game fields, tags and screenshots
-     * @Author: Egor Grishin
+     * @param gameId - id of game to be approved
+     * @param adminId - id of admin who is approving game
+     * @Author: Artemii Gorelov
      */
-    private Games createGamesResponse(GamesEntity game, List<String> gameTags, List<String> screenshots) {
-        return new Games(game.getId(),
-                game.getAuthorId(),
-                game.getTitle(),
-                game.getDescription(),
-                game.getBannerUrl(),
-                game.getCreatedAt(),
-                game.getUpdatedAt(),
-                gameTags,
-                screenshots
-        );
+    @Transactional
+    public void approveGame(Long gameId, Long adminId) {
+        UserEntity admin = usersRepository.findById(adminId).orElseThrow();
+
+        if (admin.getRole() != UserRole.ADMIN) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+
+        GamesEntity game = gamesRepository.findById(gameId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game with such id not found"));
+        game.setApproved(true);
+        gamesRepository.save(game);
+        gamesServiceLogger.info("Game {} approved by admin {}", gameId, adminId);
+    }
+
+    /**
+     * Marks game as rejected.
+     * Only admin user may perform this operation.
+     *
+     * @param gameId - id of game to be rejected
+     * @param adminId - id of admin who is rejecting game
+     * @Author: Artemii Gorelov
+     */
+    @Transactional
+    public void rejectGame(Long gameId, Long adminId) {
+        UserEntity admin = usersRepository.findById(adminId).orElseThrow();
+        if (admin.getRole() != UserRole.ADMIN) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+
+        GamesEntity game = gamesRepository.findById(gameId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
+        game.setApproved(false);
+        gamesRepository.save(game);
+        gamesServiceLogger.info("Game {} rejected by admin {}", gameId, adminId);
+    }
+
+    /**
+     * Updates game description using admin privileges.
+     * Only admin user may perform this operation.
+     *
+     * @param gameId - id of game whose description should be changed
+     * @param description - new description
+     * @param adminId - id of admin who is changing game description
+     * @Author: Artemii Gorelov
+     */
+    @Transactional
+    public void updateGameDescriptionAdmin(Long gameId, String description, Long adminId) {
+        UserEntity admin = usersRepository.findById(adminId).orElseThrow();
+        if (admin.getRole() != UserRole.ADMIN) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+
+        GamesEntity game = gamesRepository.findById(gameId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
+        game.setDescription(description);
+        gamesRepository.save(game);
+    }
+
+    /**
+     * Deletes all games created by the specified author.
+     *
+     * @param authorId - author id
+     * @Author: Artemii Gorelov
+     */
+    @Transactional
+    public void deleteGamesByAuthor(Long authorId) {
+        gamesRepository.deleteAllByAuthorId(authorId);
+    }
+
+    /**
+     * Returns all existing tag type names.
+     * The resulting list is used to pre-initialize grouped tags maps,
+     * so each response contains every known tag type even when some groups are empty.
+     *
+     * @return ordered list of all tag type names from storage
+     */
+    private List<String> allTagTypeNames() {
+        return tagTypeRepository.findAll().stream().map(TagTypeEntity::getType).toList();
+    }
+
+    /**
+     * Collects unique author ids for games contained in the current page.
+     * Used to load all page authors in batch instead of querying per item.
+     *
+     * @param gamesPage - page of games
+     * @return set of unique author ids referenced by games on the page
+     */
+    private Set<Long> allAuthorsIdsOnPage(Page<GamesEntity> gamesPage) {
+        return gamesPage.getContent().stream()
+                .map(GamesEntity::getAuthorId)
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * Checks whether the specified user is game owner or admin.
+     *
+     * @param gameId - id of game
+     * @param userId - id of user
+     * @Author: Artemii Gorelov
+     */
+    private void checkOwnerOrAdmin(Long gameId, Long userId) {
+        gamesServiceLogger.info("Called checkOwnerOrAdmin games service method");
+        GamesEntity game = gamesRepository.findById(gameId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
+
+        UserEntity user = usersRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+
+        if (!game.getAuthorId().equals(userId) && user.getRole() != UserRole.ADMIN) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to modify this game");
+        }
+    }
+
+    /**
+     * Loads screenshots for a game directly from storage and groups them into
+     * {@code videos} and {@code pictures} lists for response models.
+     *
+     * @param gameId - id of the requested game
+     * @return ordered screenshots map with {@code videos} and {@code pictures} keys
+     */
+    private Map<String, List<String>> getScreenshotsByGameId(Long gameId) {
+        Map<String, List<String>> screenshots = new LinkedHashMap<>();
+        screenshots.put("videos", new ArrayList<>());
+        screenshots.put("pictures", new ArrayList<>());
+
+        for (GamesScreenshotEntity screenshot : gameScreenshotsRepository.findAllByGameId(gameId)) {
+            if (screenshot.isVideo()) {
+                screenshots.get("videos").add(screenshot.getUrl());
+            } else {
+                screenshots.get("pictures").add(screenshot.getUrl());
+            }
+        }
+
+        return screenshots;
+    }
+
+    /**
+     * Persists categorized screenshots for a game using the fixed request contract
+     * with {@code videos} and {@code pictures} keys.
+     *
+     * @param screenshotsToSave - screenshots grouped by media type
+     * @param game - game that owns the screenshots
+     */
+    private void saveScreenshots(Map<String, List<String>> screenshotsToSave, GamesEntity game) {
+        List<GamesScreenshotEntity> videos = screenshotsToSave
+                .get("videos")
+                .stream()
+                .map(url -> new GamesScreenshotEntity(game.getId(), url, true))
+                .toList();
+
+        List<GamesScreenshotEntity> pictures = screenshotsToSave
+                .get("pictures")
+                .stream()
+                .map(url -> new GamesScreenshotEntity(game.getId(), url, false))
+                .toList();
+
+        gameScreenshotsRepository.saveAll(videos);
+        gameScreenshotsRepository.saveAll(pictures);
     }
 }
