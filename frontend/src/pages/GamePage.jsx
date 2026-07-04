@@ -668,7 +668,14 @@ function GamePage() {
                   setTitle(game.title || "");
                   setDescription(game.description || "");
                   setBannerUrl("");
-                  setTags(game.gameTags || []);
+                  setGameTags(
+                    game.gameTags || {
+                      genre: [],
+                      town: [],
+                      stage: [],
+                      featured: [],
+                    },
+                  );
                   setError("");
                   setScreenshots(normalizeMedia(game.screenshots));
                   setVideoInput("");

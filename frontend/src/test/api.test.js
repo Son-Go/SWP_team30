@@ -80,7 +80,7 @@ describe("api client", () => {
     })
 
     await expect(
-      loginUser({ email: "user@example.com", password: "secret" }),
+      loginUser({ authInfo: "user@example.com", password: "secret" }),
     ).resolves.toEqual({ token: "jwt-token" })
 
     expect(fetch).toHaveBeenCalledWith(
@@ -91,7 +91,8 @@ describe("api client", () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: "user@example.com",
+          authInfo: "user@example.com",
+          isEmail: true,
           password: "secret",
         }),
       },
@@ -107,7 +108,7 @@ describe("api client", () => {
     })
 
     await expect(
-      loginUser({ email: "user@example.com", password: "wrong" }),
+      loginUser({ authInfo: "user@example.com", password: "wrong" }),
     ).rejects.toThrow("Incorrect password")
   })
 
