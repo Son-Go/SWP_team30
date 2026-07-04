@@ -49,5 +49,5 @@ VALUES
     ('Demo', (SELECT id FROM tag_type WHERE type = 'stage')),
     ('Release', (SELECT id FROM tag_type WHERE type = 'stage')),
 
-    ('Featured', (SELECT id FROM tag_type WHERE type = 'featured')),
+    ('Featured', (SELECT id FROM tag_type WHERE type = 'featured'))
 ON CONFLICT (name) DO NOTHING;
