@@ -28,8 +28,13 @@ function GamePage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [bannerUrl, setBannerUrl] = useState("");
-  const [tags, setTags] = useState([]);
-  const [tagInput, setTagInput] = useState("");
+  const [gameTags, setGameTags] = useState({
+    genre: [],
+    town: [],
+    stage: [],
+    featured: [],
+  });
+  // const [tagInput, setTagInput] = useState("");
   const [authorName, setAuthorName] = useState(null);
 
   const [activeScreenshot, setActiveScreenshot] = useState(null);
@@ -64,7 +69,9 @@ function GamePage() {
         setTitle(data.title || "");
         setDescription(data.description || "");
         setBannerUrl(data.bannerUrl || "");
-        setTags(data.gameTags || []);
+        setGameTags(
+          data.gameTags || { genre: [], town: [], stage: [], featured: [] },
+        );
         setScreenshots(normalizeMedia(data.screenshots));
         setActiveScreenshot(null);
       } catch (err) {
@@ -157,13 +164,13 @@ function GamePage() {
     setPictureInput("");
   }
 
-  function handleAddTag() {
-    const trimmed = tagInput.trim();
-    if (trimmed && !tags.includes(trimmed)) {
-      setTags([...tags, trimmed]);
-    }
-    setTagInput("");
-  }
+  // function handleAddTag() {
+  //   const trimmed = tagInput.trim();
+  //   if (trimmed && !tags.includes(trimmed)) {
+  //     setTags([...tags, trimmed]);
+  //   }
+  //   setTagInput("");
+  // }
 
   async function handleUpdate(event) {
     event.preventDefault();
@@ -177,7 +184,7 @@ function GamePage() {
           title,
           description,
           bannerUrl: bannerUrl || undefined,
-          gameTags: tags,
+          gameTags,
           screenshots,
         },
         token,
@@ -189,7 +196,9 @@ function GamePage() {
       setTitle(freshGame.title || "");
       setDescription(freshGame.description || "");
       setBannerUrl(freshGame.bannerUrl || "");
-      setTags(freshGame.gameTags || []);
+      setGameTags(
+        freshGame.gameTags || { genre: [], town: [], stage: [], featured: [] },
+      );
       setScreenshots(normalizeMedia(freshGame.screenshots));
       setVideoInput("");
       setPictureInput("");
@@ -227,6 +236,15 @@ function GamePage() {
   const currentMedia = activeScreenshot ?? orderedMedia[0] ?? null;
   const currentMediaIsVideo = currentMedia ? isYoutubeUrl(currentMedia) : false;
 
+  const flatGameTags = game.gameTags
+    ? [
+        ...(game.gameTags.genre || []),
+        ...(game.gameTags.town || []),
+        ...(game.gameTags.stage || []),
+        ...(game.gameTags.featured || []),
+      ]
+    : [];
+
   return (
     <section className="section-lg">
       <div className="page-header">
@@ -256,7 +274,14 @@ function GamePage() {
                   setTitle(game.title || "");
                   setDescription(game.description || "");
                   setBannerUrl("");
-                  setTags(game.gameTags || []);
+                  setGameTags(
+                    game.gameTags || {
+                      genre: [],
+                      town: [],
+                      stage: [],
+                      featured: [],
+                    },
+                  );
                   setError("");
                   setScreenshots(normalizeMedia(game.screenshots));
                   setVideoInput("");
@@ -408,10 +433,11 @@ function GamePage() {
                 </span>
               </div>
             )}
-            {game.gameTags?.length > 0 && (
+
+            {flatGameTags.length > 0 && (
               <div className="game-sidebar-meta">
                 <div className="tag-list">
-                  {game.gameTags.map((tag) => (
+                  {flatGameTags.map((tag) => (
                     <Link
                       key={tag}
                       to={`/games?tags=${encodeURIComponent(tag)}`}
@@ -490,7 +516,7 @@ function GamePage() {
 
             <div className="form-group">
               <label className="label">Теги</label>
-              <TagSelector selected={tags} onChange={setTags} />
+              <TagSelector selected={gameTags} onChange={setGameTags} />
             </div>
 
             <div className="form-group">
