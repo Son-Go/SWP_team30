@@ -1065,3 +1065,72 @@ textarea:focus-visible {
   letter-spacing: 0.08em;
   color: #9b93c0;
 }
+
+.catalog-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.catalog-row-title {
+  font-size: 28px;
+  margin: 0;
+}
+
+.catalog-row-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.catalog-arrow {
+  min-width: 44px;
+  width: 44px;
+  padding: 0;
+}
+
+.catalog-row-viewport {
+  overflow: hidden;
+}
+
+.catalog-row-track {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+
+.catalog-row-track::-webkit-scrollbar {
+  display: none;
+}
+
+.catalog-row-item {
+  flex: 0 0 calc((100% - 48px) / 3);
+  min-width: calc((100% - 48px) / 3);
+}
+
+.catalog-row-item .card-link {
+  height: 100%;
+}
+
+@media (max-width: 900px) {
+  .catalog-row-item {
+    flex: 0 0 calc((100% - 24px) / 2);
+    min-width: calc((100% - 24px) / 2);
+  }
+}
+
+@media (max-width: 560px) {
+  .catalog-row-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .catalog-row-item {
+    flex: 0 0 100%;
+    min-width: 100%;
+  }
+}
