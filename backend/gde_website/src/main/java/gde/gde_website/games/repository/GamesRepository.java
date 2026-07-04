@@ -26,7 +26,7 @@ public interface GamesRepository extends JpaRepository<GamesEntity, Long> {
      * @return sublist of game entities sorted by creation date descending
      * @Author: Artemii Gorelov, Egor Grishin
      */
-    @EntityGraph(attributePaths = {"gameTags", "gameTags.tag"})
+    @EntityGraph(attributePaths = {"gameTags", "gameTags.tag", "gameTags.tag.tagType"})
     Page<GamesEntity> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
     /**
@@ -36,7 +36,7 @@ public interface GamesRepository extends JpaRepository<GamesEntity, Long> {
      * @param id - game id
      * @return optional game entity with loaded tag relations
      */
-    @EntityGraph(attributePaths = {"gameTags", "gameTags.tag"})
+    @EntityGraph(attributePaths = {"gameTags", "gameTags.tag", "gameTags.tag.tagType"})
     Optional<GamesEntity> findDetailedById(Long id);
 
     /**
@@ -51,6 +51,13 @@ public interface GamesRepository extends JpaRepository<GamesEntity, Long> {
             "JOIN g.gameTags gt " +
             "JOIN gt.tag t " +
             "WHERE t.name IN :tagNames " + "ORDER BY g.createdAt DESC")
-    @EntityGraph(attributePaths = {"gameTags", "gameTags.tag"})
+    @EntityGraph(attributePaths = {"gameTags", "gameTags.tag", "gameTags.tag.tagType"})
     Page<GamesEntity> findByTagNames(List<String> tagNames, Pageable pageable);
+
+    /**
+     * This method is used for deleting all games by author after author was deleted
+     * @param authorId - author id
+     * @Author: Artemii Gorelov
+     */
+    void deleteAllByAuthorId(Long authorId);
 }

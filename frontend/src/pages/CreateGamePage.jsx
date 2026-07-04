@@ -18,7 +18,12 @@ function CreateGamePage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [bannerUrl, setBannerUrl] = useState("");
-  const [tags, setTags] = useState([]);
+  const [gameTags, setGameTags] = useState({
+    genre: [],
+    town: [],
+    stage: [],
+    featured: [],
+  });
 
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -138,7 +143,7 @@ function CreateGamePage() {
           title,
           description,
           bannerUrl: bannerUrl || undefined,
-          gameTags: tags,
+          gameTags,
           screenshots,
         },
         token,
@@ -224,7 +229,7 @@ function CreateGamePage() {
 
           <div className="form-group">
             <label className="label">Теги</label>
-            <TagSelector selected={tags} onChange={setTags} />
+            <TagSelector selected={gameTags} onChange={setGameTags} />
           </div>
 
           <div className="form-group">

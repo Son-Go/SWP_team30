@@ -28,6 +28,8 @@
   --radius-sm: 10px;
 
   --container: 1200px;
+
+  --catalog-card-gap: 24px;
 }
 
 html {
@@ -249,7 +251,7 @@ img {
 .games-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  gap: var(--catalog-card-gap);
 }
 
 @media (max-width: 900px) {
@@ -1019,5 +1021,120 @@ textarea:focus-visible {
 @media (max-width: 640px) {
   .game-video-frame {
     min-height: 240px;
+  }
+}
+
+.tag-badge-genre {
+  background-color: #352f52;
+  color: #cfc6ef;
+  border-color: #4f4680;
+}
+
+.tag-badge-town {
+  background-color: #3b3560;
+  color: #c8bef0;
+  border-color: #6c5fc7;
+}
+
+.tag-badge-stage {
+  background-color: #443c6e;
+  color: #ddd4fa;
+  border-color: #7a6dd8;
+}
+
+.tag-badge-featured {
+  background-color: #4d4380;
+  color: #ede8fb;
+  border-color: #8a7ce8;
+}
+
+.tag-badge-active {
+  opacity: 1;
+  box-shadow: 0 0 0 1px currentColor inset;
+}
+
+.filter-category {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.filter-category-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9b93c0;
+}
+
+.catalog-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.catalog-row-title {
+  font-size: 28px;
+  margin: 0;
+}
+
+.catalog-row-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.catalog-arrow {
+  min-width: 44px;
+  width: 44px;
+  padding: 0;
+}
+
+.catalog-row-viewport {
+  overflow: visible;
+}
+
+.catalog-row-track {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  padding-top: 6px;
+  margin-top: -6px;
+  padding-bottom: 4px;
+}
+
+.catalog-row-track::-webkit-scrollbar {
+  display: none;
+}
+
+.catalog-row-item {
+  flex: 0 0 calc((100% - (var(--catalog-card-gap) * 2)) / 3);
+  min-width: calc((100% - (var(--catalog-card-gap) * 2)) / 3);
+}
+
+.catalog-row-item .card-link {
+  height: auto;
+}
+
+@media (max-width: 900px) {
+  .catalog-row-item {
+    flex: 0 0 calc((100% - var(--catalog-card-gap)) / 2);
+    min-width: calc((100% - var(--catalog-card-gap)) / 2);
+  }
+}
+
+@media (max-width: 560px) {
+  .catalog-row-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .catalog-row-item {
+    flex: 0 0 calc((100% - 48px) / 3);
+    min-width: calc((100% - 48px) / 3);
   }
 }
