@@ -33,6 +33,9 @@ public class GamesEntity {
     @Column(name = "banner_url", length = 500)
     private String bannerUrl;
 
+    @Column(name = "is_approved", nullable = false)
+    private boolean isApproved = true;
+
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT now()")
     private Instant createdAt;
 
@@ -41,6 +44,9 @@ public class GamesEntity {
 
     @OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<GameTagEntity> gameTags = new ArrayList<>();
+
+    @OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<GamesScreenshotEntity> gameScreenshots = new ArrayList<>();
 
     public GamesEntity(Long authorId, String title, String description, String bannerUrl) {
         this.authorId = authorId;

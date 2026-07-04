@@ -3,6 +3,7 @@ package gde.gde_website.users.controller;
 import gde.gde_website.users.model.LoginRequest;
 import gde.gde_website.users.model.LoginResponse;
 import gde.gde_website.users.model.MeResponse;
+import gde.gde_website.users.model.UserRole;
 import gde.gde_website.users.service.UsersService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,7 +32,7 @@ class UsersControllerTest {
 
     @Test
     void loginReturnsToken() {
-        LoginRequest request = new LoginRequest("user@example.com", "secret");
+        LoginRequest request = new LoginRequest("user@example.com", true,"secret");
         LoginResponse expected = new LoginResponse("jwt-token");
 
         when(usersService.login(request)).thenReturn(expected);
@@ -53,7 +54,7 @@ class UsersControllerTest {
     void meReturnsCurrentUserWhenAuthenticated() {
         Authentication authentication =
                 new UsernamePasswordAuthenticationToken(42L, null, List.of());
-        MeResponse expected = new MeResponse(42L, "andrey", "andrey@example.com", null, false);
+        MeResponse expected = new MeResponse(42L, "andrey", "andrey@example.com", null, false, UserRole.DEVELOPER);
 
         when(usersService.me(42L)).thenReturn(expected);
 

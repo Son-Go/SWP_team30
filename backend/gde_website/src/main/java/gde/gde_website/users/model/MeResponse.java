@@ -13,5 +13,6 @@ public record MeResponse(
         String username,
         String email,
         String profileImageUrl,
-        Boolean isFromTatarstan
+        Boolean isFromTatarstan,
+        UserRole userRole
 ) {}

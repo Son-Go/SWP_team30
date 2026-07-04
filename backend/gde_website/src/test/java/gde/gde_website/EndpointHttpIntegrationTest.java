@@ -1,16 +1,13 @@
 package gde.gde_website;
 
-import gde.gde_website.games.model.AuthorResponse;
-import gde.gde_website.games.model.Games;
-import gde.gde_website.games.model.GamesCardResponce;
-import gde.gde_website.games.model.GamesPageResponce;
-import gde.gde_website.games.model.TagsResponse;
+import gde.gde_website.games.model.*;
 import gde.gde_website.games.service.GamesService;
 import gde.gde_website.security.JwtFilter;
 import gde.gde_website.security.JwtUtils;
 import gde.gde_website.security.config.SecurityConfig;
 import gde.gde_website.users.model.LoginResponse;
 import gde.gde_website.users.model.MeResponse;
+import gde.gde_website.users.model.UserRole;
 import gde.gde_website.users.service.UsersService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +77,8 @@ class EndpointHttpIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  "email": "user@example.com",
+                                  "authInfo": "user@example.com",
+                                  "isEmail": true,
                                   "password": "secret"
                                 }
                                 """))
@@ -98,10 +96,10 @@ class EndpointHttpIntegrationTest {
     @Test
     void meReturnsCurrentUserWhenJwtIsValid() throws Exception {
         when(usersService.me(42L))
-                .thenReturn(new MeResponse(42L, "andrey", "andrey@example.com", null, false));
+                .thenReturn(new MeResponse(42L, "andrey", "andrey@example.com", null, false, UserRole.DEVELOPER));
 
         mockMvc.perform(get("/auth/me")
-                        .header("Authorization", bearerToken(42L)))
+                        .header("Authorization", bearerToken(42L, UserRole.DEVELOPER)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(42))
                 .andExpect(jsonPath("$.username").value("andrey"))
@@ -114,14 +112,15 @@ class EndpointHttpIntegrationTest {
     void gamesListIsPublicAndReturnsPagedJson() throws Exception {
         when(gamesService.getAllGames(PageRequest.of(0, 24)))
                 .thenReturn(new PageImpl<>(List.of(
-                        new GamesPageResponce(
+                        new GamesPageResponse(
                                 1L,
                                 11L,
                                 "Portal",
                                 "Puzzle platformer",
                                 "https://example.com/portal.png",
                                 new AuthorResponse("valve", null, "valve@example.com"),
-                                List.of("puzzle", "coop")
+                                true,
+                                pageTags()
                         )
                 )));
 
@@ -131,7 +130,9 @@ class EndpointHttpIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].id").value(1))
                 .andExpect(jsonPath("$.content[0].title").value("Portal"))
-                .andExpect(jsonPath("$.content[0].tags[0]").value("puzzle"));
+                .andExpect(jsonPath("$.content[0].gameTags.GENRE[0]").value("puzzle"))
+                .andExpect(jsonPath("$.content[0].gameTags.GENRE[1]").value("coop"))
+                .andExpect(jsonPath("$.content[0].gameTags.MODE").isArray());
     }
 
     @Test
@@ -142,7 +143,9 @@ class EndpointHttpIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(7))
                 .andExpect(jsonPath("$.title").value("Hades"))
-                .andExpect(jsonPath("$.isOwner").value(false));
+                .andExpect(jsonPath("$.isOwner").value(false))
+                .andExpect(jsonPath("$.screenshots.videos[0]").value("https://example.com/trailer.mp4"))
+                .andExpect(jsonPath("$.screenshots.pictures[0]").value("https://example.com/screenshot.png"));
 
         verify(gamesService).getGameById(7L, null);
     }
@@ -165,7 +168,10 @@ class EndpointHttpIntegrationTest {
                                   "description": "Updated description",
                                   "bannerUrl": "https://example.com/banner.png",
                                   "gameTags": ["indie"],
-                                  "screenshots": []
+                                  "screenshots": {
+                                    "videos": [],
+                                    "pictures": []
+                                  }
                                 }
                                 """))
                 .andExpect(status().isUnauthorized());
@@ -182,13 +188,15 @@ class EndpointHttpIntegrationTest {
         when(gamesService.createGame(any(), eq(42L))).thenReturn(game());
 
         mockMvc.perform(post("/games")
-                        .header("Authorization", bearerToken(42L))
+                        .header("Authorization", bearerToken(42L, UserRole.DEVELOPER))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(createGameJson()))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(5))
                 .andExpect(jsonPath("$.authorId").value(42))
-                .andExpect(jsonPath("$.title").value("New Game"));
+                .andExpect(jsonPath("$.title").value("New Game"))
+                .andExpect(jsonPath("$.screenshots.videos[0]").value("https://example.com/trailer.mp4"))
+                .andExpect(jsonPath("$.screenshots.pictures[0]").value("https://example.com/screenshot.png"));
 
         verify(gamesService).createGame(any(), eq(42L));
     }
@@ -198,7 +206,7 @@ class EndpointHttpIntegrationTest {
         when(gamesService.updateGame(any(), eq(42L), eq(5L))).thenReturn(game());
 
         mockMvc.perform(patch("/games/5")
-                        .header("Authorization", bearerToken(42L))
+                        .header("Authorization", bearerToken(42L, UserRole.DEVELOPER))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -206,12 +214,17 @@ class EndpointHttpIntegrationTest {
                                   "description": "Updated description",
                                   "bannerUrl": "https://example.com/banner.png",
                                   "gameTags": ["indie"],
-                                  "screenshots": []
+                                  "screenshots": {
+                                    "videos": [],
+                                    "pictures": []
+                                  }
                                 }
                                 """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(5))
-                .andExpect(jsonPath("$.title").value("New Game"));
+                .andExpect(jsonPath("$.title").value("New Game"))
+                .andExpect(jsonPath("$.screenshots.videos[0]").value("https://example.com/trailer.mp4"))
+                .andExpect(jsonPath("$.screenshots.pictures[0]").value("https://example.com/screenshot.png"));
 
         verify(gamesService).updateGame(any(), eq(42L), eq(5L));
     }
@@ -221,7 +234,7 @@ class EndpointHttpIntegrationTest {
         when(gamesService.deleteGame(5L, 42L)).thenReturn(game());
 
         mockMvc.perform(delete("/games/5")
-                        .header("Authorization", bearerToken(42L)))
+                        .header("Authorization", bearerToken(42L, UserRole.DEVELOPER)))
                 .andExpect(status().isNoContent());
 
         verify(gamesService).deleteGame(5L, 42L);
@@ -229,12 +242,13 @@ class EndpointHttpIntegrationTest {
 
     @Test
     void tagsEndpointReturnsAvailableTagsOverHttp() throws Exception {
-        when(gamesService.getAllTags()).thenReturn(new TagsResponse(List.of("puzzle", "indie")));
+        when(gamesService.getAllTags()).thenReturn(new TagsResponse(groupedTags("puzzle", "indie")));
 
         mockMvc.perform(get("/games/tags/all"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.gameTags[0]").value("puzzle"))
-                .andExpect(jsonPath("$.gameTags[1]").value("indie"));
+                .andExpect(jsonPath("$.gameTags.GENRE[0]").value("puzzle"))
+                .andExpect(jsonPath("$.gameTags.GENRE[1]").value("indie"))
+                .andExpect(jsonPath("$.gameTags.MODE").isArray());
     }
 
     @Test
@@ -249,8 +263,8 @@ class EndpointHttpIntegrationTest {
                 .andExpect(jsonPath("$.email").value("studio@example.com"));
     }
 
-    private String bearerToken(Long userId) {
-        return "Bearer " + jwtUtils.generateToken(userId);
+    private String bearerToken(Long userId, UserRole userRole) {
+        return "Bearer " + jwtUtils.generateToken(userId, userRole);
     }
 
     private String createGameJson() {
@@ -260,7 +274,10 @@ class EndpointHttpIntegrationTest {
                   "description": "Description",
                   "bannerUrl": "https://example.com/banner.png",
                   "gameTags": ["indie"],
-                  "screenshots": ["https://example.com/screenshot.png"]
+                  "screenshots": {
+                    "videos": ["https://example.com/trailer.mp4"],
+                    "pictures": ["https://example.com/screenshot.png"]
+                  }
                 }
                 """;
     }
@@ -274,13 +291,34 @@ class EndpointHttpIntegrationTest {
                 "https://example.com/banner.png",
                 Instant.parse("2026-01-01T00:00:00Z"),
                 Instant.parse("2026-01-02T00:00:00Z"),
-                List.of("indie"),
-                List.of("https://example.com/screenshot.png")
+                groupedTags("indie"),
+                groupedScreenshots()
         );
     }
 
-    private GamesCardResponce gameCard(boolean isOwner) {
-        return new GamesCardResponce(
+    private java.util.Map<String, java.util.List<String>> pageTags() {
+        java.util.Map<String, java.util.List<String>> tags = new java.util.LinkedHashMap<>();
+        tags.put("GENRE", java.util.List.of("puzzle", "coop"));
+        tags.put("MODE", java.util.List.of());
+        return tags;
+    }
+
+    private java.util.Map<String, java.util.List<String>> groupedTags(String... values) {
+        java.util.Map<String, java.util.List<String>> tags = new java.util.LinkedHashMap<>();
+        tags.put("GENRE", java.util.List.of(values));
+        tags.put("MODE", java.util.List.of());
+        return tags;
+    }
+
+    private java.util.Map<String, java.util.List<String>> groupedScreenshots() {
+        java.util.Map<String, java.util.List<String>> screenshots = new java.util.LinkedHashMap<>();
+        screenshots.put("videos", java.util.List.of("https://example.com/trailer.mp4"));
+        screenshots.put("pictures", java.util.List.of("https://example.com/screenshot.png"));
+        return screenshots;
+    }
+
+    private GamesCardResponse gameCard(boolean isOwner) {
+        return new GamesCardResponse(
                 7L,
                 15L,
                 "Hades",
@@ -289,9 +327,10 @@ class EndpointHttpIntegrationTest {
                 Instant.parse("2026-01-01T00:00:00Z"),
                 Instant.parse("2026-01-02T00:00:00Z"),
                 isOwner,
+                true,
                 new AuthorResponse("supergiant", null, "studio@example.com"),
-                List.of("action"),
-                List.of("https://example.com/screenshot.png")
+                groupedTags("action"),
+                groupedScreenshots()
         );
     }
 }

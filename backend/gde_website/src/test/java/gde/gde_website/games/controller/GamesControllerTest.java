@@ -1,10 +1,6 @@
 package gde.gde_website.games.controller;
 
-import gde.gde_website.games.model.AuthorResponse;
-import gde.gde_website.games.model.Games;
-import gde.gde_website.games.model.GamesCardResponce;
-import gde.gde_website.games.model.GamesCreateRequest;
-import gde.gde_website.games.model.GamesPageResponce;
+import gde.gde_website.games.model.*;
 import gde.gde_website.games.service.GamesService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +16,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -38,22 +36,27 @@ class GamesControllerTest {
 
     @Test
     void getAllGamesReturnsPagedGames() {
-        Page<GamesPageResponce> expectedPage = new PageImpl<>(List.of(
-                new GamesPageResponce(
+        Map<String, List<String>> tagsMap = new LinkedHashMap<>();
+        tagsMap.put("GENRE", List.of("puzzle", "coop"));
+        tagsMap.put("MODE", List.of());
+
+        Page<GamesPageResponse> expectedPage = new PageImpl<>(List.of(
+                new GamesPageResponse(
                         1L,
                         11L,
                         "Portal",
                         "Puzzle platformer",
                         "https://example.com/portal.png",
                         new AuthorResponse("valve", null, "valve@example.com"),
-                        List.of("puzzle", "coop")
+                        true,
+                        tagsMap
                 )
         ));
 
         when(gamesService.getAllGames(org.springframework.data.domain.PageRequest.of(0, 24)))
                 .thenReturn(expectedPage);
 
-        ResponseEntity<Page<GamesPageResponce>> response = gamesController.getAllGames(0, 24, null);
+        ResponseEntity<Page<GamesPageResponse>> response = gamesController.getAllGames(0, 24, null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedPage, response.getBody());
@@ -61,7 +64,7 @@ class GamesControllerTest {
 
     @Test
     void getGameByIdPassesAuthenticatedUserToService() {
-        GamesCardResponce expected = new GamesCardResponce(
+        GamesCardResponse expected = new GamesCardResponse(
                 7L,
                 15L,
                 "Hades",
@@ -70,16 +73,17 @@ class GamesControllerTest {
                 Instant.parse("2026-01-01T00:00:00Z"),
                 Instant.parse("2026-01-02T00:00:00Z"),
                 true,
+                true,
                 new AuthorResponse("supergiant", null, "studio@example.com"),
-                List.of("action"),
-                List.of("https://example.com/screenshot.png")
+                groupedTags("action"),
+                groupedScreenshots()
         );
         Authentication authentication =
                 new UsernamePasswordAuthenticationToken(99L, null, List.of());
 
         when(gamesService.getGameById(7L, 99L)).thenReturn(expected);
 
-        ResponseEntity<GamesCardResponce> response = gamesController.getGameById(7L, authentication);
+        ResponseEntity<GamesCardResponse> response = gamesController.getGameById(7L, authentication);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expected, response.getBody());
@@ -93,7 +97,7 @@ class GamesControllerTest {
                 "Description",
                 "https://example.com/banner.png",
                 List.of("indie"),
-                List.of("https://example.com/screenshot.png")
+                groupedScreenshots()
         );
 
         ResponseStatusException exception = assertThrows(
@@ -113,7 +117,7 @@ class GamesControllerTest {
                 "Description",
                 "https://example.com/banner.png",
                 List.of("indie"),
-                List.of("https://example.com/screenshot.png")
+                groupedScreenshots()
         );
         Games expected = new Games(
                 5L,
@@ -123,8 +127,8 @@ class GamesControllerTest {
                 "https://example.com/banner.png",
                 Instant.parse("2026-01-01T00:00:00Z"),
                 Instant.parse("2026-01-02T00:00:00Z"),
-                List.of("indie"),
-                List.of("https://example.com/screenshot.png")
+                groupedTags("indie"),
+                groupedScreenshots()
         );
 
         when(gamesService.createGame(request, 42L))
@@ -135,5 +139,19 @@ class GamesControllerTest {
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(expected, response.getBody());
         verify(gamesService).createGame(request, 42L);
+    }
+
+    private Map<String, List<String>> groupedScreenshots() {
+        Map<String, List<String>> screenshots = new LinkedHashMap<>();
+        screenshots.put("videos", List.of("https://example.com/trailer.mp4"));
+        screenshots.put("pictures", List.of("https://example.com/screenshot.png"));
+        return screenshots;
+    }
+
+    private Map<String, List<String>> groupedTags(String... values) {
+        Map<String, List<String>> tagsMap = new LinkedHashMap<>();
+        tagsMap.put("GENRE", List.of(values));
+        tagsMap.put("MODE", List.of());
+        return tagsMap;
     }
 }
