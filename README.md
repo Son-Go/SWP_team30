@@ -9,7 +9,7 @@ GDE Website - website for GDE innopolis club, where local game developers can pu
 
 To access deployed MVP-v0 open [link](https://precious-toffee-52e805.netlify.app/)
 
-To access deployed MVP-v1 open [link](http://gde.maxmir.ru/)
+To access deployed Project open [link](http://gde.maxmir.ru/)
 
 ---
 
@@ -17,7 +17,7 @@ To access deployed MVP-v1 open [link](http://gde.maxmir.ru/)
 
 **MVP-v0:** Open https://github.com/Son-Go/SWP_team30/tree/8c2e78c353f0c7f9470b3c63cf59da54a8ecf47e/temp-frontend/htmlFrontend folder, and run VS code Live server extension. MVP-v0 has no backend functionality
 
-**MVP-v1:** Clone project, copy [.env.example](/.env.example) to `.env.secret`, run docker compose up. `http://localhost:80` will show working website
+**Other MVP:** Clone project, copy [.env.example](/.env.example) to `.env.secret`, run docker compose up. `http://localhost:80` will show working website
 
 ---
 
@@ -38,12 +38,13 @@ All testing info can be found in:
 - [endpoint-testing.md](/docs/endpoint-testing.md) - manual endpoint testing
 - [user-acceptance-tests.md](/docs/user-acceptance-tests.md) - UAT tests
 - [quality-requirements.md](/docs/quality-requirements.md) - qualiy requirements with links to automated tests
+- [endpoint-overview](/docs/endpoint-overview.md) - overeview of all endpoints with their bodies and purposes
 
 --- 
 
 ## Logging
 
-Test contain several logging tools to log container health and system stability
+Project contain several logging tools to log container health and system stability
 
 List of tools:
 
@@ -71,15 +72,10 @@ Project supports following function:
 
 ---
 
-
-## Visuals
-
----
-
 ## Project status
 **Active development**
 
-**Version:** v0.1.5 (MVP-v1 status)
+**Version:** v0.2.0 (MVP-v2 status)
 
 [CHANGELOG](./CHANGELOG.md)
 
@@ -91,6 +87,16 @@ The maintained documentation is published as a browsable hosted site: [https://s
 * [Architecture Documentation](docs/architecture/README.md)
 * [Quality Requirements](docs/quality-requirements.md)
 * [Testing Documentation](docs/testing.md)
+* [endpoint-overview](/docs/endpoint-overview.md)
+
+### High-Level Architecture Summary
+
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| **Frontend** | React 19 + Vite + Nginx | Application is served by Nginx, with reverse proxy to backend API |
+| **Backend** | Spring Boot 4 + Java 21 | REST API with JWT authentication, JPA/Hibernate ORM, Flyway migrations |
+| **Database** | PostgreSQL | Persistent data store for users, games, tags, and relationships |
+| **Observability** | Grafana + Prometheus + Loki + Alloy + cAdvisor | Logging, metrics, and monitoring (optional overlay) |
 
 ---
 
