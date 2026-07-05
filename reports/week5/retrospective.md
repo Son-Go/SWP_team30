@@ -13,10 +13,10 @@
 
 1. **Test implementation** poorly configured testing resulted in blocking workflow on non-main branches
 2. **Team spririt:** Due to unclear assignment descriptions and constantly changing customer expectations team morale went down
-3. **Development process:** Team discovered some misscomunication patterns which lead to misscomunications in API request bodies.
+3. **Development process:** Team discovered some misscomunication patterns which lead to misscomunications in API request bodies
 
 ## Action points
 
 1. Team reconfigured test, so they work only on main branch
-2. Several team members decided to celebrate current project state by ordering sushi  
+2. Several team members decided to celebrate current project state by ordering sushi
 3. Team created dedicated document to display API requests changes
