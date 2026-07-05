@@ -26,6 +26,7 @@ To access deployed MVP-v1 open [link](http://gde.maxmir.ru/)
 - Week 2 [README.md](https://github.com/Son-Go/SWP_team30/blob/8b765b5d98da638555c6fb2a9f5be49d44b7cc38/reports/week2/README.md)
 - Week 3 [README.md](https://github.com/Son-Go/SWP_team30/blob/1214b680442a30e2ae7adfb5d748f33b7229d92b/reports/week3/README.md)
 - Week 4 [README.md](https://github.com/Son-Go/SWP_team30/blob/main/reports/week4/README.md)
+- Week 5 [README.md](https://github.com/Son-Go/SWP_team30/blob/main/reports/week5/README.md)
 
 ---
 
@@ -84,7 +85,12 @@ Project supports following function:
 
 ## Documentation
 
+The maintained documentation is published as a browsable hosted site: [https://son-go.github.io/SWP_team30/](https://son-go.github.io/SWP_team30/)
+
 * [Development Process & Configuration Management](docs/development-process.md)
+* [Architecture Documentation](docs/architecture/README.md)
+* [Quality Requirements](docs/quality-requirements.md)
+* [Testing Documentation](docs/testing.md)
 
 ---
 
