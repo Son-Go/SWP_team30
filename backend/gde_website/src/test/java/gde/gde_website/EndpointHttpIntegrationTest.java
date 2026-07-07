@@ -117,6 +117,7 @@ class EndpointHttpIntegrationTest {
                                 11L,
                                 "Portal",
                                 "Puzzle platformer",
+                                "Puzzle platformer",
                                 "https://example.com/portal.png",
                                 new AuthorResponse("valve", null, "valve@example.com"),
                                 true,
@@ -271,6 +272,7 @@ class EndpointHttpIntegrationTest {
         return """
                 {
                   "title": "New Game",
+                  "shortDescription": "Short description",
                   "description": "Description",
                   "bannerUrl": "https://example.com/banner.png",
                   "gameTags": ["indie"],
@@ -287,6 +289,7 @@ class EndpointHttpIntegrationTest {
                 5L,
                 42L,
                 "New Game",
+                "Short description",
                 "Description",
                 "https://example.com/banner.png",
                 Instant.parse("2026-01-01T00:00:00Z"),
@@ -322,6 +325,7 @@ class EndpointHttpIntegrationTest {
                 7L,
                 15L,
                 "Hades",
+                "Roguelike action",
                 "Roguelike action",
                 "https://example.com/hades.png",
                 Instant.parse("2026-01-01T00:00:00Z"),

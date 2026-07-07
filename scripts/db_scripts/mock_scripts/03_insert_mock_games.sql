@@ -12,6 +12,7 @@ DECLARE
     v_tag_count INTEGER;
     v_screenshot_count INTEGER;
     v_title TEXT;
+    v_short_description TEXT;
     v_description TEXT;
     i INTEGER;
     j INTEGER;
@@ -34,11 +35,13 @@ BEGIN
                    nouns[1 + floor(random() * array_length(nouns, 1))::int] || ' ' || i;
         v_description := 'Mock game generated for local development and UI testing. ' ||
                          'This title was created to populate the catalogue with varied content.';
+        v_short_description := 'Mock game generated for local development and UI testing.';
 
-        INSERT INTO games (author_id, title, description, banner_url, is_approved)
+        INSERT INTO games (author_id, title, short_description, description, banner_url, is_approved)
         VALUES (
             v_user_id,
             v_title,
+            v_short_description,
             v_description,
             'https://loremflickr.com/1200/675/abstract?random=' || i,
             true
