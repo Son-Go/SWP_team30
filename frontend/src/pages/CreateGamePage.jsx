@@ -181,7 +181,8 @@ function CreateGamePage() {
               className="input"
               type="text"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              maxLength={50}
+              onChange={(e) => setTitle(e.target.value.slice(0, 50))}
               required
             />
           </div>
