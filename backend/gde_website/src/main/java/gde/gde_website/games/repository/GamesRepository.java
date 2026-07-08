@@ -60,4 +60,22 @@ public interface GamesRepository extends JpaRepository<GamesEntity, Long> {
      * @Author: Artemii Gorelov
      */
     void deleteAllByAuthorId(Long authorId);
+
+    /**
+     * Returns number of games created by specific author.
+     *
+     * @param authorId - author id
+     * @return count of games belonging to the author
+     * @Author: Artemii Gorelov
+     */
+    long countByAuthorId(Long authorId);
+
+    /**
+     * finds info about games of author with requested id
+     * @param userId - author id
+     * @param pageable - list of games divided by pages
+     * @return return list of games divided by pages
+     */
+    @EntityGraph(attributePaths = {"gameTags", "gameTags.tag"})
+    Page<GamesEntity> findAllByAuthorId(Long userId, Pageable pageable);
 }
