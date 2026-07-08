@@ -136,7 +136,7 @@ function GamesPage() {
       try {
         setFeaturedLoading(true);
         setFeaturedError("");
-        const data = await getGames(0, ["featured"]);
+        const data = await getGames(0, ["Featured"]);
         setFeaturedGames(data.content || []);
       } catch (err) {
         setFeaturedError(err.message || "Не удалось загрузить избранные игры");
