@@ -1138,3 +1138,33 @@ textarea:focus-visible {
     min-width: calc((100% - 48px) / 3);
   }
 }
+
+.textarea-counter-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2px;
+}
+
+.textarea-counter {
+  font-size: 11px;
+  line-height: 1;
+  color: var(--text-muted);
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.textarea-counter.limit-hit {
+  animation: textarea-counter-limit 3s ease;
+}
+
+@keyframes textarea-counter-limit {
+  0% {
+    color: var(--danger);
+  }
+  85% {
+    color: var(--danger);
+  }
+  100% {
+    color: var(--text-muted);
+  }
+}

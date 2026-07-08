@@ -499,6 +499,14 @@ function GamePage() {
                   </span>
                 )}
               </div>
+
+              <div className="textarea-counter-row">
+                <span
+                  className={`textarea-counter ${showLimit ? "limit-hit" : ""}`}
+                >
+                  {description.length}/1500
+                </span>
+              </div>
             </div>
 
             <div className="form-group">
