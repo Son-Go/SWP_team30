@@ -40,6 +40,8 @@ function GamePage() {
   const [activeScreenshot, setActiveScreenshot] = useState(null);
   const [screenshots, setScreenshots] = useState({ videos: [], pictures: [] });
 
+  const [thumbStart, setThumbStart] = useState(0);
+
   const [videoInput, setVideoInput] = useState("");
   const [pictureInput, setPictureInput] = useState("");
 
@@ -82,6 +84,10 @@ function GamePage() {
     }
     loadGame();
   }, [id, token]);
+
+  useEffect(() => {
+    setThumbStart(0);
+  }, [game?.id, orderedMedia.length]);
 
   function triggerMediaLimit() {
     clearTimeout(mediaLimitTimerRef.current);
@@ -236,6 +242,14 @@ function GamePage() {
   const currentMedia = activeScreenshot ?? orderedMedia[0] ?? null;
   const currentMediaIsVideo = currentMedia ? isYoutubeUrl(currentMedia) : false;
 
+  const visibleThumbsCount = 7;
+  const maxThumbStart = Math.max(0, orderedMedia.length - visibleThumbsCount);
+  const safeThumbStart = Math.min(thumbStart, maxThumbStart);
+  const visibleThumbs = orderedMedia.slice(
+    safeThumbStart,
+    safeThumbStart + visibleThumbsCount,
+  );
+
   const flatGameTags = game.gameTags
     ? [
         ...(game.gameTags.genre || []),
@@ -365,26 +379,75 @@ function GamePage() {
                   </button>
                 </div>
 
-                <div className="game-gallery-thumbs">
-                  {orderedMedia.map((url, i) =>
-                    isYoutubeUrl(url) ? (
-                      <button
-                        key={i}
-                        type="button"
-                        className={`game-gallery-thumb game-gallery-thumb-video ${currentMedia === url ? "active" : ""}`}
-                        onClick={() => setActiveScreenshot(url)}
-                      >
-                        YouTube
-                      </button>
-                    ) : (
-                      <img
-                        key={i}
-                        src={url}
-                        className={`game-gallery-thumb ${currentMedia === url ? "active" : ""}`}
-                        onClick={() => setActiveScreenshot(url)}
-                      />
-                    ),
-                  )}
+                <div className="game-gallery-thumbs-row">
+                  <button
+                    type="button"
+                    className="gallery-arrow gallery-arrow-thumb gallery-arrow-thumb-left"
+                    onClick={() =>
+                      setThumbStart((prev) => Math.max(0, prev - 1))
+                    }
+                    disabled={safeThumbStart === 0}
+                    aria-label="Показать предыдущие медиа"
+                  >
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="15 18 9 12 15 6" />
+                    </svg>
+                  </button>
+
+                  <div className="game-gallery-thumbs">
+                    {visibleThumbs.map((url, i) =>
+                      isYoutubeUrl(url) ? (
+                        <button
+                          key={`${url}-${i}`}
+                          type="button"
+                          className={`game-gallery-thumb game-gallery-thumb-video ${currentMedia === url ? "active" : ""}`}
+                          onClick={() => setActiveScreenshot(url)}
+                        >
+                          YouTube
+                        </button>
+                      ) : (
+                        <img
+                          key={`${url}-${i}`}
+                          src={url}
+                          alt={`${game.title} media ${safeThumbStart + i + 1}`}
+                          className={`game-gallery-thumb ${currentMedia === url ? "active" : ""}`}
+                          onClick={() => setActiveScreenshot(url)}
+                        />
+                      ),
+                    )}
+                  </div>
+
+                  <button
+                    type="button"
+                    className="gallery-arrow gallery-arrow-thumb gallery-arrow-thumb-right"
+                    onClick={() =>
+                      setThumbStart((prev) => Math.min(maxThumbStart, prev + 1))
+                    }
+                    disabled={safeThumbStart >= maxThumbStart}
+                    aria-label="Показать следующие медиа"
+                  >
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  </button>
                 </div>
               </>
             ) : game.bannerUrl ? (
