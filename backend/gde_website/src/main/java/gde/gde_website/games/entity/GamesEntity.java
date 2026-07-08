@@ -30,6 +30,9 @@ public class GamesEntity {
     @Column(columnDefinition = "text")
     private String description;
 
+    @Column(columnDefinition = "text")
+    private String shortDescription;
+
     @Column(name = "banner_url", length = 500)
     private String bannerUrl;
 

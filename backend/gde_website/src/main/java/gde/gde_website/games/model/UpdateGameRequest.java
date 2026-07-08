@@ -17,6 +17,7 @@ import java.util.Map;
 public record UpdateGameRequest(
         String title,
         String description,
+        String shortDescription,
         String bannerUrl,
         List<String> gameTags,
         Map<String, List<String>> screenshots

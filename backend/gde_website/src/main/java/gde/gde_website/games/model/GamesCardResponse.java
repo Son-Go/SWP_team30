@@ -25,6 +25,7 @@ public record GamesCardResponse(
         Long authorId,
         String title,
         String description,
+        String shortDescription,
         String bannerUrl,
         Instant createdAt,
         Instant updatedAt,

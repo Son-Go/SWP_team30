@@ -19,6 +19,7 @@ public record GamesPageResponse(
         Long authorId,
         String title,
         String description,
+        String shortDescription,
         String bannerUrl,
         AuthorResponse author,
         boolean isApproved,

@@ -22,6 +22,7 @@ public record Games(
         Long authorId,
         String title,
         String description,
+        String shortDescription,
         String bannerUrl,
         Instant createdAt,
         Instant updatedAt,

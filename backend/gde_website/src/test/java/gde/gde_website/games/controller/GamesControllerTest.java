@@ -46,6 +46,7 @@ class GamesControllerTest {
                         11L,
                         "Portal",
                         "Puzzle platformer",
+                        "ZOV",
                         "https://example.com/portal.png",
                         new AuthorResponse("valve", null, "valve@example.com"),
                         true,
@@ -69,6 +70,7 @@ class GamesControllerTest {
                 15L,
                 "Hades",
                 "Roguelike action",
+                "ZOV",
                 "https://example.com/hades.png",
                 Instant.parse("2026-01-01T00:00:00Z"),
                 Instant.parse("2026-01-02T00:00:00Z"),
@@ -95,6 +97,7 @@ class GamesControllerTest {
         GamesCreateRequest request = new GamesCreateRequest(
                 "New Game",
                 "Description",
+                "ZOV",
                 "https://example.com/banner.png",
                 List.of("indie"),
                 groupedScreenshots()
@@ -115,6 +118,7 @@ class GamesControllerTest {
         GamesCreateRequest request = new GamesCreateRequest(
                 "New Game",
                 "Description",
+                "ZOV",
                 "https://example.com/banner.png",
                 List.of("indie"),
                 groupedScreenshots()
@@ -124,6 +128,7 @@ class GamesControllerTest {
                 42L,
                 "New Game",
                 "Description",
+                "ZOV",
                 "https://example.com/banner.png",
                 Instant.parse("2026-01-01T00:00:00Z"),
                 Instant.parse("2026-01-02T00:00:00Z"),
