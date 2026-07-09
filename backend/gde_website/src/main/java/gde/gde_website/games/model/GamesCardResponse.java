@@ -1,5 +1,7 @@
 package gde.gde_website.games.model;
 
+import org.springframework.data.domain.Page;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +36,7 @@ public record GamesCardResponse(
         boolean isApproved,
         AuthorResponse author,
         Map<String, List<String>> gameTags,
-        Map<String, List<String>> screenshots
+        Map<String, List<String>> screenshots,
+        Page<GamesCommentResponse> comments
 ) {
 }
