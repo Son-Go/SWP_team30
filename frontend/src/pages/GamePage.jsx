@@ -85,10 +85,6 @@ function GamePage() {
     loadGame();
   }, [id, token]);
 
-  useEffect(() => {
-    setThumbStart(0);
-  }, [game?.id, orderedMedia.length]);
-
   function triggerMediaLimit() {
     clearTimeout(mediaLimitTimerRef.current);
     setShowMediaLimit(false);
@@ -243,12 +239,33 @@ function GamePage() {
   const currentMediaIsVideo = currentMedia ? isYoutubeUrl(currentMedia) : false;
 
   const visibleThumbsCount = 7;
-  const maxThumbStart = Math.max(0, orderedMedia.length - visibleThumbsCount);
+  const currentIndex = currentMedia ? orderedMedia.indexOf(currentMedia) : 0;
+  const maxThumbStart =
+    orderedMedia.length === 0
+      ? 0
+      : Math.floor((orderedMedia.length - 1) / visibleThumbsCount) *
+        visibleThumbsCount;
   const safeThumbStart = Math.min(thumbStart, maxThumbStart);
+
+  function setActiveMediaByIndex(index) {
+    if (!orderedMedia.length) return;
+
+    const clampedIndex = Math.max(0, Math.min(index, orderedMedia.length - 1));
+    const nextPageStart =
+      Math.floor(clampedIndex / visibleThumbsCount) * visibleThumbsCount;
+
+    setActiveScreenshot(orderedMedia[clampedIndex]);
+    setThumbStart(nextPageStart);
+  }
+
   const visibleThumbs = orderedMedia.slice(
     safeThumbStart,
     safeThumbStart + visibleThumbsCount,
   );
+
+  // useEffect(() => {
+  //   setThumbStart(0);
+  // }, [game?.id, orderedMedia.length]);
 
   const flatGameTags = game.gameTags
     ? [
@@ -319,12 +336,13 @@ function GamePage() {
                 <div className="game-gallery-viewer">
                   <button
                     className="gallery-arrow gallery-arrow-left"
-                    onClick={() => {
-                      const idx = orderedMedia.indexOf(currentMedia);
-                      const prev =
-                        (idx - 1 + orderedMedia.length) % orderedMedia.length;
-                      setActiveScreenshot(orderedMedia[prev]);
-                    }}
+                    onClick={() =>
+                      setActiveMediaByIndex(
+                        currentIndex <= 0
+                          ? orderedMedia.length - 1
+                          : currentIndex - 1,
+                      )
+                    }
                   >
                     <svg
                       width="24"
@@ -358,11 +376,13 @@ function GamePage() {
 
                   <button
                     className="gallery-arrow gallery-arrow-right"
-                    onClick={() => {
-                      const idx = orderedMedia.indexOf(currentMedia);
-                      const next = (idx + 1) % orderedMedia.length;
-                      setActiveScreenshot(orderedMedia[next]);
-                    }}
+                    onClick={() =>
+                      setActiveMediaByIndex(
+                        currentIndex >= orderedMedia.length - 1
+                          ? 0
+                          : currentIndex + 1,
+                      )
+                    }
                   >
                     <svg
                       width="24"
@@ -382,11 +402,9 @@ function GamePage() {
                 <div className="game-gallery-thumbs-row">
                   <button
                     type="button"
-                    className="gallery-arrow gallery-arrow-thumb gallery-arrow-thumb-left"
-                    onClick={() =>
-                      setThumbStart((prev) => Math.max(0, prev - 1))
-                    }
-                    disabled={safeThumbStart === 0}
+                    className="gallery-arrow-thumb gallery-arrow-thumb-left"
+                    onClick={() => setActiveMediaByIndex(currentIndex - 1)}
+                    disabled={currentIndex <= 0}
                     aria-label="Показать предыдущие медиа"
                   >
                     <svg
@@ -404,35 +422,35 @@ function GamePage() {
                   </button>
 
                   <div className="game-gallery-thumbs">
-                    {visibleThumbs.map((url, i) =>
-                      isYoutubeUrl(url) ? (
+                    {visibleThumbs.map((url, i) => {
+                      const mediaIndex = safeThumbStart + i;
+
+                      return isYoutubeUrl(url) ? (
                         <button
-                          key={`${url}-${i}`}
+                          key={`${url}-${mediaIndex}`}
                           type="button"
                           className={`game-gallery-thumb game-gallery-thumb-video ${currentMedia === url ? "active" : ""}`}
-                          onClick={() => setActiveScreenshot(url)}
+                          onClick={() => setActiveMediaByIndex(mediaIndex)}
                         >
                           YouTube
                         </button>
                       ) : (
                         <img
-                          key={`${url}-${i}`}
+                          key={`${url}-${mediaIndex}`}
                           src={url}
-                          alt={`${game.title} media ${safeThumbStart + i + 1}`}
+                          alt={`${game.title} media ${mediaIndex + 1}`}
                           className={`game-gallery-thumb ${currentMedia === url ? "active" : ""}`}
-                          onClick={() => setActiveScreenshot(url)}
+                          onClick={() => setActiveMediaByIndex(mediaIndex)}
                         />
-                      ),
-                    )}
+                      );
+                    })}
                   </div>
 
                   <button
                     type="button"
-                    className="gallery-arrow gallery-arrow-thumb gallery-arrow-thumb-right"
-                    onClick={() =>
-                      setThumbStart((prev) => Math.min(maxThumbStart, prev + 1))
-                    }
-                    disabled={safeThumbStart >= maxThumbStart}
+                    className="gallery-arrow-thumb gallery-arrow-thumb-right"
+                    onClick={() => setActiveMediaByIndex(currentIndex + 1)}
+                    disabled={currentIndex >= orderedMedia.length - 1}
                     aria-label="Показать следующие медиа"
                   >
                     <svg

@@ -1226,3 +1226,40 @@ textarea:focus-visible {
     color: var(--text-muted);
   }
 }
+
+.game-gallery-thumbs-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gallery-arrow-thumb {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.75);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    color 0.15s,
+    background-color 0.15s,
+    border-color 0.15s,
+    opacity 0.15s;
+}
+
+.gallery-arrow-thumb:hover:not(:disabled) {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.gallery-arrow-thumb:disabled {
+  opacity: 0.28;
+  cursor: default;
+}
