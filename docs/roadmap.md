@@ -1,6 +1,6 @@
 # Roadmap
 
-## Sprint 1 (15.06.2026 - 21.06.2025)
+## Sprint 1 (15.06.2026 - 21.06.2026)
 
 **Milestone:** [Sprint 1](https://github.com/Son-Go/SWP_team30/milestone/1)
 
@@ -14,7 +14,7 @@
 | US-63 | create grid card view | [#63](https://github.com/Son-Go/SWP_team30/issues/63) |
 
 
-## Sprint 2 (22.06.2026 - 28.06.2025)
+## Sprint 2 (22.06.2026 - 28.06.2026)
 
 **Milestone:** [Sprint 2](https://github.com/Son-Go/SWP_team30/milestone/2)
 
@@ -28,7 +28,7 @@
 | PBI | logging system | [#144](https://github.com/Son-Go/SWP_team30/issues/144) |
 
 
-## Sprint 3 (29.06.2026 - 05.07.2025)
+## Sprint 3 (29.06.2026 - 05.07.2026)
 
 **Milestone:** [Sprint 3](https://github.com/Son-Go/SWP_team30/milestone/3)
 
@@ -39,4 +39,10 @@
 | PBI | add video player | [#184](https://github.com/Son-Go/SWP_team30/issues/184) |
 | PBI | Login by login | [#183](https://github.com/Son-Go/SWP_team30/issues/183) |
 | PBI | Different tag types | [#185](https://github.com/Son-Go/SWP_team30/issues/185) |
+| PBI | Translate all the stuff to Russian | [#204](https://github.com/Son-Go/SWP_team30/issues/204) |
+| US-09 | Regional emphasis on Tatarstan users | [#51](https://github.com/Son-Go/SWP_team30/issues/51) |
+
+## Sprint 4 (06.07.2026 - 12.07.2025)
+
+The customer has not yet decided on the scope of the sprint 4 
 

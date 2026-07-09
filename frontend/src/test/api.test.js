@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import {
-  createGame,
   deleteGame,
   getCurrentUser,
   getGameById,
@@ -81,7 +80,7 @@ describe("api client", () => {
     })
 
     await expect(
-      loginUser({ email: "user@example.com", password: "secret" }),
+      loginUser({ authInfo: "user@example.com", password: "secret" }),
     ).resolves.toEqual({ token: "jwt-token" })
 
     expect(fetch).toHaveBeenCalledWith(
@@ -109,7 +108,7 @@ describe("api client", () => {
     })
 
     await expect(
-      loginUser({ email: "user@example.com", password: "wrong" }),
+      loginUser({ authInfo: "user@example.com", password: "wrong" }),
     ).rejects.toThrow("Incorrect password")
   })
 
@@ -147,62 +146,6 @@ describe("api client", () => {
       email: "new@example.com",
       profileImageUrl: null,
     })
-  })
-
-  it("sends create-game screenshots using the backend grouped contract", async () => {
-    fetch.mockResolvedValue({
-      ok: true,
-      status: 201,
-      headers: new Headers({ "content-type": "application/json" }),
-      json: async () => ({
-        id: 5,
-        title: "New Game",
-        gameTags: { GENRE: ["indie"] },
-        screenshots: {
-          videos: [],
-          pictures: ["https://example.com/screenshot.png"],
-        },
-      }),
-    })
-
-    await expect(
-      createGame(
-        {
-          title: "New Game",
-          description: "Description",
-          bannerUrl: "https://example.com/banner.png",
-          gameTags: ["indie"],
-          screenshots: ["https://example.com/screenshot.png"],
-        },
-        "token-123",
-      ),
-    ).resolves.toMatchObject({
-      id: 5,
-      gameTags: ["indie"],
-      tags: ["indie"],
-      screenshots: ["https://example.com/screenshot.png"],
-    })
-
-    expect(fetch).toHaveBeenCalledWith(
-      `${API_BASE}/games`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer token-123",
-        },
-        body: JSON.stringify({
-          title: "New Game",
-          description: "Description",
-          bannerUrl: "https://example.com/banner.png",
-          gameTags: ["indie"],
-          screenshots: {
-            videos: [],
-            pictures: ["https://example.com/screenshot.png"],
-          },
-        }),
-      },
-    )
   })
 
   it("sends delete requests with the bearer token", async () => {

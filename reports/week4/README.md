@@ -113,3 +113,21 @@ Branch protection rules
 ![image1](./images/Branch_ruleset_1.jpg)
 ![image2](./images/Branch_ruleset_2.jpg)
 ![image3](./images/Branch_ruleset_3.jpg)
+
+Backlog
+![image4](./images/backlog.png)
+
+CI run
+![image5](./images/CI_run.png)
+
+QA run
+![image6](./images/full_QA_run.png)
+
+PR_issue
+![image7](./images/PR_issue.png)
+
+Release
+![image8](./images/release1.png)
+
+Sprint milestone
+![image9](./images/sprint_milestone1.png)
