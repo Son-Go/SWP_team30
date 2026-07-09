@@ -1,61 +1,84 @@
 import React, { useEffect, useState } from "react";
 import { getAllTags } from "../api/api";
 
+const CATEGORY_CONFIG = [
+  {
+    key: "genre",
+    label: "Жанр",
+    multiple: true,
+    colorClass: "tag-badge-genre",
+  },
+  {
+    key: "town",
+    label: "Город",
+    multiple: false,
+    colorClass: "tag-badge-town",
+  },
+  {
+    key: "stage",
+    label: "Статус",
+    multiple: false,
+    colorClass: "tag-badge-stage",
+  },
+];
+
+const EMPTY_TAGS = { genre: [], town: [], stage: [], featured: [] };
+
 function TagSelector({ selected, onChange }) {
-  const [allTags, setAllTags] = useState([]);
+  const [allTags, setAllTags] = useState(EMPTY_TAGS);
 
   useEffect(() => {
     getAllTags()
-      .then((data) => setAllTags(data.gameTags || []))
-      .catch(() => setAllTags([]));
+      .then((data) => setAllTags({ ...EMPTY_TAGS, ...(data.gameTags || {}) }))
+      .catch(() => setAllTags(EMPTY_TAGS));
   }, []);
 
-  function toggleTag(tag) {
-    if (selected.includes(tag)) {
-      onChange(selected.filter((t) => t !== tag));
+  function toggleTag(categoryKey, multiple, tag) {
+    const current = selected[categoryKey] || [];
+    let nextValue;
+
+    if (multiple) {
+      nextValue = current.includes(tag)
+        ? current.filter((t) => t !== tag)
+        : [...current, tag];
     } else {
-      onChange([...selected, tag]);
+      nextValue = current.includes(tag) ? [] : [tag];
     }
+
+    onChange({ ...selected, [categoryKey]: nextValue });
   }
 
-  if (!allTags.length) return null;
+  const hasAnyTags = CATEGORY_CONFIG.some(
+    ({ key }) => (allTags[key] || []).length > 0,
+  );
+  if (!hasAnyTags) return null;
 
   return (
     <div className="tag-selector">
-      <div className="tag-selector-all">
-        <span className="tag-selector-label">Все теги</span>
-        <div className="tag-list">
-          {allTags.map((tag) => (
-            <span
-              key={tag}
-              className={`tag-badge tag-badge-selectable ${
-                selected.includes(tag) ? "tag-badge-dimmed" : ""
-              }`}
-              onClick={() => toggleTag(tag)}
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-      </div>
+      {CATEGORY_CONFIG.map(({ key, label, multiple, colorClass }) => {
+        const options = allTags[key] || [];
+        if (!options.length) return null;
+        const current = selected[key] || [];
 
-      <div className="tag-selector-selected">
-        <span className="tag-selector-label">Выбранные</span>
-        <div className="tag-list">
-          {selected.map((tag) => (
-            <span
-              key={tag}
-              className="tag-badge tag-badge-selected"
-              onClick={() => toggleTag(tag)}
-            >
-              {tag} <span className="tag-remove-icon">×</span>
-            </span>
-          ))}
-          {selected.length === 0 && (
-            <span className="tag-selector-empty">Ничего не выбрано</span>
-          )}
-        </div>
-      </div>
+        return (
+          <div className="tag-selector-category" key={key}>
+            <span className="tag-selector-label">{label}</span>
+            <div className="tag-list">
+              {options.map((tag) => (
+                <span
+                  key={tag}
+                  className={`tag-badge tag-badge-selectable ${colorClass} ${
+                    current.includes(tag) ? "tag-badge-active" : ""
+                  }`}
+                  onClick={() => toggleTag(key, multiple, tag)}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

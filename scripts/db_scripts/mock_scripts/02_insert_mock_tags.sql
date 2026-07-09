@@ -2,33 +2,57 @@
 -- The tag table is mapped by TagEntity and uses tag_type_id as a foreign key.
 
 INSERT INTO tag_type (type)
-VALUES ('GENRE')
+VALUES ('genre')
+ON CONFLICT (type) DO NOTHING;
+
+INSERT INTO tag_type (type)
+VALUES ('town')
+ON CONFLICT (type) DO NOTHING;
+
+INSERT INTO tag_type (type)
+VALUES ('stage')
+ON CONFLICT (type) DO NOTHING;
+
+INSERT INTO tag_type (type)
+VALUES ('featured')
 ON CONFLICT (type) DO NOTHING;
 
 INSERT INTO tag (name, tag_type_id)
 VALUES
-    ('Neon Drift', (SELECT id FROM tag_type WHERE type = 'GENRE')),
-    ('Echo Forge', (SELECT id FROM tag_type WHERE type = 'GENRE')),
-    ('Pixel Mirage', (SELECT id FROM tag_type WHERE type = 'GENRE')),
-    ('Stormbound', (SELECT id FROM tag_type WHERE type = 'GENRE')),
-    ('Velvet Circuit', (SELECT id FROM tag_type WHERE type = 'GENRE')),
-    ('Whisper Arbor', (SELECT id FROM tag_type WHERE type = 'GENRE')),
-    ('Aurora Relay', (SELECT id FROM tag_type WHERE type = 'GENRE')),
-    ('Cinder Bloom', (SELECT id FROM tag_type WHERE type = 'GENRE')),
-    ('Sunset Runners', (SELECT id FROM tag_type WHERE type = 'GENRE')),
-    ('Tidal Vault', (SELECT id FROM tag_type WHERE type = 'GENRE')),
-    ('Gizmo Harbor', (SELECT id FROM tag_type WHERE type = 'GENRE')),
-    ('Quantum Orchard', (SELECT id FROM tag_type WHERE type = 'GENRE')),
-    ('Rogue Lantern', (SELECT id FROM tag_type WHERE type = 'GENRE')),
-    ('Mosaic Frontier', (SELECT id FROM tag_type WHERE type = 'GENRE')),
-    ('Brass Echo', (SELECT id FROM tag_type WHERE type = 'GENRE')),
-    ('Midnight Tangle', (SELECT id FROM tag_type WHERE type = 'GENRE')),
-    ('Phoenix Thread', (SELECT id FROM tag_type WHERE type = 'GENRE')),
-    ('Celestial Loop', (SELECT id FROM tag_type WHERE type = 'GENRE')),
-    ('Ember Protocol', (SELECT id FROM tag_type WHERE type = 'GENRE')),
-    ('Frost Beacon', (SELECT id FROM tag_type WHERE type = 'GENRE')),
-    ('Nova Loom', (SELECT id FROM tag_type WHERE type = 'GENRE')),
-    ('Cipher Harbor', (SELECT id FROM tag_type WHERE type = 'GENRE')),
-    ('Lumen Drift', (SELECT id FROM tag_type WHERE type = 'GENRE')),
-    ('Sable Compass', (SELECT id FROM tag_type WHERE type = 'GENRE'))
+    ('horror', (SELECT id FROM tag_type WHERE type = 'genre')),
+    ('FPS', (SELECT id FROM tag_type WHERE type = 'genre')),
+    ('Action', (SELECT id FROM tag_type WHERE type = 'genre')),
+    ('Adventure', (SELECT id FROM tag_type WHERE type = 'genre')),
+    ('RPG', (SELECT id FROM tag_type WHERE type = 'genre')),
+    ('RTS', (SELECT id FROM tag_type WHERE type = 'genre')),
+    ('Simulation', (SELECT id FROM tag_type WHERE type = 'genre')),
+    ('Puzzle', (SELECT id FROM tag_type WHERE type = 'genre')),
+    ('TPS', (SELECT id FROM tag_type WHERE type = 'genre')),
+    ('MMO', (SELECT id FROM tag_type WHERE type = 'genre')),
+    ('MOBA', (SELECT id FROM tag_type WHERE type = 'genre')),
+    ('Battle Royale', (SELECT id FROM tag_type WHERE type = 'genre')),
+    ('Stealth', (SELECT id FROM tag_type WHERE type = 'genre')),
+    ('Survival', (SELECT id FROM tag_type WHERE type = 'genre')),
+    ('Sandbox', (SELECT id FROM tag_type WHERE type = 'genre')),
+    ('Open World', (SELECT id FROM tag_type WHERE type = 'genre')),
+    ('Platformer', (SELECT id FROM tag_type WHERE type = 'genre')),
+    ('Roguelike', (SELECT id FROM tag_type WHERE type = 'genre')),
+    ('Metroidvania', (SELECT id FROM tag_type WHERE type = 'genre')),
+    ('Visual Novel', (SELECT id FROM tag_type WHERE type = 'genre')),
+    ('Rhythm', (SELECT id FROM tag_type WHERE type = 'genre')),
+    ('Sport', (SELECT id FROM tag_type WHERE type = 'genre')),
+    ('Racing', (SELECT id FROM tag_type WHERE type = 'genre')),
+    ('Fighting', (SELECT id FROM tag_type WHERE type = 'genre')),
+    ('Cozy', (SELECT id FROM tag_type WHERE type = 'genre')),
+
+    ('Prototype', (SELECT id FROM tag_type WHERE type = 'stage')),
+    ('Demo', (SELECT id FROM tag_type WHERE type = 'stage')),
+    ('Release', (SELECT id FROM tag_type WHERE type = 'stage')),
+
+    ('Innopolis', (SELECT id FROM tag_type WHERE type = 'town')),
+    ('Kazan', (SELECT id FROM tag_type WHERE type = 'town')),
+    ('Tatarstan', (SELECT id FROM tag_type WHERE type = 'town')),
+    ('Other', (SELECT id FROM tag_type WHERE type = 'town')),
+
+    ('Featured', (SELECT id FROM tag_type WHERE type = 'featured'))
 ON CONFLICT (name) DO NOTHING;

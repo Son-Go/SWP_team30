@@ -46,17 +46,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/games").permitAll()
                         .requestMatchers(HttpMethod.GET, "/games/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/games/author/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/users/{id}").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/users/{id}/games").permitAll()
 
                         // Endpoints which requires JWT token authentication
                         .requestMatchers(HttpMethod.POST, "/games").authenticated()
                         .requestMatchers(HttpMethod.GET, "/auth/me").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/games/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/games/**").authenticated()
-                        .requestMatchers(HttpMethod.PATCH, "/users/me").authenticated()
-                        .requestMatchers(HttpMethod.PATCH, "/users/me/password").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/users/me").authenticated()
 
                         // Admin endpoints
                         .requestMatchers("/admin/**").hasRole("ADMIN")
