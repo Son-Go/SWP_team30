@@ -96,7 +96,6 @@ class GamesControllerTest {
     void createGameRequiresAuthentication() {
         GamesCreateRequest request = new GamesCreateRequest(
                 "New Game",
-                "Short description",
                 "Description",
                 "ZOV",
                 "https://example.com/banner.png",
@@ -118,7 +117,6 @@ class GamesControllerTest {
                 new UsernamePasswordAuthenticationToken(42L, null, List.of());
         GamesCreateRequest request = new GamesCreateRequest(
                 "New Game",
-                "Short description",
                 "Description",
                 "ZOV",
                 "https://example.com/banner.png",
@@ -129,7 +127,6 @@ class GamesControllerTest {
                 5L,
                 42L,
                 "New Game",
-                "Short description",
                 "Description",
                 "ZOV",
                 "https://example.com/banner.png",

@@ -4,25 +4,6 @@ This document describes the current GitHub Actions CI pipeline, what each job ch
 
 > Manual endporoint testing [endpoint-testing.md](./endpoint-testing.md)
 
-## MVP v2 / Sprint 3 verification evidence
-
-The baseline Assignment 4 gates remain active for the current MVP v2 scope:
-
-- frontend lint, unit tests, and production build
-- backend Maven verification with controller and HTTP integration tests
-- additional QA checks for proxy, mock-auth, and route-contract risks
-- Playwright end-to-end coverage, Docker Compose smoke testing, and documentation link checking
-
-The current automated evidence is focused on the product areas that matter most for the sprint scope:
-
-- authentication and authorization: register, login, profile access, and protected game update/delete operations
-- game management: create, update, and delete flows through backend HTTP tests and the browser-based integration flow
-- public author experience: the public author endpoint contract remains reachable and stable for the UI
-- deployment and proxy correctness: QA scripts validate the nginx authorization header forwarding, the disabled mock-auth path, and the frontend/backend route contract
-- architectural traceability: the test and CI evidence supports the accepted ADRs for JWT authentication, Docker Compose deployment, nginx reverse proxying, Flyway-backed persistence, and the layered backend design
-
-This approach keeps verification credible for the changed sprint areas without relying on arbitrary test-count targets.
-
 ## Workflow Files
 
 - Main CI workflow: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml)
@@ -723,4 +704,4 @@ The CI pipeline does not currently include:
 - full repository/database integration tests for every backend service method
 - load, performance, or security scanning
 
-These can be added later if the project needs stronger release confidence, but the current suite is already sufficient for the MVP v2 / Sprint 3 scope because it covers the critical auth, content-management, public-contract, and deployment paths that the sprint changed or depended on.
+These can be added later if the project needs stronger release confidence.
