@@ -10,7 +10,6 @@ import java.util.Map;
  * @param id - game id
  * @param authorId - game author id
  * @param title - game title
- * @param shortDescription - short description displayed on game cards
  * @param description - game description
  * @param bannerUrl - game banner path
  * @param createdAt - date at which game was created
@@ -25,8 +24,8 @@ public record GamesCardResponse(
         Long id,
         Long authorId,
         String title,
-        String shortDescription,
         String description,
+        String shortDescription,
         String bannerUrl,
         Instant createdAt,
         Instant updatedAt,

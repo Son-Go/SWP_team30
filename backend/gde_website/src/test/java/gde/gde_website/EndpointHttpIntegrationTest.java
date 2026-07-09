@@ -7,7 +7,10 @@ import gde.gde_website.security.JwtUtils;
 import gde.gde_website.security.config.SecurityConfig;
 import gde.gde_website.users.model.LoginResponse;
 import gde.gde_website.users.model.MeResponse;
+import gde.gde_website.users.model.PublicUserProfileResponse;
 import gde.gde_website.users.model.UserRole;
+import gde.gde_website.users.model.UserProfileUpdateResponse;
+import gde.gde_website.users.service.UsersProfileService;
 import gde.gde_website.users.service.UsersService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +50,9 @@ class EndpointHttpIntegrationTest {
 
     @MockitoBean
     private UsersService usersService;
+
+    @MockitoBean
+    private UsersProfileService usersProfileService;
 
     @MockitoBean
     private GamesService gamesService;
@@ -117,7 +123,7 @@ class EndpointHttpIntegrationTest {
                                 11L,
                                 "Portal",
                                 "Puzzle platformer",
-                                "Puzzle platformer",
+                                "Suka",
                                 "https://example.com/portal.png",
                                 new AuthorResponse("valve", null, "valve@example.com"),
                                 true,
@@ -264,6 +270,62 @@ class EndpointHttpIntegrationTest {
                 .andExpect(jsonPath("$.email").value("studio@example.com"));
     }
 
+    @Test
+    void publicUserProfileIsAvailableOverHttp() throws Exception {
+        when(usersProfileService.getPublicProfile(15L))
+                .thenReturn(new PublicUserProfileResponse(15L, "supergiant", null, 3L));
+
+        mockMvc.perform(get("/users/15"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(15))
+                .andExpect(jsonPath("$.username").value("supergiant"))
+                .andExpect(jsonPath("$.profileImageUrl").doesNotExist())
+                .andExpect(jsonPath("$.gameCount").value(3));
+    }
+
+    @Test
+    void updateProfileRequiresJwtOverHttp() throws Exception {
+        mockMvc.perform(patch("/users/me")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "username": "andrey",
+                                  "email": "andrey@example.com",
+                                  "profileImageUrl": "https://example.com/avatar.png"
+                                }
+                                """))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void updateProfileUsesAuthenticatedUserFromJwt() throws Exception {
+        when(usersProfileService.updateProfile(any(), any()))
+                .thenReturn(new UserProfileUpdateResponse(
+                        42L,
+                        "andrey",
+                        "andrey@example.com",
+                        "https://example.com/avatar.png"
+                ));
+
+        mockMvc.perform(patch("/users/me")
+                        .header("Authorization", bearerToken(42L, UserRole.DEVELOPER))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "username": "andrey",
+                                  "email": "andrey@example.com",
+                                  "profileImageUrl": "https://example.com/avatar.png"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(42))
+                .andExpect(jsonPath("$.username").value("andrey"))
+                .andExpect(jsonPath("$.email").value("andrey@example.com"))
+                .andExpect(jsonPath("$.profileImageUrl").value("https://example.com/avatar.png"));
+
+        verify(usersProfileService).updateProfile(eq(42L), any());
+    }
+
     private String bearerToken(Long userId, UserRole userRole) {
         return "Bearer " + jwtUtils.generateToken(userId, userRole);
     }
@@ -272,7 +334,6 @@ class EndpointHttpIntegrationTest {
         return """
                 {
                   "title": "New Game",
-                  "shortDescription": "Short description",
                   "description": "Description",
                   "bannerUrl": "https://example.com/banner.png",
                   "gameTags": ["indie"],
@@ -289,8 +350,8 @@ class EndpointHttpIntegrationTest {
                 5L,
                 42L,
                 "New Game",
-                "Short description",
                 "Description",
+                "Cool",
                 "https://example.com/banner.png",
                 Instant.parse("2026-01-01T00:00:00Z"),
                 Instant.parse("2026-01-02T00:00:00Z"),
@@ -326,7 +387,7 @@ class EndpointHttpIntegrationTest {
                 15L,
                 "Hades",
                 "Roguelike action",
-                "Roguelike action",
+                "ZOV",
                 "https://example.com/hades.png",
                 Instant.parse("2026-01-01T00:00:00Z"),
                 Instant.parse("2026-01-02T00:00:00Z"),

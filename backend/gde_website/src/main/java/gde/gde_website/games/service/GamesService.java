@@ -148,7 +148,6 @@ public class GamesService {
         GamesEntity game = new GamesEntity(
                 authorId,
                 request.title(),
-                shortDescriptionOrFallback(request.shortDescription(), request.description(), request.title()),
                 request.description(),
                 request.bannerUrl()
         );
@@ -206,13 +205,6 @@ public class GamesService {
         }
         if (request.description() != null) {
             gameToUpdate.setDescription(request.description());
-        }
-        if (request.shortDescription() != null) {
-            gameToUpdate.setShortDescription(shortDescriptionOrFallback(
-                    request.shortDescription(),
-                    gameToUpdate.getDescription(),
-                    gameToUpdate.getTitle()
-            ));
         }
         if (request.bannerUrl() != null) {
             gameToUpdate.setBannerUrl(request.bannerUrl());
@@ -479,25 +471,5 @@ public class GamesService {
 
         gameScreenshotsRepository.saveAll(videos);
         gameScreenshotsRepository.saveAll(pictures);
-    }
-
-    private String shortDescriptionOrFallback(String shortDescription, String description, String title) {
-        String value = firstText(shortDescription, description, title);
-
-        if (value.length() > 500) {
-            return value.substring(0, 500);
-        }
-
-        return value;
-    }
-
-    private String firstText(String... values) {
-        for (String value : values) {
-            if (value != null && !value.isBlank()) {
-                return value;
-            }
-        }
-
-        return "";
     }
 }

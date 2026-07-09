@@ -9,7 +9,6 @@ import java.util.Map;
  * @param id - game id
  * @param authorId - id of game author
  * @param title - game title
- * @param shortDescription - short description displayed on game cards
  * @param description - game description
  * @param bannerUrl - game banner url
  * @param author - author information, if available
@@ -19,8 +18,8 @@ public record GamesPageResponse(
         Long id,
         Long authorId,
         String title,
-        String shortDescription,
         String description,
+        String shortDescription,
         String bannerUrl,
         AuthorResponse author,
         boolean isApproved,

@@ -17,6 +17,3 @@
 
 ### Generated backups ###
 backups/postgres/
-
-### Generated documentation site ###
-site/

@@ -27,11 +27,11 @@ public class GamesEntity {
     @Column(length = 255, nullable = false)
     private String title;
 
-    @Column(name = "short_description", length = 500, nullable = false)
-    private String shortDescription;
-
     @Column(columnDefinition = "text")
     private String description;
+
+    @Column(columnDefinition = "text")
+    private String shortDescription;
 
     @Column(name = "banner_url", length = 500)
     private String bannerUrl;
@@ -51,13 +51,9 @@ public class GamesEntity {
     @OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<GamesScreenshotEntity> gameScreenshots = new ArrayList<>();
 
-    @OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<CommentEntity> comments = new ArrayList<>();
-
-    public GamesEntity(Long authorId, String title, String shortDescription, String description, String bannerUrl) {
+    public GamesEntity(Long authorId, String title, String description, String bannerUrl) {
         this.authorId = authorId;
         this.title = title;
-        this.shortDescription = shortDescription;
         this.description = description;
         this.bannerUrl = bannerUrl;
     }
@@ -65,12 +61,6 @@ public class GamesEntity {
     @PrePersist
     protected void onCreate() {
         Instant now = Instant.now();
-        if (shortDescription == null) {
-            shortDescription = "";
-        }
-        if (shortDescription.length() > 500) {
-            shortDescription = shortDescription.substring(0, 500);
-        }
         if (createdAt == null) {
             createdAt = now;
         }
