@@ -1,0 +1,159 @@
+@startuml component-diagram
+!theme plain
+
+title GDE Website — Component Diagram (Static View)
+
+skinparam component {
+  BackgroundColor<<frontend>> #E3F2FD
+  BackgroundColor<<backend>> #FFF3E0
+  BackgroundColor<<database>> #E8F5E9
+  BackgroundColor<<external>> #FCE4EC
+  BackgroundColor<<observability>> #F3E5F5
+  BorderColor #333333
+  FontSize 12
+}
+
+skinparam package {
+  BackgroundColor #FAFAFA
+  BorderColor #666666
+  FontSize 13
+}
+
+skinparam note {
+  BackgroundColor #FFFDE7
+  BorderColor #FBC02D
+}
+
+' ─── External actors ───
+actor "User / Browser" as User
+
+' ─── Frontend package ───
+package "Frontend (React + Vite)" <<frontend>> {
+  component "NavBar" as NavBar
+  component "GamesPage\n(Game listing & filtering)" as GamesPage
+  component "GamePage\n(Game detail)" as GamePage
+  component "CreateGamePage\n(Game creation)" as CreateGamePage
+  component "AuthPage\n(Login / Register)" as AuthPage
+  component "ProtectedRoute\n(Route guard)" as ProtectedRoute
+  component "AuthContext\n(JWT token state)" as AuthContext
+  component "API Client\n(fetch wrapper)" as APIClient
+  component "Nginx\n(Reverse proxy)" as Nginx
+}
+
+' ─── Backend package ───
+package "Backend (Spring Boot 4 / Java 21)" <<backend>> {
+  component "SecurityConfig\n(JWT filter, CORS)" as SecurityConfig
+  component "JwtFilter\n(Token validation)" as JwtFilter
+  component "JwtUtils\n(Token generation)" as JwtUtils
+
+  package "Games Module" {
+    component "GamesController\n(REST endpoints)" as GamesCtrl
+    component "GamesService\n(Business logic)" as GamesSvc
+    component "GamesRepository\n(JPA / Hibernate)" as GamesRepo
+  }
+
+  package "Users Module" {
+    component "UsersController\n(/auth endpoints)" as UsersCtrl
+    component "UsersService\n(Auth logic)" as UsersSvc
+    component "UsersRepository\n(JPA / Hibernate)" as UsersRepo
+  }
+
+  package "Forum Module" {
+    component "ForumController\n(placeholder)" as ForumCtrl
+  }
+
+  package "Store Module" {
+    component "StoreController\n(placeholder)" as StoreCtrl
+  }
+
+  component "Flyway\n(DB migrations)" as Flyway
+}
+
+' ─── Database ───
+database "PostgreSQL\n(Database)" as Postgres
+
+' ─── Observability ───
+package "Observability Stack" <<observability>> {
+  component "Grafana\n(Dashboard UI)" as Grafana
+  component "Prometheus\n(Metrics)" as Prometheus
+  component "Loki\n(Logs)" as Loki
+  component "Alloy\n(Log collector)" as Alloy
+  component "cAdvisor\n(Container metrics)" as cAdvisor
+}
+
+' ─── External services ───
+package "External" <<external>> {
+  component "pgAdmin\n(DB admin UI)" as PgAdmin
+}
+
+' ─── Connections ───
+
+' User → Nginx
+User --> Nginx : HTTP (port 80)
+
+' Nginx → Frontend
+Nginx --> GamesPage : serves SPA
+Nginx --> GamePage : serves SPA
+Nginx --> CreateGamePage : serves SPA
+Nginx --> AuthPage : serves SPA
+
+' Nginx → Backend (reverse proxy /api/)
+Nginx --> GamesCtrl : /api/games (proxy_pass)
+Nginx --> UsersCtrl : /api/auth (proxy_pass)
+
+' Frontend internal
+GamesPage --> APIClient : getGames()
+GamePage --> APIClient : getGameById()
+CreateGamePage --> APIClient : createGame()
+AuthPage --> APIClient : loginUser() / registerUser()
+APIClient --> AuthContext : stores JWT token
+ProtectedRoute --> AuthContext : checks auth state
+
+' Backend internal
+GamesCtrl --> GamesSvc : delegates
+GamesSvc --> GamesRepo : JPA queries
+GamesSvc --> UsersRepo : author lookup
+
+UsersCtrl --> UsersSvc : delegates
+UsersSvc --> UsersRepo : JPA queries
+UsersSvc --> JwtUtils : generate token
+
+SecurityConfig --> JwtFilter : filter chain
+JwtFilter --> JwtUtils : validate token
+
+' Backend → Database
+GamesRepo --> Postgres : JDBC
+UsersRepo --> Postgres : JDBC
+Flyway --> Postgres : migrations
+
+' Observability connections
+Alloy --> Loki : push logs
+Prometheus --> Alloy : scrape metrics
+Prometheus --> Loki : scrape metrics
+Prometheus --> cAdvisor : scrape metrics
+Grafana --> Prometheus : query metrics
+Grafana --> Loki : query logs
+
+' pgAdmin
+PgAdmin --> Postgres : JDBC
+
+' ─── Notes ───
+note right of APIClient
+  Uses VITE_API_URL env var.
+  In production, requests go
+  through Nginx /api/ proxy.
+end note
+
+note bottom of Postgres
+  Persistent volume:
+  postgres_data
+  Flyway manages schema
+end note
+
+note right of SecurityConfig
+  Stateless JWT auth.
+  No session storage.
+  BCrypt password hashing.
+end note
+
+@enduml

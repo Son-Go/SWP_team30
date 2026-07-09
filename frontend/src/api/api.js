@@ -1,3 +1,5 @@
+import { normalizeMedia } from "../utils/media";
+
 const API_URL = import.meta.env.VITE_API_URL;
 const USE_MOCK_AUTH = false;
 const TOKEN_KEY = "session_token";
@@ -44,10 +46,36 @@ export function getGames(page = 0, tags = []) {
   return request(`/games?page=${page}${tagsQuery}`);
 }
 
-export function getGameById(id, token) {
-  return request(`/games/${id}`, {
+export async function getGameById(id, token) {
+  const data = await request(`/games/${id}`, {
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
   });
+
+  return {
+    ...data,
+    screenshots: normalizeMedia(data?.screenshots),
+  };
+}
+
+function flattenGameTags(gameTags) {
+  if (Array.isArray(gameTags)) {
+    return gameTags;
+  }
+
+  if (!gameTags || typeof gameTags !== "object") {
+    return [];
+  }
+
+  return Object.values(gameTags).flat().filter(Boolean);
+}
+
+function normalizeGameResponse(game) {
+  if (!game) return game;
+
+  return {
+    ...game,
+    screenshots: normalizeMedia(game?.screenshots),
+  };
 }
 
 export function createGame(body, token) {
@@ -57,8 +85,12 @@ export function createGame(body, token) {
       "Content-Type": "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
-    body: JSON.stringify(body),
-  });
+    body: JSON.stringify({
+      ...body,
+      gameTags: flattenGameTags(body?.gameTags),
+      screenshots: normalizeMedia(body?.screenshots),
+    }),
+  }).then(normalizeGameResponse);
 }
 
 export function updateGame(id, body, token) {
@@ -68,8 +100,12 @@ export function updateGame(id, body, token) {
       "Content-Type": "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
-    body: JSON.stringify(body),
-  });
+    body: JSON.stringify({
+      ...body,
+      gameTags: flattenGameTags(body?.gameTags),
+      screenshots: normalizeMedia(body?.screenshots),
+    }),
+  }).then(normalizeGameResponse);
 }
 
 export function deleteGame(id, token) {
@@ -85,13 +121,16 @@ export async function loginUser(credentials) {
     return { token: "mock-session-token" };
   }
 
+  const isEmail = credentials.authInfo.includes("@"); // автоопределение
+
   return request("/auth/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      email: credentials.email,
+      authInfo: credentials.authInfo, // email или username
+      isEmail, // true / false
       password: credentials.password,
     }),
   });

@@ -8,7 +8,17 @@
 
 ## [Unreleased](https://github.com/Son-Go/SWP_team30)
 
-Additional documentations, readme updates, images for v0.1.5
+Additional documentation, images and readme updates for v0.2.0
+
+## [v0.2.0](https://github.com/Son-Go/SWP_team30/releases/tag/MVP-v2)
+
+### Added
+- Additional documentations, readme updates, images for v0.1.5
+- Screenshot gallery support youtube videos
+- Game description correctly display basic text formatting
+- Tags now divided into different tag types
+- Game page support sections (new games, featured and other)
+- New project interactive [documentation](https://son-go.github.io/SWP_team30/)
 
 ## [v0.1.5](https://github.com/Son-Go/SWP_team30/releases/tag/MVP-v1.5)
 

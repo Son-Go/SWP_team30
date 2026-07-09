@@ -12,16 +12,16 @@ test("user can register, log in, create a game, and view it through the real sta
 
   await page.goto("/auth");
 
-  await page.locator('button[type="button"]').click();
-  await page.getByLabel("Username").fill(username);
-  await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(password);
+  await page.locator('form button[type="button"]').click();
+  await page.locator("#username").fill(username);
+  await page.locator("#email").fill(email);
+  await page.locator("#password").fill(password);
   await page.locator('button[type="submit"]').click();
 
-  await expect(page.getByLabel("Username")).toBeHidden();
+  await expect(page.locator("#authInfo")).toBeVisible();
 
-  await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(password);
+  await page.locator("#authInfo").fill(email);
+  await page.locator("#password").fill(password);
   await page.locator('button[type="submit"]').click();
 
   await expect(page).toHaveURL(/\/games$/);
@@ -37,5 +37,7 @@ test("user can register, log in, create a game, and view it through the real sta
   await expect(page.getByText(description)).toBeVisible();
 
   await page.goto("/games");
-  await expect(page.getByRole("link").filter({ hasText: gameTitle })).toBeVisible();
+  await expect(
+    page.locator(".games-grid").getByRole("link").filter({ hasText: gameTitle }),
+  ).toBeVisible();
 });

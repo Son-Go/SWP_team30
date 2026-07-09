@@ -1,0 +1,92 @@
+@startuml create-game-sequence
+!theme plain
+
+title GDE Website — Sequence Diagram: Create Game Workflow
+
+skinparam sequence {
+  ArrowColor #333333
+  ActorBorderColor #333333
+  LifeLineBorderColor #666666
+  ParticipantBackgroundColor #E3F2FD
+  ParticipantBorderColor #333333
+  NoteBackgroundColor #FFFDE7
+  NoteBorderColor #FBC02D
+  FontSize 12
+}
+
+actor "User" as User
+participant "Browser\n(React SPA)" as Browser
+participant "Nginx\n(Reverse Proxy)" as Nginx
+participant "GamesController\n(Spring Boot)" as GamesCtrl
+participant "JwtFilter\n(Security)" as JwtFilter
+participant "JwtUtils\n(Token)" as JwtUtils
+participant "GamesService\n(Business Logic)" as GamesSvc
+participant "GamesRepository\n(JPA)" as GamesRepo
+database "PostgreSQL" as Postgres
+
+== 1. User navigates to Create Game page ==
+
+User -> Browser : Clicks "Create Game" button
+Browser -> Browser : ProtectedRoute checks AuthContext\nfor valid JWT token
+
+note right of Browser
+  If no token → redirect to /auth
+  If token exists → render CreateGamePage
+end note
+
+== 2. User fills in game details and submits ==
+
+User -> Browser : Fills title, description,\nbanner URL, tags\nand clicks "Submit"
+Browser -> Browser : Validates form fields
+
+== 3. Frontend sends authenticated POST request ==
+
+Browser -> Nginx : POST /api/games\n{title, description, bannerUrl, tags}\nAuthorization: Bearer <JWT>
+Nginx -> GamesCtrl : proxy_pass → POST /games\n(forwards Authorization header)
+
+== 4. Backend validates JWT token ==
+
+GamesCtrl -> JwtFilter : Filter chain intercepts request
+JwtFilter -> JwtUtils : Validate JWT token
+JwtUtils --> JwtFilter : Token valid → extract userId
+JwtFilter --> GamesCtrl : Set Authentication principal\n(userId)
+
+== 5. Backend processes game creation ==
+
+GamesCtrl -> GamesCtrl : Check authentication\n(if null → 401 UNAUTHORIZED)
+GamesCtrl -> GamesSvc : createGame(request, userId)
+
+== 6. Service layer creates game entity ==
+
+GamesSvc -> GamesRepo : Save GamesEntity\n(title, description, bannerUrl,\nauthorId, timestamps)
+GamesRepo -> Postgres : INSERT INTO games\n(title, description, banner_url,\nauthor_id, created_at, updated_at)
+Postgres --> GamesRepo : Game saved (with generated ID)
+
+== 7. Service handles tags ==
+
+GamesSvc -> GamesSvc : Resolve tag names\n→ TagEntity references
+GamesSvc -> GamesRepo : Save GameTagEntity\n(game_id, tag_id)
+GamesRepo -> Postgres : INSERT INTO game_tags\n(game_id, tag_id)
+Postgres --> GamesRepo : Tags linked
+
+== 8. Response flows back ==
+
+GamesSvc --> GamesCtrl : Games entity (with ID)
+GamesCtrl --> Nginx : HTTP 201 Created\n{game data}
+Nginx --> Browser : HTTP 201 Created\n{game data}
+
+== 9. Frontend updates UI ==
+
+Browser -> Browser : Update state with\nnew game data
+Browser --> User : Show success message\n/ redirect to game page
+
+note over User, Postgres
+  **Key architecture decisions demonstrated:**
+  1. Stateless JWT authentication (no server-side sessions)
+  2. Nginx reverse proxy for frontend-backend communication
+  3. Service layer pattern (Controller → Service → Repository)
+  4. JPA/Hibernate ORM with PostgreSQL
+  5. Tag-based game categorization via join table
+end note
+
+@enduml

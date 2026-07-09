@@ -9,6 +9,7 @@ import java.util.Map;
  * is provided, current tag relations are replaced with the provided list.
  *
  * @param title - new game title or {@code null}
+ * @param shortDescription - new short description or {@code null}
  * @param description - new game description or {@code null}
  * @param bannerUrl - new banner url or {@code null}
  * @param gameTags - new list of tag names or {@code null}
@@ -16,6 +17,7 @@ import java.util.Map;
  */
 public record UpdateGameRequest(
         String title,
+        String shortDescription,
         String description,
         String shortDescription,
         String bannerUrl,

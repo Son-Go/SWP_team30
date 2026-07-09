@@ -1,0 +1,165 @@
+@startuml deployment-diagram
+!theme plain
+
+title GDE Website — Deployment Diagram
+
+skinparam node {
+  BackgroundColor #E3F2FD
+  BorderColor #333333
+  FontSize 12
+}
+skinparam artifact {
+  BackgroundColor #FFF3E0
+  BorderColor #333333
+  FontSize 12
+}
+skinparam database {
+  BackgroundColor #E8F5E9
+  BorderColor #333333
+  FontSize 12
+}
+skinparam cloud {
+  BackgroundColor #FCE4EC
+  BorderColor #333333
+  FontSize 12
+}
+skinparam note {
+  BackgroundColor #FFFDE7
+  BorderColor #FBC02D
+}
+
+' ─── Customer-facing access ───
+cloud "Customer / Internet" as Internet {
+  actor "User / Browser" as User
+}
+
+' ─── Docker Host ───
+node "Docker Host\n(Linux / Windows / macOS)" as DockerHost {
+
+  node "Docker Network: gde-network\n(bridge)" as GdeNetwork {
+
+    ' ─── Frontend ───
+    node "frontend\n(Nginx container)" as FrontendNode {
+      artifact "nginx:stable-alpine" as NginxArtifact
+      artifact "React SPA\n(built with Vite)" as ReactSPA
+      note right of NginxArtifact
+        Port 80 exposed
+        Serves static SPA files
+        Reverse proxies /api/ to backend
+      end note
+    }
+
+    ' ─── Backend ───
+    node "backend\n(Spring Boot container)" as BackendNode {
+      artifact "eclipse-temurin:21-jre" as JreRuntime
+      artifact "gde_website.jar\n(Spring Boot 4)" as SpringBootApp
+      note right of SpringBootApp
+        Port 8080 exposed
+        REST API (JSON)
+        JWT authentication
+        Flyway migrations
+      end note
+    }
+
+    ' ─── Database ───
+    node "postgres\n(PostgreSQL container)" as PostgresNode {
+      artifact "postgres:latest" as PostgresImage
+      database "PostgreSQL\n(postgres_data volume)" as PostgresDB
+      note right of PostgresDB
+        Persistent volume:
+        postgres_data
+        Stores users, games,
+        tags, game_tags
+      end note
+    }
+
+    ' ─── pgAdmin ───
+    node "pgAdmin\n(pgAdmin4 container)" as PgAdminNode {
+      artifact "dpage/pgadmin4:latest" as PgAdminImage
+      note right of PgAdminImage
+        Port 5050 exposed
+        DB admin UI
+      end note
+    }
+
+    ' ─── Observability ───
+    node "grafana\n(Grafana container)" as GrafanaNode {
+      artifact "grafana/grafana:latest" as GrafanaImage
+      note right of GrafanaImage
+        Port 3000 exposed
+        Dashboard UI
+      end note
+    }
+
+    node "prometheus\n(Prometheus container)" as PrometheusNode {
+      artifact "prom/prometheus:latest" as PrometheusImage
+      database "prometheus_data\n(volume)" as PrometheusDB
+    }
+
+    node "loki\n(Loki container)" as LokiNode {
+      artifact "grafana/loki:latest" as LokiImage
+      database "loki_data\n(volume)" as LokiDB
+    }
+
+    node "alloy\n(Alloy container)" as AlloyNode {
+      artifact "grafana/alloy:latest" as AlloyImage
+      database "alloy_data\n(volume)" as AlloyDB
+    }
+
+    node "cadvisor\n(cAdvisor container)" as cAdvisorNode {
+      artifact "gcr.io/cadvisor/cadvisor:latest" as cAdvisorImage
+    }
+
+    node "docker-events\n(Docker CLI container)" as DockerEventsNode {
+      artifact "docker:cli" as DockerEventsImage
+    }
+  }
+}
+
+' ─── External connections ───
+User --> FrontendNode : HTTP (port 80)
+FrontendNode --> BackendNode : /api/ → proxy_pass\nhttp://backend:8080
+
+' ─── Internal connections ───
+BackendNode --> PostgresNode : JDBC\n(postgres:5432)
+PgAdminNode --> PostgresNode : JDBC\n(postgres:5432)
+
+AlloyNode --> LokiNode : push logs\n(http://loki:3100)
+PrometheusNode --> AlloyNode : scrape metrics
+PrometheusNode --> LokiNode : scrape metrics
+PrometheusNode --> cAdvisorNode : scrape metrics
+GrafanaNode --> PrometheusNode : query metrics
+GrafanaNode --> LokiNode : query logs
+
+DockerEventsNode --> AlloyNode : Docker events\n(via Docker socket)
+
+' ─── Volume mounts ───
+note bottom of DockerHost
+  **Volumes:**
+  - postgres_data (PostgreSQL data)
+  - prometheus_data (Prometheus TSDB)
+  - loki_data (Loki log storage)
+  - grafana_data (Grafana state)
+  - alloy_data (Alloy state)
+
+  **Network:**
+  - gde-network (bridge, shared by all services)
+
+  **Compose files:**
+  - compose.yaml (app stack)
+  - compose.observability.yaml (observability overlay)
+end note
+
+' ─── Deployment model notes ───
+note as DeploymentNote
+  **Deployment Model:**
+  - Single Docker host (local or VM)
+  - All services run as Docker containers
+  - Docker Compose orchestrates services
+  - Nginx serves frontend + reverse proxies API
+  - PostgreSQL is the sole data store
+  - Observability is an optional overlay
+  - CI/CD works through GitHub Actions
+end note
+
+@enduml

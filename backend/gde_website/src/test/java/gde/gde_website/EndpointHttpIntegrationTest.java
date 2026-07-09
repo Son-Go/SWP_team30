@@ -272,6 +272,7 @@ class EndpointHttpIntegrationTest {
         return """
                 {
                   "title": "New Game",
+                  "shortDescription": "Short description",
                   "description": "Description",
                   "bannerUrl": "https://example.com/banner.png",
                   "gameTags": ["indie"],
@@ -288,6 +289,7 @@ class EndpointHttpIntegrationTest {
                 5L,
                 42L,
                 "New Game",
+                "Short description",
                 "Description",
                 "Cool",
                 "https://example.com/banner.png",
