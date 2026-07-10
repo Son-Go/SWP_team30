@@ -58,7 +58,8 @@ public class GamesCommentsController {
             @PathVariable("comment_id") Long commentId,
             @RequestBody @Valid GamesCreateCommentRequest request,
             Authentication authentication,
-            @PathVariable Long game_id) {
+            @PathVariable Long game_id
+    ) {
         gamesCommentsControllerLogger
                 .info("Called GamesCommentsController /games/{game_id}/comments/{comment_id} method (patch)");
 
@@ -68,6 +69,23 @@ public class GamesCommentsController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(gamesCommentsService.updateComment(request, currentUserId, commentId, game_id));
+    }
+
+    @DeleteMapping("/{comment_id}")
+    public ResponseEntity<GamesCommentResponse> deleteComment(
+            @PathVariable("comment_id") Long commentId,
+            Authentication authentication,
+            @PathVariable Long game_id
+    ) {
+        gamesCommentsControllerLogger
+                .info("Called GamesCommentsController /games/{game_id}/comments/{comment_id} method (delete)");
+
+        checkAuth(authentication);
+
+        Long currentUserId = (Long) authentication.getPrincipal();
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(gamesCommentsService.deleteComment(currentUserId, commentId, game_id));
     }
 
     private void checkAuth(Authentication authentication) {

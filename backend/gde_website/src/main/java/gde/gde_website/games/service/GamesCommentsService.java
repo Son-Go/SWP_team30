@@ -75,7 +75,8 @@ public class GamesCommentsService {
     public GamesCommentResponse updateComment(GamesCreateCommentRequest request,
                                               Long currentUserId,
                                               Long commentId,
-                                              Long gameId) {
+                                              Long gameId
+    ) {
         commentsServiceLogger.info("Called updateComment method");
 
         Pair<CommentEntity, UserEntity> afterCheck = checkPermissions(commentId, currentUserId, gameId);
@@ -93,6 +94,26 @@ public class GamesCommentsService {
         return gamesCommentsMapper.commentEntityToCommentResponse(savedComment, author);
     }
 
+    @Transactional
+    public GamesCommentResponse deleteComment(Long currentUserId,
+                                              Long commentId,
+                                              Long gameId
+    ) {
+        commentsServiceLogger.info("Called deleteComment method");
+
+        Pair<CommentEntity, UserEntity> afterCheck = checkPermissions(commentId, currentUserId, gameId);
+
+        CommentEntity commentToDelete = afterCheck.getFirst();
+
+        UserEntity author = afterCheck.getSecond();
+
+        commentRepository.delete(commentToDelete);
+
+        commentsServiceLogger.info("Successfully delete comment id={}", commentToDelete.getId());
+
+        return gamesCommentsMapper.commentEntityToCommentResponse(commentToDelete, author);
+    }
+
     private Set<Long> allAuthorsIdsOnPage(Page<CommentEntity> commentsPage) {
         return commentsPage.getContent().stream()
                 .map(CommentEntity::getUserId)
@@ -104,7 +125,7 @@ public class GamesCommentsService {
      *
      * @param commentId - id of comment
      * @param userId - id of user
-     * @Author: Artemii Gorelov
+     * @Author: Egor Grishin
      */
     private Pair<CommentEntity, UserEntity> checkPermissions(Long commentId, Long userId, Long gameId) {
         commentsServiceLogger.info("Called checkPermissions comments service method");
