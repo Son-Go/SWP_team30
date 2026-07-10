@@ -1,6 +1,7 @@
 package gde.gde_website;
 
 import gde.gde_website.games.model.*;
+import gde.gde_website.games.service.GamesCommentsService;
 import gde.gde_website.games.service.GamesService;
 import gde.gde_website.security.JwtFilter;
 import gde.gde_website.security.JwtUtils;
@@ -56,6 +57,9 @@ class EndpointHttpIntegrationTest {
 
     @MockitoBean
     private GamesService gamesService;
+
+    @MockitoBean
+    private GamesCommentsService gamesCommentsService;
 
     @Test
     void registerCreatesUserSessionOverHttp() throws Exception {
@@ -127,7 +131,8 @@ class EndpointHttpIntegrationTest {
                                 "https://example.com/portal.png",
                                 new AuthorResponse("valve", null, "valve@example.com"),
                                 true,
-                                pageTags()
+                                pageTags(),
+                                List.of("https://example.com/portal-shot.png")
                         )
                 )));
 
@@ -388,7 +393,8 @@ class EndpointHttpIntegrationTest {
                                 "https://example.com/hades.png",
                                 new AuthorResponse("supergiant", null, "studio@example.com"),
                                 true,
-                                pageTags()
+                                pageTags(),
+                                List.of("https://example.com/hades-shot.png")
                         )
                 )));
 
