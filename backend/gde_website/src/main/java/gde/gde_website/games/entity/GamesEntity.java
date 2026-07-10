@@ -27,7 +27,7 @@ public class GamesEntity {
     @Column(length = 255, nullable = false)
     private String title;
 
-    @Column(name = "short_description", length = 500, nullable = false)
+    @Column(name = "short_description", length = 500, nullable = true)
     private String shortDescription;
 
     @Column(columnDefinition = "text")
