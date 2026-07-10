@@ -1,16 +1,21 @@
 package gde.gde_website.games.controller;
 
 import gde.gde_website.games.model.GamesCommentResponse;
+import gde.gde_website.games.model.GamesCreateCommentRequest;
 import gde.gde_website.games.service.GamesCommentsService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/games/{game_id}/comments")
@@ -31,5 +36,23 @@ public class GamesCommentsController {
         Pageable pageable = PageRequest.of(page, size);
 
         return ResponseEntity.status(HttpStatus.OK).body(gamesCommentsService.getAllCommentsByGameId(gameId, pageable));
+    }
+
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GamesCommentResponse> createComment(
+            @PathVariable("game_id") Long gameId,
+            @RequestBody @Valid GamesCreateCommentRequest request,
+            Authentication authentication
+    ) {
+        gamesCommentsControllerLogger.info("Called GamesCommentsController /games/{game_id}/comments method (post)");
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            gamesCommentsControllerLogger.error("User create comment permissions error");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
+        }
+
+        Long currentUserId = (Long) authentication.getPrincipal();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(gamesCommentsService.createComment(request, currentUserId, gameId));
     }
 }

@@ -3,6 +3,7 @@ package gde.gde_website.games.service;
 import gde.gde_website.games.entity.CommentEntity;
 import gde.gde_website.games.mapper.GamesCommentsMapper;
 import gde.gde_website.games.model.GamesCommentResponse;
+import gde.gde_website.games.model.GamesCreateCommentRequest;
 import gde.gde_website.games.repository.CommentRepository;
 import gde.gde_website.games.repository.GamesRepository;
 import gde.gde_website.users.entity.UserEntity;
@@ -44,6 +45,27 @@ public class GamesCommentsService {
 
         return commentEntityPage.map(commentEntity ->
                 gamesCommentsMapper.commentEntityToCommentResponse(commentEntity, authorsMap));
+    }
+
+    @Transactional
+    public GamesCommentResponse createComment(GamesCreateCommentRequest request, Long authorId, Long gameId) {
+        commentsServiceLogger.info("Called createComment method");
+
+        gamesRepository.findById(gameId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        UserEntity author = usersRepository.findById(authorId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.FORBIDDEN));
+
+        CommentEntity comment = new CommentEntity(
+                authorId,
+                gameId,
+                request.text()
+        );
+
+        CommentEntity savedComment = commentRepository.save(comment);
+
+        commentsServiceLogger.info("Successfully created comment id={}", savedComment.getId());
+
+        return gamesCommentsMapper.commentEntityToCommentResponse(savedComment, author);
     }
 
     private Set<Long> allAuthorsIdsOnPage(Page<CommentEntity> commentsPage) {

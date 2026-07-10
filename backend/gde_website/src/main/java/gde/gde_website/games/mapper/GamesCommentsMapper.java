@@ -27,6 +27,19 @@ public class GamesCommentsMapper {
         );
     }
 
+    public GamesCommentResponse commentEntityToCommentResponse(CommentEntity comment, UserEntity author) {
+        AuthorResponse authorResp = null;
+        if (author != null) { authorResp = getAuthorResponseFromUserEntity(author); }
+
+        return new GamesCommentResponse(
+                comment.getId(),
+                authorResp,
+                comment.getText(),
+                comment.getCreatedAt(),
+                comment.getUpdatedAt()
+        );
+    }
+
     private AuthorResponse getAuthorResponseFromUserEntity(UserEntity user) {
         return new AuthorResponse(
                 user.getUsername(),

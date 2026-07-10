@@ -173,6 +173,8 @@ public class GamesService {
             saveScreenshots(request.screenshots(), savedGame);
         }
 
+        gamesServiceLogger.info("Successfully created game id={}", savedGame.getId());
+
         return mapper.entityToGames(savedGame, allTagTypeNames(), getScreenshotsByGameId(savedGame.getId()));
     }
 
