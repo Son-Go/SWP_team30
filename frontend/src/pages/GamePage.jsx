@@ -267,13 +267,22 @@ function GamePage() {
   //   setThumbStart(0);
   // }, [game?.id, orderedMedia.length]);
 
-  const flatGameTags = game.gameTags
-    ? [
-        ...(game.gameTags.genre || []),
-        ...(game.gameTags.town || []),
-        ...(game.gameTags.stage || []),
-        ...(game.gameTags.featured || []),
-      ]
+  const TAG_CATEGORY_CLASSES = {
+    genre: "tag-badge-genre",
+    town: "tag-badge-town",
+    stage: "tag-badge-stage",
+    featured: "tag-badge-featured",
+  };
+
+  const visibleGameTags = game.gameTags
+    ? Object.entries(game.gameTags)
+        .filter(([category]) => category !== "featured")
+        .flatMap(([category, tags]) =>
+          (tags || []).filter(Boolean).map((tag) => ({
+            name: tag,
+            colorClass: TAG_CATEGORY_CLASSES[category] || "",
+          })),
+        )
     : [];
 
   return (
@@ -515,17 +524,13 @@ function GamePage() {
               </div>
             )}
 
-            {flatGameTags.length > 0 && (
+            {visibleGameTags.length > 0 && (
               <div className="game-sidebar-meta">
                 <div className="tag-list">
-                  {flatGameTags.map((tag) => (
-                    <Link
-                      key={tag}
-                      to={`/games?tags=${encodeURIComponent(tag)}`}
-                      className="tag-badge tag-badge-selectable"
-                    >
-                      {tag}
-                    </Link>
+                  {visibleGameTags.map(({ name, colorClass }) => (
+                    <span className={`tag-badge ${colorClass}`} key={name}>
+                      {name}
+                    </span>
                   ))}
                 </div>
               </div>

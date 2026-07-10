@@ -2,11 +2,27 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 function GameCard({ game }) {
-  const visibleTags = Array.isArray(game.tags)
-    ? game.tags
-    : game.gameTags && typeof game.gameTags === "object"
-      ? Object.values(game.gameTags).flat().filter(Boolean)
-      : [];
+  const TAG_CATEGORY_CLASSES = {
+    genre: "tag-badge-genre",
+    town: "tag-badge-town",
+    stage: "tag-badge-stage",
+    featured: "tag-badge-featured",
+  };
+
+  const visibleTags =
+    game.gameTags && typeof game.gameTags === "object"
+      ? Object.entries(game.gameTags)
+          .filter(([category]) => category !== "featured")
+          .flatMap(([category, tags]) =>
+            (tags || []).filter(Boolean).map((tag) => ({
+              name: tag,
+              colorClass: TAG_CATEGORY_CLASSES[category] || "",
+            })),
+          )
+      : (game.tags || []).map((tag) => ({
+          name: tag,
+          colorClass: "",
+        }));
 
   return (
     <Link to={`/games/${game.id}`} className="card card-link">
@@ -44,9 +60,9 @@ function GameCard({ game }) {
 
         {visibleTags.length > 0 && (
           <div className="tag-list">
-            {visibleTags.map((tag) => (
-              <span key={tag} className="tag-badge">
-                {tag}
+            {visibleTags.map(({ name, colorClass }) => (
+              <span className={`tag-badge ${colorClass}`} key={name}>
+                {name}
               </span>
             ))}
           </div>
