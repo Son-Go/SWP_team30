@@ -595,7 +595,9 @@ textarea:focus-visible {
   cursor: pointer;
   transition:
     background-color 0.15s ease,
-    color 0.15s ease;
+    color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .tag-badge-selectable:hover {
@@ -1088,16 +1090,34 @@ textarea:focus-visible {
   border-color: #4f4680;
 }
 
+.tag-badge-genre.tag-badge-active {
+  background-color: #6d4fcf;
+  border-color: #9b7ef0;
+  color: #fff;
+}
+
 .tag-badge-town {
   background-color: #3b3560;
   color: #c8bef0;
   border-color: #6c5fc7;
 }
 
+.tag-badge-town.tag-badge-active {
+  background-color: #6c5fc7;
+  border-color: #a695f5;
+  color: #fff;
+}
+
 .tag-badge-stage {
   background-color: #443c6e;
   color: #ddd4fa;
   border-color: #7a6dd8;
+}
+
+.tag-badge-stage.tag-badge-active {
+  background-color: #7a6dd8;
+  border-color: #b0a6f8;
+  color: #fff;
 }
 
 .tag-badge-featured {
@@ -1108,7 +1128,10 @@ textarea:focus-visible {
 
 .tag-badge-active {
   opacity: 1;
-  box-shadow: 0 0 0 1px currentColor inset;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+  transform: scale(1.04);
 }
 
 .filter-category {
