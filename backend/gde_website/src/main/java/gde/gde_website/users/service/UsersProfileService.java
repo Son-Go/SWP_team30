@@ -170,7 +170,7 @@ public class UsersProfileService {
 
         Map<Long, UserEntity> authorsMap = Map.of(author.getId(), author);
 
-        return gamesPage.map(game -> gamesMapper.gamesEntityToGamesPageResponse(game, tagTypesNames, authorsMap));
+        return gamesPage.map(game -> gamesMapper.gamesEntityToGamesPageResponse(game, tagTypesNames, authorsMap, List.of()));
     }
 
     /**

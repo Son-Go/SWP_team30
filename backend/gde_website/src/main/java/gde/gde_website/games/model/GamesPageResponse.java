@@ -24,6 +24,7 @@ public record GamesPageResponse(
         String bannerUrl,
         AuthorResponse author,
         boolean isApproved,
-        Map<String, List<String>> gameTags
+        Map<String, List<String>> gameTags,
+        List<String> pictures
 ) {
 }

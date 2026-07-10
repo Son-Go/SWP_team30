@@ -4,6 +4,7 @@ import gde.gde_website.games.entity.GamesScreenshotEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -21,6 +22,15 @@ public interface GameScreenshotsRepository extends JpaRepository<GamesScreenshot
      * @return list of screenshot entities for the game
      */
     List<GamesScreenshotEntity> findAllByGameId(Long gameId);
+
+    /**
+     * Loads all non-video screenshot records for the requested set of games.
+     * Returns only entries where {@code isVideo = false}.
+     *
+     * @param gameIds - ids of requested games
+     * @return list of picture screenshot entities for the requested games
+     */
+    List<GamesScreenshotEntity> findAllByGameIdInAndIsVideoFalse(Collection<Long> gameIds);
 
     /**
      * Deletes all stored screenshot records for the requested game.
