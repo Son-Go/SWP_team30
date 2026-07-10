@@ -26,11 +26,11 @@ function GameHoverCard({ game, anchorRect }) {
     left = anchorRect.left - popupWidth - gap;
   }
 
-  const top = Math.min(anchorRect.top, window.innerHeight - 400);
+  //   const top = Math.min(anchorRect.top, window.innerHeight - 400);
 
   const style = {
     position: "fixed",
-    top: Math.max(8, top),
+    top: anchorRect.top,
     left,
     width: popupWidth,
     zIndex: 1000,
@@ -62,41 +62,6 @@ function GameHoverCard({ game, anchorRect }) {
 
   return (
     <div className="game-hover-card" style={style}>
-      {/* Слайдшоу скриншотов */}
-      <div className="game-hover-card__screenshots">
-        {pictures.length > 0 ? (
-          <>
-            <img
-              key={currentImg}
-              src={pictures[currentImg]}
-              alt={`Скриншот ${currentImg + 1}`}
-              className="game-hover-card__screenshot"
-            />
-            {pictures.length > 1 && (
-              <div className="game-hover-card__dots">
-                {pictures.map((_, i) => (
-                  <span
-                    key={i}
-                    className={`game-hover-card__dot ${i === currentImg ? "active" : ""}`}
-                  />
-                ))}
-              </div>
-            )}
-          </>
-        ) : game.bannerUrl ? (
-          <img
-            src={game.bannerUrl}
-            alt={game.title}
-            className="game-hover-card__screenshot"
-          />
-        ) : (
-          <div className="game-hover-card__screenshot game-hover-card__screenshot--empty">
-            Нет скриншотов
-          </div>
-        )}
-      </div>
-
-      {/* Инфо */}
       <div className="game-hover-card__body">
         <div className="game-hover-card__title">{game.title}</div>
 

@@ -1351,59 +1351,6 @@ textarea:focus-visible {
   }
 }
 
-.game-hover-card__screenshots {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-  background: #0d0f1a;
-}
-
-.game-hover-card__screenshot {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  animation: screenshotFade 0.4s ease;
-}
-
-.game-hover-card__screenshot--empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-text-muted, #666);
-  font-size: 13px;
-}
-
-@keyframes screenshotFade {
-  from {
-    opacity: 0.3;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.game-hover-card__dots {
-  position: absolute;
-  bottom: 6px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 4px;
-}
-
-.game-hover-card__dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.35);
-  transition: background 0.2s;
-}
-
-.game-hover-card__dot.active {
-  background: #fff;
-}
-
 .game-hover-card__body {
   padding: 12px 14px 14px;
   display: flex;
@@ -1439,4 +1386,18 @@ textarea:focus-visible {
   flex-wrap: wrap;
   gap: 4px;
   margin-top: 2px;
+}
+
+.card-banner-slider {
+  animation: cardScreenshotFade 0.35s ease;
+}
+
+@keyframes cardScreenshotFade {
+  from {
+    opacity: 0.35;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
