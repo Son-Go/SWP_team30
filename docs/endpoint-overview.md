@@ -459,12 +459,151 @@ Success response: `200 OK`
 
 ---
 
+## Comment endpoints
+
+Comments are nested under a game. The base path is `/games/{game_id}/comments`.
+
+### 19. Get all comments of a game
+- Method: `GET`
+- Path: `/games/{game_id}/comments`
+- Purpose: Retrieve a paginated list of comments for a game, ordered by creation date descending.
+- Auth required: No
+- Query parameters:
+  - `page` (optional, default `0`)
+  - `size` (optional, default `5`)
+- Success response: `200 OK`
+- Response body: a paginated Spring Data `Page` object containing an array of comments under `content`
+
+Example response:
+```json
+{
+  "content": [
+    {
+      "id": 1,
+      "author": {
+        "username": "alice",
+        "profile_image_url": null,
+        "email": "alice@example.com"
+      },
+      "text": "Great game!",
+      "createdAt": "2026-01-02T10:00:00Z",
+      "updatedAt": "2026-01-02T10:00:00Z"
+    }
+  ],
+  "totalElements": 1
+}
+```
+
+---
+
+### 20. Create a comment
+- Method: `POST`
+- Path: `/games/{game_id}/comments`
+- Purpose: Create a new comment for a game on behalf of the authenticated user.
+- Auth required: Yes
+- Headers:
+  - `Authorization: Bearer <token>`
+  - `Content-Type: application/json`
+- Body:
+```json
+{
+  "text": "Great game!"
+}
+```
+
+Notes:
+- `text` is required and must be non-blank.
+
+Success response: `201 Created`
+
+Example response:
+```json
+{
+  "id": 1,
+  "author": {
+    "username": "alice",
+    "profile_image_url": null,
+    "email": "alice@example.com"
+  },
+  "text": "Great game!",
+  "createdAt": "2026-01-02T10:00:00Z",
+  "updatedAt": "2026-01-02T10:00:00Z"
+}
+```
+
+---
+
+### 21. Update a comment
+- Method: `PATCH`
+- Path: `/games/{game_id}/comments/{comment_id}`
+- Purpose: Update the text of an existing comment.
+- Auth required: Yes
+- Headers:
+  - `Authorization: Bearer <token>`
+  - `Content-Type: application/json`
+- Body:
+```json
+{
+  "text": "Updated comment text"
+}
+```
+
+Notes:
+- `text` is required and must be non-blank.
+
+Success response: `200 OK`
+
+Example response:
+```json
+{
+  "id": 1,
+  "author": {
+    "username": "alice",
+    "profile_image_url": null,
+    "email": "alice@example.com"
+  },
+  "text": "Updated comment text",
+  "createdAt": "2026-01-02T10:00:00Z",
+  "updatedAt": "2026-01-02T10:30:00Z"
+}
+```
+
+---
+
+### 22. Delete a comment
+- Method: `DELETE`
+- Path: `/games/{game_id}/comments/{comment_id}`
+- Purpose: Delete an existing comment. The author of the comment or an admin can delete it.
+- Auth required: Yes
+- Headers:
+  - `Authorization: Bearer <token>`
+- Success response: `204 No Content`
+- Response body: the deleted comment object
+
+Example response:
+```json
+{
+  "id": 1,
+  "author": {
+    "username": "alice",
+    "profile_image_url": null,
+    "email": "alice@example.com"
+  },
+  "text": "Great game!",
+  "createdAt": "2026-01-02T10:00:00Z",
+  "updatedAt": "2026-01-02T10:00:00Z"
+}
+```
+
+---
+
 ## Notes
 - The following endpoints are publicly accessible:
   - `GET /games`
   - `GET /games/{id}`
   - `GET /games/author/{id}`
   - `GET /games/tags/all`
+  - `GET /games/{game_id}/comments`
   - `POST /auth/login`
   - `POST /auth/register`
 
@@ -473,6 +612,9 @@ Success response: `200 OK`
   - `POST /games`
   - `PATCH /games/{id}`
   - `DELETE /games/{id}`
+  - `POST /games/{game_id}/comments`
+  - `PATCH /games/{game_id}/comments/{comment_id}`
+  - `DELETE /games/{game_id}/comments/{comment_id}`
 
 - Admin-only routes require a JWT with the `ADMIN` role.
 - The empty forum and store controllers currently do not expose any public REST endpoints.

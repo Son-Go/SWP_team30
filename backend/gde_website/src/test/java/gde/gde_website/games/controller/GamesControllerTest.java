@@ -50,7 +50,8 @@ class GamesControllerTest {
                         "https://example.com/portal.png",
                         new AuthorResponse("valve", null, "valve@example.com"),
                         true,
-                        tagsMap
+                        tagsMap,
+                        List.of("https://example.com/portal-shot.png")
                 )
         ));
 

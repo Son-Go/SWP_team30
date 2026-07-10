@@ -58,9 +58,15 @@ public class GamesService {
         Map<Long, UserEntity> authorsMap = usersRepository.findAllById(authorIds).stream()
                 .collect(Collectors.toMap(UserEntity::getId, user -> user));
 
+        Map<Long, List<String>> picturesMap = allPicturesByGameIdsOnPage(gamesPage);
+
         List<String> tagTypeNames = allTagTypeNames();
 
-        return gamesPage.map(game -> mapper.gamesEntityToGamesPageResponse(game, tagTypeNames, authorsMap));
+        return gamesPage.map(game -> mapper.gamesEntityToGamesPageResponse(game,
+                tagTypeNames,
+                authorsMap,
+                picturesMap.getOrDefault(game.getId(), List.of())
+        ));
     }
 
     /**
@@ -89,9 +95,16 @@ public class GamesService {
         Map<Long, UserEntity> authorsMap = usersRepository.findAllById(authorIds).stream()
                 .collect(Collectors.toMap(UserEntity::getId, user -> user));
 
+        Map<Long, List<String>> picturesMap = allPicturesByGameIdsOnPage(gamesPage);
+
         List<String> tagTypeNames = allTagTypeNames();
 
-        return gamesPage.map(game -> mapper.gamesEntityToGamesPageResponse(game, tagTypeNames, authorsMap));
+        return gamesPage.map(game -> mapper.gamesEntityToGamesPageResponse(
+                game,
+                tagTypeNames,
+                authorsMap,
+                picturesMap.getOrDefault(game.getId(), List.of())
+        ));
     }
 
     /**
@@ -172,6 +185,8 @@ public class GamesService {
         if (request.screenshots() != null) {
             saveScreenshots(request.screenshots(), savedGame);
         }
+
+        gamesServiceLogger.info("Successfully created game id={}", savedGame.getId());
 
         return mapper.entityToGames(savedGame, allTagTypeNames(), getScreenshotsByGameId(savedGame.getId()));
     }
@@ -412,6 +427,27 @@ public class GamesService {
         return gamesPage.getContent().stream()
                 .map(GamesEntity::getAuthorId)
                 .collect(Collectors.toSet());
+    }
+
+    /**
+     * Loads all non-video screenshots for games present on the current page and groups them by game id.
+     *
+     * @param gamesPage - page of games
+     * @return map where key is game id and value is list of picture URLs for that game
+     */
+    private Map<Long, List<String>> allPicturesByGameIdsOnPage(Page<GamesEntity> gamesPage) {
+        Set<Long> gameIds = gamesPage.getContent().stream()
+                .map(GamesEntity::getId)
+                .collect(Collectors.toSet());
+
+        Map<Long, List<String>> picturesMap = new LinkedHashMap<>();
+
+        for (GamesScreenshotEntity screenshot : gameScreenshotsRepository.findAllByGameIdInAndIsVideoFalse(gameIds)) {
+            picturesMap.computeIfAbsent(screenshot.getGameId(), ignored -> new ArrayList<>())
+                    .add(screenshot.getUrl());
+        }
+
+        return picturesMap;
     }
 
     /**

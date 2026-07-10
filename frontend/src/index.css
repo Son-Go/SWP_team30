@@ -1330,3 +1330,74 @@ textarea:focus-visible {
   opacity: 0.28;
   cursor: default;
 }
+
+.game-hover-card {
+  background: var(--color-surface, #1a1f2e);
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.1));
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  animation: hoverCardIn 0.15s ease;
+}
+
+@keyframes hoverCardIn {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.game-hover-card__body {
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.game-hover-card__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text, #fff);
+  line-height: 1.3;
+}
+
+.game-hover-card__date {
+  font-size: 12px;
+  color: var(--color-text-muted, #8a9bb0);
+}
+
+.game-hover-card__desc {
+  font-size: 12px;
+  color: var(--color-text-secondary, #b0bec5);
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.game-hover-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.card-banner-slider {
+  animation: cardScreenshotFade 0.35s ease;
+}
+
+@keyframes cardScreenshotFade {
+  from {
+    opacity: 0.35;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
