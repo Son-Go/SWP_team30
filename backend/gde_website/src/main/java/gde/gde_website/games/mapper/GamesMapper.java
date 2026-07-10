@@ -98,7 +98,11 @@ public class GamesMapper {
      * @param authorsMap - map of authors indexed by author id for page items on current result page
      * @return paginated game response item with grouped tags and author info
      */
-    public GamesPageResponse gamesEntityToGamesPageResponse(GamesEntity game, List<String> tagTypesNames, Map<Long, UserEntity> authorsMap) {
+    public GamesPageResponse gamesEntityToGamesPageResponse(GamesEntity game,
+                                                            List<String> tagTypesNames,
+                                                            Map<Long, UserEntity> authorsMap,
+                                                            List<String> pictures
+    ) {
         List<TagEntity> tags = getTagsEntitiesByGamesEntity(game);
 
         Map<String, List<String>> separatedTags = getSeparatedTags(tagTypesNames, tags);
@@ -123,7 +127,8 @@ public class GamesMapper {
                 game.getBannerUrl(),
                 authorResp,
                 game.isApproved(),
-                separatedTags
+                separatedTags,
+                pictures
         );
     }
 
