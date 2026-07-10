@@ -8,5 +8,11 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './src/test/setup.js',
     exclude: ['node_modules/**', 'dist/**', 'e2e/**'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json-summary', 'lcov'],
+      include: ['src/api/api.js', 'src/hooks/useGames.js'],
+      thresholds: { perFile: true, lines: 30 },
+    },
   },
 })
