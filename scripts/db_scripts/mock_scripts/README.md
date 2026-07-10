@@ -1,43 +1,63 @@
-# Mock database seed scripts
+# Mock Database Seed Scripts
 
-These scripts mirror the Hibernate/JPA model used by the backend and seed the database with realistic mock data for development and UI testing.
+These scripts seed the PostgreSQL database with realistic mock data for local development and UI testing.
 
-## Hibernate-backed schema summary
+## Schema Requirement
 
-The persistence layer is defined by the JPA entities under [backend/gde_website/src/main/java/gde/gde_website](backend/gde_website/src/main/java/gde/gde_website):
+Run the backend migrations before using these seed scripts. The seed data expects the current schema, including:
 
-- UserEntity → maps to the users table. Each user has a username, email, password hash, profile image URL, role and creation timestamp.
-- GamesEntity → maps to the games table. A game has an author, title, description, banner URL and timestamps.
-- TagEntity and TagTypeEntity → map to tag and tag_type. A tag belongs to a tag type.
-- GameTagEntity → maps to game_tag and implements the many-to-many relation between games and tags.
-- GameScreenshotEntity → maps to game_screenshot and stores one-to-many screenshot URLs for each game.
-- UserGamesEntity → maps to user_games and stores a user’s relation to a game, such as ownership or library state.
+- `games.is_approved`
+- `game_screenshots.is_video`
 
-## Relationships used by the seed scripts
+If seeding fails with an error such as `column "is_approved" of relation "games" does not exist`, your local database schema is behind the current migrations. Recreate or migrate the local database first, then run the seed command again.
 
-- One user can author many games.
-- One game can have many tags through game_tag.
-- One game can have many screenshots through game_screenshot.
-- One user can own or link to many games through user_games.
+## Files
 
-## Files in this folder
+- `01_insert_mock_users.sql`: creates 15 mock users.
+- `02_insert_mock_tags.sql`: creates mock tag types and tags.
+- `03_insert_mock_games.sql`: creates 50 mock games, assigns them to developers, adds tags, and adds screenshots.
+- `04_insert_mock_comments.sql`: adds three comments from different existing users to every game.
 
-- 01_insert_mock_users.sql: creates 15 mock users.
-- 02_insert_mock_tags.sql: creates 25 creative mock tags.
-- 03_insert_mock_games.sql: creates 50 mock games, assigns them to random developers, adds random tags (1–5), adds screenshots (1–3) and uses loremflickr banner URLs.
+The scripts are executed in filename order.
 
-## How to run
+## One-Command Local Run
 
-If you are using a local PostgreSQL instance:
+From the repository root:
+
+```powershell
+.\scripts\fill-db.ps1
+```
+
+The runner reads `POSTGRES_DB` and `POSTGRES_USER` from `.env.secret`, then streams every `.sql` file in this folder into the Docker Compose `postgres` service.
+
+You can override the database or user:
+
+```powershell
+.\scripts\fill-db.ps1 -Database <database> -DbUser <user>
+```
+
+## Requirements
+
+- Docker Desktop is running.
+- The local Docker Compose `postgres` service is running.
+- `.env.secret` contains `POSTGRES_DB` and `POSTGRES_USER`.
+- Backend migrations have already been applied to the database.
+
+## Existing Data Behavior
+
+Users and tags use `ON CONFLICT DO NOTHING`, so rerunning those parts does not duplicate the same users or tags.
+
+Games are generated each time `03_insert_mock_games.sql` runs, so rerunning the command adds another batch of mock games.
+
+Comments are generated for every game each time `04_insert_mock_comments.sql` runs, so rerunning the command adds three more comments to each game.
+
+## Manual psql Run
+
+If you are using a local PostgreSQL instance outside Docker Compose:
 
 ```bash
 psql -U <user> -d <database> -f scripts/db_scripts/mock_scripts/01_insert_mock_users.sql
 psql -U <user> -d <database> -f scripts/db_scripts/mock_scripts/02_insert_mock_tags.sql
 psql -U <user> -d <database> -f scripts/db_scripts/mock_scripts/03_insert_mock_games.sql
-```
-
-If you are running PostgreSQL in Docker Compose, use the same files through the container shell, for example:
-
-```bash
-docker compose exec postgres psql -U <user> -d <database> -f /path/to/script.sql
+psql -U <user> -d <database> -f scripts/db_scripts/mock_scripts/04_insert_mock_comments.sql
 ```

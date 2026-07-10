@@ -7,7 +7,10 @@ import gde.gde_website.security.JwtUtils;
 import gde.gde_website.security.config.SecurityConfig;
 import gde.gde_website.users.model.LoginResponse;
 import gde.gde_website.users.model.MeResponse;
+import gde.gde_website.users.model.PublicUserProfileResponse;
+import gde.gde_website.users.model.UserProfileUpdateResponse;
 import gde.gde_website.users.model.UserRole;
+import gde.gde_website.users.service.UsersProfileService;
 import gde.gde_website.users.service.UsersService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +50,9 @@ class EndpointHttpIntegrationTest {
 
     @MockitoBean
     private UsersService usersService;
+
+    @MockitoBean
+    private UsersProfileService usersProfileService;
 
     @MockitoBean
     private GamesService gamesService;
@@ -116,6 +122,7 @@ class EndpointHttpIntegrationTest {
                                 1L,
                                 11L,
                                 "Portal",
+                                "Puzzle platformer",
                                 "Puzzle platformer",
                                 "https://example.com/portal.png",
                                 new AuthorResponse("valve", null, "valve@example.com"),
@@ -263,6 +270,138 @@ class EndpointHttpIntegrationTest {
                 .andExpect(jsonPath("$.email").value("studio@example.com"));
     }
 
+    @Test
+    void updateProfileRequiresJwtOverHttp() throws Exception {
+        mockMvc.perform(patch("/users/me")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "username": "andrey-updated",
+                                  "email": "updated@example.com",
+                                  "profileImageUrl": "https://example.com/avatar.png"
+                                }
+                                """))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void updateProfileUsesAuthenticatedUserFromJwt() throws Exception {
+        when(usersProfileService.updateProfile(any(), any()))
+                .thenReturn(new UserProfileUpdateResponse(
+                        42L,
+                        "andrey-updated",
+                        "updated@example.com",
+                        "https://example.com/avatar.png"
+                ));
+
+        mockMvc.perform(patch("/users/me")
+                        .header("Authorization", bearerToken(42L, UserRole.DEVELOPER))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "username": "andrey-updated",
+                                  "email": "updated@example.com",
+                                  "profileImageUrl": "https://example.com/avatar.png"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(42))
+                .andExpect(jsonPath("$.username").value("andrey-updated"))
+                .andExpect(jsonPath("$.email").value("updated@example.com"))
+                .andExpect(jsonPath("$.profileImageUrl").value("https://example.com/avatar.png"));
+
+        verify(usersProfileService).updateProfile(eq(42L), any());
+    }
+
+    @Test
+    void changePasswordRequiresJwtOverHttp() throws Exception {
+        mockMvc.perform(patch("/users/me/password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "oldPassword": "old-secret",
+                                  "newPassword": "new-secret"
+                                }
+                                """))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void changePasswordUsesAuthenticatedUserFromJwt() throws Exception {
+        mockMvc.perform(patch("/users/me/password")
+                        .header("Authorization", bearerToken(42L, UserRole.DEVELOPER))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "oldPassword": "old-secret",
+                                  "newPassword": "new-secret"
+                                }
+                                """))
+                .andExpect(status().isNoContent());
+
+        verify(usersProfileService).changePassword(eq(42L), any());
+    }
+
+    @Test
+    void deleteAccountRequiresJwtOverHttp() throws Exception {
+        mockMvc.perform(delete("/users/me"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void deleteAccountUsesAuthenticatedUserFromJwt() throws Exception {
+        mockMvc.perform(delete("/users/me")
+                        .header("Authorization", bearerToken(42L, UserRole.DEVELOPER)))
+                .andExpect(status().isNoContent());
+
+        verify(usersProfileService).deleteAccount(42L);
+    }
+
+    @Test
+    void publicProfileIsPublicAndReturnsUserContractOverHttp() throws Exception {
+        when(usersProfileService.getPublicProfile(15L))
+                .thenReturn(new PublicUserProfileResponse(
+                        15L,
+                        "supergiant",
+                        "https://example.com/studio.png",
+                        3L
+                ));
+
+        mockMvc.perform(get("/users/15"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(15))
+                .andExpect(jsonPath("$.username").value("supergiant"))
+                .andExpect(jsonPath("$.profileImageUrl").value("https://example.com/studio.png"))
+                .andExpect(jsonPath("$.gameCount").value(3));
+    }
+
+    @Test
+    void publicUserGamesArePublicAndReturnPagedJson() throws Exception {
+        when(usersProfileService.getUserGames(eq(15L), eq(PageRequest.of(0, 24))))
+                .thenReturn(new PageImpl<>(List.of(
+                        new GamesPageResponse(
+                                7L,
+                                15L,
+                                "Hades",
+                                "Roguelike action",
+                                "Roguelike action",
+                                "https://example.com/hades.png",
+                                new AuthorResponse("supergiant", null, "studio@example.com"),
+                                true,
+                                pageTags()
+                        )
+                )));
+
+        mockMvc.perform(get("/users/15/games")
+                        .param("page", "0")
+                        .param("size", "24"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].id").value(7))
+                .andExpect(jsonPath("$.content[0].title").value("Hades"))
+                .andExpect(jsonPath("$.content[0].author.username").value("supergiant"))
+                .andExpect(jsonPath("$.content[0].gameTags.GENRE[0]").value("puzzle"));
+    }
+
     private String bearerToken(Long userId, UserRole userRole) {
         return "Bearer " + jwtUtils.generateToken(userId, userRole);
     }
@@ -271,6 +410,7 @@ class EndpointHttpIntegrationTest {
         return """
                 {
                   "title": "New Game",
+                  "shortDescription": "Short description",
                   "description": "Description",
                   "bannerUrl": "https://example.com/banner.png",
                   "gameTags": ["indie"],
@@ -287,6 +427,7 @@ class EndpointHttpIntegrationTest {
                 5L,
                 42L,
                 "New Game",
+                "Short description",
                 "Description",
                 "https://example.com/banner.png",
                 Instant.parse("2026-01-01T00:00:00Z"),
@@ -322,6 +463,7 @@ class EndpointHttpIntegrationTest {
                 7L,
                 15L,
                 "Hades",
+                "Roguelike action",
                 "Roguelike action",
                 "https://example.com/hades.png",
                 Instant.parse("2026-01-01T00:00:00Z"),

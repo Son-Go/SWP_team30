@@ -37,5 +37,7 @@ test("user can register, log in, create a game, and view it through the real sta
   await expect(page.getByText(description)).toBeVisible();
 
   await page.goto("/games");
-  await expect(page.getByRole("link").filter({ hasText: gameTitle })).toBeVisible();
+  await expect(
+    page.locator(".games-grid").getByRole("link").filter({ hasText: gameTitle }),
+  ).toBeVisible();
 });
