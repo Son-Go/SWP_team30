@@ -36,7 +36,6 @@ public record GamesCardResponse(
         boolean isApproved,
         AuthorResponse author,
         Map<String, List<String>> gameTags,
-        Map<String, List<String>> screenshots,
-        Page<GamesCommentResponse> comments
+        Map<String, List<String>> screenshots
 ) {
 }
