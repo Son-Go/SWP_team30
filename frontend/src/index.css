@@ -548,6 +548,10 @@ textarea:focus-visible {
   align-items: flex-start;
 }
 
+.tag-selector-category .tag-list {
+  margin-top: 10px;
+}
+
 .tag-selector-all,
 .tag-selector-selected {
   width: 50%;
@@ -562,7 +566,28 @@ textarea:focus-visible {
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  margin-bottom: 4px !important;
 }
+
+.filter-category-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+/* .filter-category-label-genre {
+  color: var(--text-muted);
+}
+
+.filter-category-label-town {
+  color: #7ee2a4;
+}
+
+.filter-category-label-stage {
+  color: #ffbc70;
+} */
 
 .tag-selector-empty {
   font-size: 0.8rem;
@@ -596,8 +621,9 @@ textarea:focus-visible {
   transition:
     background-color 0.15s ease,
     color 0.15s ease,
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
 }
 
 .tag-badge-selectable:hover {
@@ -1092,32 +1118,50 @@ textarea:focus-visible {
 
 .tag-badge-genre.tag-badge-active {
   background-color: #6d4fcf;
-  border-color: #9b7ef0;
-  color: #fff;
+  border-color: #a68aff;
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.42);
+}
+
+.tag-badge-genre.tag-badge-selectable:hover {
+  background-color: #443b6d;
+  color: #e0d9fb;
+  border-color: #6d5cab;
 }
 
 .tag-badge-town {
-  background-color: #3b3560;
-  color: #c8bef0;
-  border-color: #6c5fc7;
+  background-color: #183d2a;
+  color: #a9e7bf;
+  border-color: #287348;
+}
+
+.tag-badge-town.tag-badge-selectable:hover {
+  background-color: #215236;
+  color: #ccf5d9;
+  border-color: #3e9a62;
 }
 
 .tag-badge-town.tag-badge-active {
-  background-color: #6c5fc7;
-  border-color: #a695f5;
-  color: #fff;
+  background-color: #24834c;
+  border-color: #7be6a1;
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.38);
 }
 
 .tag-badge-stage {
-  background-color: #443c6e;
-  color: #ddd4fa;
-  border-color: #7a6dd8;
+  background-color: #4a2c13;
+  color: #ffd19a;
+  border-color: #9b581e;
+}
+
+.tag-badge-stage.tag-badge-selectable:hover {
+  background-color: #613a18;
+  color: #ffe1ba;
+  border-color: #c9752c;
 }
 
 .tag-badge-stage.tag-badge-active {
-  background-color: #7a6dd8;
-  border-color: #b0a6f8;
-  color: #fff;
+  background-color: #c96b1c;
+  border-color: #ffc178;
+  box-shadow: 0 0 12px rgba(249, 115, 22, 0.4);
 }
 
 .tag-badge-featured {
@@ -1130,7 +1174,6 @@ textarea:focus-visible {
   opacity: 1;
   color: #ffffff;
   font-weight: 700;
-  box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
   transform: scale(1.04);
 }
 
@@ -1139,14 +1182,6 @@ textarea:focus-visible {
   flex-direction: column;
   gap: 8px;
   margin-bottom: 12px;
-}
-
-.filter-category-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #9b93c0;
 }
 
 .catalog-row-header {

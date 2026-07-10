@@ -276,7 +276,7 @@ function GamesPage() {
             {FILTER_CATEGORIES.map(({ key, label }) =>
               (allTags[key] || []).length > 0 ? (
                 <div className="filter-category" key={key}>
-                  <span className="filter-category-label">{label}</span>
+                  <div className="filter-category-label">{label}</div>
                   <div className="tag-list">
                     {(allTags[key] || []).map((tag) => (
                       <span
