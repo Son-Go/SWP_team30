@@ -1330,3 +1330,113 @@ textarea:focus-visible {
   opacity: 0.28;
   cursor: default;
 }
+
+.game-hover-card {
+  background: var(--color-surface, #1a1f2e);
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.1));
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  animation: hoverCardIn 0.15s ease;
+}
+
+@keyframes hoverCardIn {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.game-hover-card__screenshots {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #0d0f1a;
+}
+
+.game-hover-card__screenshot {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: screenshotFade 0.4s ease;
+}
+
+.game-hover-card__screenshot--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted, #666);
+  font-size: 13px;
+}
+
+@keyframes screenshotFade {
+  from {
+    opacity: 0.3;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.game-hover-card__dots {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 4px;
+}
+
+.game-hover-card__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  transition: background 0.2s;
+}
+
+.game-hover-card__dot.active {
+  background: #fff;
+}
+
+.game-hover-card__body {
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.game-hover-card__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text, #fff);
+  line-height: 1.3;
+}
+
+.game-hover-card__date {
+  font-size: 12px;
+  color: var(--color-text-muted, #8a9bb0);
+}
+
+.game-hover-card__desc {
+  font-size: 12px;
+  color: var(--color-text-secondary, #b0bec5);
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.game-hover-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
