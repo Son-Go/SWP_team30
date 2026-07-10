@@ -25,7 +25,7 @@ Base URL:
   - `size` (optional, default `24`)
   - `tags` (optional, repeatable, e.g. `?tags=RPG&tags=Adventure`)
 - Success response: `200 OK`
-- Response body: a paginated Spring Data `Page` object containing an array of games under `content`
+- Response body: a paginated Spring Data `Page` object containing an array of games under `content`. Each game item includes a `pictures` field — a list of the game's picture URLs (empty list if the game has no pictures).
 
 Example response:
 ```json
@@ -45,7 +45,11 @@ Example response:
       "isApproved": true,
       "gameTags": {
         "GENRE": ["RPG", "Adventure"]
-      }
+      },
+      "pictures": [
+        "https://example.com/screenshot1.png",
+        "https://example.com/screenshot2.png"
+      ]
     }
   ],
   "totalElements": 1
