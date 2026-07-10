@@ -16,6 +16,7 @@ If seeding fails with an error such as `column "is_approved" of relation "games"
 - `01_insert_mock_users.sql`: creates 15 mock users.
 - `02_insert_mock_tags.sql`: creates mock tag types and tags.
 - `03_insert_mock_games.sql`: creates 50 mock games, assigns them to developers, adds tags, and adds screenshots.
+- `04_insert_mock_comments.sql`: adds three comments from different existing users to every game.
 
 The scripts are executed in filename order.
 
@@ -48,6 +49,8 @@ Users and tags use `ON CONFLICT DO NOTHING`, so rerunning those parts does not d
 
 Games are generated each time `03_insert_mock_games.sql` runs, so rerunning the command adds another batch of mock games.
 
+Comments are generated for every game each time `04_insert_mock_comments.sql` runs, so rerunning the command adds three more comments to each game.
+
 ## Manual psql Run
 
 If you are using a local PostgreSQL instance outside Docker Compose:
@@ -56,4 +59,5 @@ If you are using a local PostgreSQL instance outside Docker Compose:
 psql -U <user> -d <database> -f scripts/db_scripts/mock_scripts/01_insert_mock_users.sql
 psql -U <user> -d <database> -f scripts/db_scripts/mock_scripts/02_insert_mock_tags.sql
 psql -U <user> -d <database> -f scripts/db_scripts/mock_scripts/03_insert_mock_games.sql
+psql -U <user> -d <database> -f scripts/db_scripts/mock_scripts/04_insert_mock_comments.sql
 ```
