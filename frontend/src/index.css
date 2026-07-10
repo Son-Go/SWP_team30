@@ -910,6 +910,15 @@ textarea:focus-visible {
   gap: 6px;
 }
 
+.game-sidebar-short-description {
+  margin: -6px 0 0;
+  color: var(--text);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .game-sidebar-label {
   font-size: 0.72rem;
   font-weight: 600;
