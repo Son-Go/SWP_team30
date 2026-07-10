@@ -2,7 +2,6 @@ package gde.gde_website.games.mapper;
 
 import gde.gde_website.games.entity.*;
 import gde.gde_website.games.model.*;
-import gde.gde_website.games.repository.GameScreenshotsRepository;
 import gde.gde_website.users.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
