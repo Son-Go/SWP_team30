@@ -27,6 +27,7 @@ function GamePage() {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [shortDescription, setShortDescription] = useState("");
   const [bannerUrl, setBannerUrl] = useState("");
   const [gameTags, setGameTags] = useState({
     genre: [],
@@ -56,6 +57,11 @@ function GamePage() {
   const [showLimit, setShowLimit] = useState(false);
   const limitTimerRef = useRef(null);
 
+  const [showShortDescriptionLimit, setShowShortDescriptionLimit] =
+    useState(false);
+
+  const shortDescriptionLimitTimerRef = useRef(null);
+
   useEffect(() => {
     async function loadGame() {
       try {
@@ -69,6 +75,7 @@ function GamePage() {
             .catch(() => setAuthorName(null));
         }
         setTitle(data.title || "");
+        setShortDescription(data.shortDescription || "");
         setDescription(data.description || "");
         setBannerUrl(data.bannerUrl || "");
         setGameTags(
@@ -185,6 +192,7 @@ function GamePage() {
         {
           title,
           description,
+          shortDescription: shortDescription.trim() || null,
           bannerUrl: bannerUrl || undefined,
           gameTags,
           screenshots,
@@ -196,6 +204,7 @@ function GamePage() {
 
       setGame(freshGame);
       setTitle(freshGame.title || "");
+      setShortDescription(freshGame.shortDescription || "");
       setDescription(freshGame.description || "");
       setBannerUrl(freshGame.bannerUrl || "");
       setGameTags(
@@ -313,6 +322,8 @@ function GamePage() {
                   setIsEditing(false);
                   setTitle(game.title || "");
                   setDescription(game.description || "");
+                  setShortDescription(game.shortDescription || "");
+                  setShowShortDescriptionLimit(false);
                   setBannerUrl("");
                   setGameTags(
                     game.gameTags || {
@@ -505,15 +516,15 @@ function GamePage() {
                 className="game-sidebar-cover"
               />
             )}
-            {authorName && (
-              <div className="game-sidebar-meta">
-                <span className="game-sidebar-label">Разработчик</span>
-                <span className="card-author">{authorName}</span>
-              </div>
+            {game.shortDescription?.trim() && (
+              <p className="game-sidebar-short-description">
+                {game.shortDescription}
+              </p>
             )}
+
             {game.createdAt && (
               <div className="game-sidebar-meta">
-                <span className="game-sidebar-label">Дата создания</span>
+                <span className="game-sidebar-label">Дата выхода</span>
                 <span className="card-author">
                   {new Date(game.createdAt).toLocaleDateString("ru-RU", {
                     day: "numeric",
@@ -521,6 +532,13 @@ function GamePage() {
                     year: "numeric",
                   })}
                 </span>
+              </div>
+            )}
+
+            {authorName && (
+              <div className="game-sidebar-meta">
+                <span className="game-sidebar-label">Разработчик</span>
+                <span className="card-author">{authorName}</span>
               </div>
             )}
 
@@ -553,6 +571,57 @@ function GamePage() {
                 onChange={(e) => setTitle(e.target.value.slice(0, 50))}
                 required
               />
+            </div>
+
+            <div className="form-group">
+              <label className="label" htmlFor="shortDescription">
+                Краткое описание
+              </label>
+
+              <div className="description-limit-wrap">
+                <textarea
+                  id="shortDescription"
+                  className="textarea"
+                  value={shortDescription}
+                  placeholder="Кратко расскажите, о чём игра"
+                  onChange={(e) => {
+                    const value = e.target.value;
+
+                    if (value.length <= 300) {
+                      setShortDescription(value);
+                      setShowShortDescriptionLimit(false);
+                      return;
+                    }
+
+                    clearTimeout(shortDescriptionLimitTimerRef.current);
+                    setShowShortDescriptionLimit(false);
+
+                    setTimeout(() => {
+                      setShowShortDescriptionLimit(true);
+                    }, 10);
+
+                    shortDescriptionLimitTimerRef.current = setTimeout(() => {
+                      setShowShortDescriptionLimit(false);
+                    }, 3000);
+                  }}
+                />
+
+                {showShortDescriptionLimit && (
+                  <span className="input-hint-error description-limit-hint">
+                    Достигнут лимит в 300 символов
+                  </span>
+                )}
+              </div>
+
+              <div className="textarea-counter-row">
+                <span
+                  className={`textarea-counter ${
+                    showShortDescriptionLimit ? "limit-hit" : ""
+                  }`}
+                >
+                  {shortDescription.length}/300
+                </span>
+              </div>
             </div>
 
             <div className="form-group">
@@ -762,6 +831,8 @@ function GamePage() {
                   setIsEditing(false);
                   setTitle(game.title || "");
                   setDescription(game.description || "");
+                  setShortDescription(game.shortDescription || "");
+                  setShowShortDescriptionLimit(false);
                   setBannerUrl("");
                   setGameTags(
                     game.gameTags || {
