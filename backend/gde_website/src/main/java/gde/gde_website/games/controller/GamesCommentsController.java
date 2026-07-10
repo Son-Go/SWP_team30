@@ -46,13 +46,34 @@ public class GamesCommentsController {
     ) {
         gamesCommentsControllerLogger.info("Called GamesCommentsController /games/{game_id}/comments method (post)");
 
-        if (authentication == null || !authentication.isAuthenticated()) {
-            gamesCommentsControllerLogger.error("User create comment permissions error");
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
-        }
+        checkAuth(authentication);
 
         Long currentUserId = (Long) authentication.getPrincipal();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(gamesCommentsService.createComment(request, currentUserId, gameId));
+    }
+
+    @PatchMapping(path = "/{comment_id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<GamesCommentResponse> updateComment(
+            @PathVariable("comment_id") Long commentId,
+            @RequestBody @Valid GamesCreateCommentRequest request,
+            Authentication authentication,
+            @PathVariable Long game_id) {
+        gamesCommentsControllerLogger
+                .info("Called GamesCommentsController /games/{game_id}/comments/{comment_id} method (patch)");
+
+        checkAuth(authentication);
+
+        Long currentUserId = (Long) authentication.getPrincipal();
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(gamesCommentsService.updateComment(request, currentUserId, commentId, game_id));
+    }
+
+    private void checkAuth(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            gamesCommentsControllerLogger.error("User create comment permissions error");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
+        }
     }
 }
