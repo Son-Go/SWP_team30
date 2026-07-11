@@ -191,3 +191,14 @@ export function getAllTags() {
 export function getGameComments(gameId) {
   return request(`/games/${gameId}/comments`);
 }
+
+export function createGameComment(gameId, text, token) {
+  return request(`/games/${gameId}/comments`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ text }),
+  });
+}
