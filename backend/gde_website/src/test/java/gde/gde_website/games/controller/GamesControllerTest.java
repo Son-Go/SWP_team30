@@ -48,6 +48,7 @@ class GamesControllerTest {
                         "Puzzle platformer",
                         "Puzzle platformer",
                         "https://example.com/portal.png",
+                        Instant.parse("2026-01-01T00:00:00Z"),
                         new AuthorResponse("valve", null, "valve@example.com"),
                         true,
                         tagsMap,
