@@ -1405,43 +1405,42 @@ textarea:focus-visible {
 .comments-section {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .comments-title {
   margin: 0;
-  font-size: 24px;
+  font-size: 20px;
   line-height: 1.2;
 }
 
 .comments-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
 }
 
 .comment-card {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 28px 32px;
-  background: rgba(30, 30, 36, 0.94);
+  gap: 10px;
+  padding: 18px 20px;
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  border-radius: var(--radius-sm);
 }
 
 .comment-header {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
 }
 
 .comment-avatar,
 .comment-avatar-placeholder {
-  width: 64px;
-  height: 64px;
-  min-width: 64px;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
   border-radius: 50%;
 }
 
@@ -1456,16 +1455,16 @@ textarea:focus-visible {
   justify-content: center;
   background: #3a3060;
   color: #d5c8ff;
-  font-size: 24px;
+  font-size: 15px;
   font-weight: 700;
 }
 
 .comment-author-name {
   color: var(--primary);
-  font-size: 20px;
+  font-size: 15px;
   font-weight: 600;
   text-decoration: underline;
-  text-underline-offset: 3px;
+  text-underline-offset: 2px;
 }
 
 .comment-author-name:hover {
@@ -1475,20 +1474,21 @@ textarea:focus-visible {
 .comment-text {
   margin: 0;
   color: var(--text);
-  font-size: 18px;
-  line-height: 1.55;
+  font-size: 15px;
+  line-height: 1.5;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 
 .comment-date {
   color: var(--text-muted);
-  font-size: 16px;
+  font-size: 13px;
 }
 
 .comments-empty {
   margin: 0;
   color: var(--text-muted);
+  font-size: 14px;
 }
 
 .comments-error {
@@ -1497,25 +1497,6 @@ textarea:focus-visible {
 
 @media (max-width: 640px) {
   .comment-card {
-    padding: 20px;
-  }
-
-  .comment-avatar,
-  .comment-avatar-placeholder {
-    width: 48px;
-    height: 48px;
-    min-width: 48px;
-  }
-
-  .comment-author-name {
-    font-size: 17px;
-  }
-
-  .comment-text {
-    font-size: 16px;
-  }
-
-  .comment-date {
-    font-size: 14px;
+    padding: 16px;
   }
 }
