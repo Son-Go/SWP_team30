@@ -200,3 +200,39 @@ Each scenario is end-user-facing and can be executed by the customer during a re
 | **Resulting PBIs** | [#247 (Increase the contrast of the tag selected in the filter)](https://github.com/Son-Go/SWP_team30/issues/247) |
 
 ---
+
+> New for sprint 4
+
+## UAT-006 — User can create a comment on a game
+
+| Field | Value |
+|---|---|
+| **ID** | `UAT-006` |
+| **Status** | `Active` |
+| **User Goal** | As an authorized user, I want to leave a comment on a game page, so I can share my opinion about the game |
+| **Preconditions** | The user has an account, is logged in, is not banned, and an existing game page is available |
+| **Linked PBIs** | [#281](https://github.com/Son-Go/SWP_team30/issues/281) |
+
+### Steps
+
+| # | Action | Expected Outcome |
+|---|---|---|
+| 1 | Log in to the application with valid credentials | User is successfully authorized |
+| 2 | Open the page of an existing game | The game page is displayed successfully |
+| 3 | Navigate to the comments section | The comment input field and existing comments are visible |
+| 4 | Enter a comment, for example: `Great game! I like the visual style and gameplay.` | The entered text is shown in the comment input field |
+| 5 | Click the button to publish or send the comment | The comment is successfully created |
+| 6 | Check the comments list on the game page | The new comment is visible with the entered text and the current user's name |
+| 7 | Refresh the game page | The created comment remains visible after refresh |
+
+### Execution History
+
+#### Week 6 — Sprint 4
+
+| Field | Value |
+|---|---|
+| **Execution Date** | 11.07.2026 |
+| **Executed By** | Customer (during Sprint Review) |
+| **Result** | ✅ Pass |
+| **Customer Comments** | The customer created the comment “Great game! I like the visual style and gameplay.” on an existing game page. The comment was displayed successfully in the comments list and remained visible after the page was refreshed. No comments. |
+| **Resulting PBIs** | No new PBI |
