@@ -59,13 +59,7 @@ Example response:
       ]
     }
   ],
-  "totalElements": 1,
-  "totalPages": 1,
-  "size": 24,
-  "number": 0,
-  "first": true,
-  "last": true,
-  "empty": false
+  "totalElements": 1
 }
 ```
 
