@@ -1,6 +1,7 @@
 package gde.gde_website.users.service;
 
 import gde.gde_website.games.entity.GamesEntity;
+import gde.gde_website.games.repository.CommentRepository;
 import gde.gde_website.games.repository.GamesRepository;
 import gde.gde_website.games.service.GamesService;
 import gde.gde_website.security.JwtUtils;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UsersService {
+    private final CommentRepository commentRepository;
     private final static Logger userServiceLogger = LoggerFactory.getLogger(UsersService.class);
 
     private final UsersRepository userRepository;
@@ -211,6 +213,7 @@ public class UsersService {
         if (targetUser.getRole() == UserRole.BANNED) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is already banned");
         targetUser.setRole(UserRole.BANNED);
         userRepository.save(targetUser);
+        commentRepository.deleteAllByUserId(userId);
     }
 
     /**

@@ -125,6 +125,7 @@ public class GamesMapper {
                 game.getShortDescription(),
                 game.getDescription(),
                 game.getBannerUrl(),
+                game.getCreatedAt(),
                 authorResp,
                 game.isApproved(),
                 separatedTags,

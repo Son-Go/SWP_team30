@@ -158,6 +158,9 @@ public class GamesService {
     @Transactional
     public Games createGame(GamesCreateRequest request, Long authorId) {
         gamesServiceLogger.info("Called GamesService createGame method");
+
+        checkNotBanned(authorId);
+
         GamesEntity game = new GamesEntity(
                 authorId,
                 request.title(),
@@ -462,12 +465,32 @@ public class GamesService {
         GamesEntity game = gamesRepository.findById(gameId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
 
-        UserEntity user = usersRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+        UserEntity user = checkNotBanned(userId);
 
         if (!game.getAuthorId().equals(userId) && user.getRole() != UserRole.ADMIN) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to modify this game");
         }
+    }
+
+    /**
+     * Ensures that the specified user exists and is not banned.
+     * Used to prevent banned users from creating, updating or deleting games.
+     *
+     * @param userId - id of user to check
+     * @return found user entity, guaranteed not banned
+     * @throws ResponseStatusException with code {@code 401} if user does not exist
+     * @throws ResponseStatusException with code {@code 403} if user is banned
+     * @Author: Artemii Gorelov
+     */
+    private UserEntity checkNotBanned(Long userId) {
+        UserEntity user = usersRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+
+        if (user.getRole() == UserRole.BANNED) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Banned users cannot perform this action");
+        }
+
+        return user;
     }
 
     /**
