@@ -52,8 +52,8 @@ function GameHoverCard({ game, anchorRect }) {
     stage: "tag-badge-stage",
   };
 
-  const releaseDate = game.releaseDate
-    ? new Date(game.releaseDate).toLocaleDateString("ru-RU", {
+  const releaseDate = game.createdAt
+    ? new Date(game.createdAt).toLocaleDateString("ru-RU", {
         day: "numeric",
         month: "short",
         year: "numeric",
