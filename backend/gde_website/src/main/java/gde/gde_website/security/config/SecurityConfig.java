@@ -57,6 +57,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/users/me").authenticated()
                         .requestMatchers(HttpMethod.PATCH, "/users/me/password").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/users/me").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/games/{game_id}/comments").authenticated()
+                        .requestMatchers(HttpMethod.PATCH, "/games/{game_id}/comments/{comment_id}").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/games/{game_id}/comments/{comment_id}").authenticated()
 
                         // Admin endpoints
                         .requestMatchers("/admin/**").hasRole("ADMIN")

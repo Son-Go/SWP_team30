@@ -136,7 +136,7 @@ function GamesPage() {
       try {
         setFeaturedLoading(true);
         setFeaturedError("");
-        const data = await getGames(0, ["featured"]);
+        const data = await getGames(0, ["Featured"]);
         setFeaturedGames(data.content || []);
       } catch (err) {
         setFeaturedError(err.message || "Не удалось загрузить избранные игры");
@@ -210,10 +210,7 @@ function GamesPage() {
 
   return (
     <section className="section-lg">
-      <div className="page-header">
-        <div>
-          <div className="page-title">Каталог игр</div>
-        </div>
+      <div className="page-header" style={{ justifyContent: "flex-end" }}>
         <Link to="/games/create" className="button button-secondary">
           Выложить игру
         </Link>
@@ -279,7 +276,7 @@ function GamesPage() {
             {FILTER_CATEGORIES.map(({ key, label }) =>
               (allTags[key] || []).length > 0 ? (
                 <div className="filter-category" key={key}>
-                  <span className="filter-category-label">{label}</span>
+                  <div className="filter-category-label">{label}</div>
                   <div className="tag-list">
                     {(allTags[key] || []).map((tag) => (
                       <span

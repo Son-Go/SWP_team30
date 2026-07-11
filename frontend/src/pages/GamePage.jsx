@@ -5,6 +5,7 @@ import ErrorState from "../components/ErrorState";
 import Loader from "../components/Loader";
 import { useAuth } from "../context/auth-context";
 import TagSelector from "../components/TagSelector";
+import CommentsSection from "../components/CommentsSection";
 import {
   isImageUrl,
   isYoutubeUrl,
@@ -27,6 +28,7 @@ function GamePage() {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [shortDescription, setShortDescription] = useState("");
   const [bannerUrl, setBannerUrl] = useState("");
   const [gameTags, setGameTags] = useState({
     genre: [],
@@ -39,6 +41,8 @@ function GamePage() {
 
   const [activeScreenshot, setActiveScreenshot] = useState(null);
   const [screenshots, setScreenshots] = useState({ videos: [], pictures: [] });
+
+  const [thumbStart, setThumbStart] = useState(0);
 
   const [videoInput, setVideoInput] = useState("");
   const [pictureInput, setPictureInput] = useState("");
@@ -54,6 +58,11 @@ function GamePage() {
   const [showLimit, setShowLimit] = useState(false);
   const limitTimerRef = useRef(null);
 
+  const [showShortDescriptionLimit, setShowShortDescriptionLimit] =
+    useState(false);
+
+  const shortDescriptionLimitTimerRef = useRef(null);
+
   useEffect(() => {
     async function loadGame() {
       try {
@@ -67,6 +76,7 @@ function GamePage() {
             .catch(() => setAuthorName(null));
         }
         setTitle(data.title || "");
+        setShortDescription(data.shortDescription || "");
         setDescription(data.description || "");
         setBannerUrl(data.bannerUrl || "");
         setGameTags(
@@ -183,6 +193,7 @@ function GamePage() {
         {
           title,
           description,
+          shortDescription: shortDescription.trim() || null,
           bannerUrl: bannerUrl || undefined,
           gameTags,
           screenshots,
@@ -194,6 +205,7 @@ function GamePage() {
 
       setGame(freshGame);
       setTitle(freshGame.title || "");
+      setShortDescription(freshGame.shortDescription || "");
       setDescription(freshGame.description || "");
       setBannerUrl(freshGame.bannerUrl || "");
       setGameTags(
@@ -236,13 +248,51 @@ function GamePage() {
   const currentMedia = activeScreenshot ?? orderedMedia[0] ?? null;
   const currentMediaIsVideo = currentMedia ? isYoutubeUrl(currentMedia) : false;
 
-  const flatGameTags = game.gameTags
-    ? [
-        ...(game.gameTags.genre || []),
-        ...(game.gameTags.town || []),
-        ...(game.gameTags.stage || []),
-        ...(game.gameTags.featured || []),
-      ]
+  const visibleThumbsCount = 7;
+  const currentIndex = currentMedia ? orderedMedia.indexOf(currentMedia) : 0;
+  const maxThumbStart =
+    orderedMedia.length === 0
+      ? 0
+      : Math.floor((orderedMedia.length - 1) / visibleThumbsCount) *
+        visibleThumbsCount;
+  const safeThumbStart = Math.min(thumbStart, maxThumbStart);
+
+  function setActiveMediaByIndex(index) {
+    if (!orderedMedia.length) return;
+
+    const clampedIndex = Math.max(0, Math.min(index, orderedMedia.length - 1));
+    const nextPageStart =
+      Math.floor(clampedIndex / visibleThumbsCount) * visibleThumbsCount;
+
+    setActiveScreenshot(orderedMedia[clampedIndex]);
+    setThumbStart(nextPageStart);
+  }
+
+  const visibleThumbs = orderedMedia.slice(
+    safeThumbStart,
+    safeThumbStart + visibleThumbsCount,
+  );
+
+  // useEffect(() => {
+  //   setThumbStart(0);
+  // }, [game?.id, orderedMedia.length]);
+
+  const TAG_CATEGORY_CLASSES = {
+    genre: "tag-badge-genre",
+    town: "tag-badge-town",
+    stage: "tag-badge-stage",
+    featured: "tag-badge-featured",
+  };
+
+  const visibleGameTags = game.gameTags
+    ? Object.entries(game.gameTags)
+        .filter(([category]) => category !== "featured")
+        .flatMap(([category, tags]) =>
+          (tags || []).filter(Boolean).map((tag) => ({
+            name: tag,
+            colorClass: TAG_CATEGORY_CLASSES[category] || "",
+          })),
+        )
     : [];
 
   return (
@@ -273,6 +323,8 @@ function GamePage() {
                   setIsEditing(false);
                   setTitle(game.title || "");
                   setDescription(game.description || "");
+                  setShortDescription(game.shortDescription || "");
+                  setShowShortDescriptionLimit(false);
                   setBannerUrl("");
                   setGameTags(
                     game.gameTags || {
@@ -298,159 +350,215 @@ function GamePage() {
       {error ? <ErrorState message={error} /> : null}
 
       {!isEditing ? (
-        <div className="game-layout">
-          <div className="game-gallery">
-            {orderedMedia.length > 0 ? (
-              <>
-                <div className="game-gallery-viewer">
-                  <button
-                    className="gallery-arrow gallery-arrow-left"
-                    onClick={() => {
-                      const idx = orderedMedia.indexOf(currentMedia);
-                      const prev =
-                        (idx - 1 + orderedMedia.length) % orderedMedia.length;
-                      setActiveScreenshot(orderedMedia[prev]);
-                    }}
-                  >
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+        <>
+          <div className="game-layout">
+            <div className="game-gallery">
+              {orderedMedia.length > 0 ? (
+                <>
+                  <div className="game-gallery-viewer">
+                    <button
+                      className="gallery-arrow gallery-arrow-left"
+                      onClick={() =>
+                        setActiveMediaByIndex(
+                          currentIndex <= 0
+                            ? orderedMedia.length - 1
+                            : currentIndex - 1,
+                        )
+                      }
                     >
-                      <polyline points="15 18 9 12 15 6" />
-                    </svg>
-                  </button>
-
-                  {currentMediaIsVideo ? (
-                    <iframe
-                      src={getYoutubeEmbedUrl(currentMedia)}
-                      title={`${game.title} video`}
-                      className="game-gallery-main game-video-frame"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  ) : (
-                    <img
-                      src={currentMedia}
-                      alt={game.title}
-                      className="game-gallery-main"
-                    />
-                  )}
-
-                  <button
-                    className="gallery-arrow gallery-arrow-right"
-                    onClick={() => {
-                      const idx = orderedMedia.indexOf(currentMedia);
-                      const next = (idx + 1) % orderedMedia.length;
-                      setActiveScreenshot(orderedMedia[next]);
-                    }}
-                  >
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <polyline points="9 18 15 12 9 6" />
-                    </svg>
-                  </button>
-                </div>
-
-                <div className="game-gallery-thumbs">
-                  {orderedMedia.map((url, i) =>
-                    isYoutubeUrl(url) ? (
-                      <button
-                        key={i}
-                        type="button"
-                        className={`game-gallery-thumb game-gallery-thumb-video ${currentMedia === url ? "active" : ""}`}
-                        onClick={() => setActiveScreenshot(url)}
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       >
-                        YouTube
-                      </button>
+                        <polyline points="15 18 9 12 15 6" />
+                      </svg>
+                    </button>
+
+                    {currentMediaIsVideo ? (
+                      <iframe
+                        src={getYoutubeEmbedUrl(currentMedia)}
+                        title={`${game.title} video`}
+                        className="game-gallery-main game-video-frame"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
                     ) : (
                       <img
-                        key={i}
-                        src={url}
-                        className={`game-gallery-thumb ${currentMedia === url ? "active" : ""}`}
-                        onClick={() => setActiveScreenshot(url)}
+                        src={currentMedia}
+                        alt={game.title}
+                        className="game-gallery-main"
                       />
-                    ),
-                  )}
-                </div>
-              </>
-            ) : game.bannerUrl ? (
-              <img
-                src={game.bannerUrl}
-                alt={game.title}
-                className="game-gallery-main"
-              />
-            ) : (
-              <div className="state-box game-gallery-main">
-                Медиа не загружены.
-              </div>
-            )}
+                    )}
 
-            <div className="game-description">
-              <h2 className="card-title">Описание</h2>
-              <p className="card-text" style={{ whiteSpace: "pre-wrap" }}>
-                {game.description || "Описания нема."}
-              </p>
-            </div>
-          </div>
-
-          <aside className="game-sidebar">
-            {game.bannerUrl && (
-              <img
-                src={game.bannerUrl}
-                alt={game.title}
-                className="game-sidebar-cover"
-              />
-            )}
-            {authorName && (
-              <div className="game-sidebar-meta">
-                <span className="game-sidebar-label">Разработчик</span>
-                <span className="card-author">{authorName}</span>
-              </div>
-            )}
-            {game.createdAt && (
-              <div className="game-sidebar-meta">
-                <span className="game-sidebar-label">Дата создания</span>
-                <span className="card-author">
-                  {new Date(game.createdAt).toLocaleDateString("ru-RU", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </span>
-              </div>
-            )}
-
-            {flatGameTags.length > 0 && (
-              <div className="game-sidebar-meta">
-                <div className="tag-list">
-                  {flatGameTags.map((tag) => (
-                    <Link
-                      key={tag}
-                      to={`/games?tags=${encodeURIComponent(tag)}`}
-                      className="tag-badge tag-badge-selectable"
+                    <button
+                      className="gallery-arrow gallery-arrow-right"
+                      onClick={() =>
+                        setActiveMediaByIndex(
+                          currentIndex >= orderedMedia.length - 1
+                            ? 0
+                            : currentIndex + 1,
+                        )
+                      }
                     >
-                      {tag}
-                    </Link>
-                  ))}
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="9 18 15 12 9 6" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div className="game-gallery-thumbs-row">
+                    <button
+                      type="button"
+                      className="gallery-arrow-thumb gallery-arrow-thumb-left"
+                      onClick={() => setActiveMediaByIndex(currentIndex - 1)}
+                      disabled={currentIndex <= 0}
+                      aria-label="Показать предыдущие медиа"
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="15 18 9 12 15 6" />
+                      </svg>
+                    </button>
+
+                    <div className="game-gallery-thumbs">
+                      {visibleThumbs.map((url, i) => {
+                        const mediaIndex = safeThumbStart + i;
+
+                        return isYoutubeUrl(url) ? (
+                          <button
+                            key={`${url}-${mediaIndex}`}
+                            type="button"
+                            className={`game-gallery-thumb game-gallery-thumb-video ${currentMedia === url ? "active" : ""}`}
+                            onClick={() => setActiveMediaByIndex(mediaIndex)}
+                          >
+                            YouTube
+                          </button>
+                        ) : (
+                          <img
+                            key={`${url}-${mediaIndex}`}
+                            src={url}
+                            alt={`${game.title} media ${mediaIndex + 1}`}
+                            className={`game-gallery-thumb ${currentMedia === url ? "active" : ""}`}
+                            onClick={() => setActiveMediaByIndex(mediaIndex)}
+                          />
+                        );
+                      })}
+                    </div>
+
+                    <button
+                      type="button"
+                      className="gallery-arrow-thumb gallery-arrow-thumb-right"
+                      onClick={() => setActiveMediaByIndex(currentIndex + 1)}
+                      disabled={currentIndex >= orderedMedia.length - 1}
+                      aria-label="Показать следующие медиа"
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="9 18 15 12 9 6" />
+                      </svg>
+                    </button>
+                  </div>
+                </>
+              ) : game.bannerUrl ? (
+                <img
+                  src={game.bannerUrl}
+                  alt={game.title}
+                  className="game-gallery-main"
+                />
+              ) : (
+                <div className="state-box game-gallery-main">
+                  Медиа не загружены.
                 </div>
+              )}
+
+              <div className="game-description">
+                <h2 className="card-title">Описание</h2>
+                <p className="card-text" style={{ whiteSpace: "pre-wrap" }}>
+                  {game.description || "Описания нема."}
+                </p>
               </div>
-            )}
-          </aside>
-        </div>
+            </div>
+
+            <aside className="game-sidebar">
+              {game.bannerUrl && (
+                <img
+                  src={game.bannerUrl}
+                  alt={game.title}
+                  className="game-sidebar-cover"
+                />
+              )}
+              {game.shortDescription?.trim() && (
+                <p className="game-sidebar-short-description">
+                  {game.shortDescription}
+                </p>
+              )}
+
+              {game.createdAt && (
+                <div className="game-sidebar-meta">
+                  <span className="game-sidebar-label">Дата выхода</span>
+                  <span className="card-author">
+                    {new Date(game.createdAt).toLocaleDateString("ru-RU", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </span>
+                </div>
+              )}
+
+              {authorName && (
+                <div className="game-sidebar-meta">
+                  <span className="game-sidebar-label">Разработчик</span>
+                  <span className="card-author">{authorName}</span>
+                </div>
+              )}
+
+              {visibleGameTags.length > 0 && (
+                <div className="game-sidebar-meta">
+                  <div className="tag-list">
+                    {visibleGameTags.map(({ name, colorClass }) => (
+                      <span className={`tag-badge ${colorClass}`} key={name}>
+                        {name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </aside>
+          </div>
+          <CommentsSection gameId={id} gameAuthorUsername={authorName} />
+        </>
       ) : (
         <article className="card create-game-card">
           <form className="form" onSubmit={handleUpdate}>
@@ -463,9 +571,61 @@ function GamePage() {
                 className="input"
                 type="text"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                maxLength={50}
+                onChange={(e) => setTitle(e.target.value.slice(0, 50))}
                 required
               />
+            </div>
+
+            <div className="form-group">
+              <label className="label" htmlFor="shortDescription">
+                Краткое описание
+              </label>
+
+              <div className="description-limit-wrap">
+                <textarea
+                  id="shortDescription"
+                  className="textarea"
+                  value={shortDescription}
+                  placeholder="Кратко расскажите, о чём игра"
+                  onChange={(e) => {
+                    const value = e.target.value;
+
+                    if (value.length <= 300) {
+                      setShortDescription(value);
+                      setShowShortDescriptionLimit(false);
+                      return;
+                    }
+
+                    clearTimeout(shortDescriptionLimitTimerRef.current);
+                    setShowShortDescriptionLimit(false);
+
+                    setTimeout(() => {
+                      setShowShortDescriptionLimit(true);
+                    }, 10);
+
+                    shortDescriptionLimitTimerRef.current = setTimeout(() => {
+                      setShowShortDescriptionLimit(false);
+                    }, 3000);
+                  }}
+                />
+
+                {showShortDescriptionLimit && (
+                  <span className="input-hint-error description-limit-hint">
+                    Достигнут лимит в 300 символов
+                  </span>
+                )}
+              </div>
+
+              <div className="textarea-counter-row">
+                <span
+                  className={`textarea-counter ${
+                    showShortDescriptionLimit ? "limit-hit" : ""
+                  }`}
+                >
+                  {shortDescription.length}/300
+                </span>
+              </div>
             </div>
 
             <div className="form-group">
@@ -497,6 +657,14 @@ function GamePage() {
                     Достигнут лимит в 1500 символов
                   </span>
                 )}
+              </div>
+
+              <div className="textarea-counter-row">
+                <span
+                  className={`textarea-counter ${showLimit ? "limit-hit" : ""}`}
+                >
+                  {description.length}/1500
+                </span>
               </div>
             </div>
 
@@ -667,6 +835,8 @@ function GamePage() {
                   setIsEditing(false);
                   setTitle(game.title || "");
                   setDescription(game.description || "");
+                  setShortDescription(game.shortDescription || "");
+                  setShowShortDescriptionLimit(false);
                   setBannerUrl("");
                   setGameTags(
                     game.gameTags || {

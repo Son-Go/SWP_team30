@@ -17,6 +17,7 @@ function CreateGamePage() {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [shortDescription, setShortDescription] = useState("");
   const [bannerUrl, setBannerUrl] = useState("");
   const [gameTags, setGameTags] = useState({
     genre: [],
@@ -30,6 +31,10 @@ function CreateGamePage() {
 
   const [showDescriptionLimit, setShowDescriptionLimit] = useState(false);
   const descriptionLimitTimerRef = useRef(null);
+
+  const [showShortDescriptionLimit, setShowShortDescriptionLimit] =
+    useState(false);
+  const shortDescriptionLimitTimerRef = useRef(null);
 
   const [screenshots, setScreenshots] = useState({ videos: [], pictures: [] });
   const [videoInput, setVideoInput] = useState("");
@@ -76,6 +81,17 @@ function CreateGamePage() {
     setTimeout(() => setShowDescriptionLimit(true), 10);
     descriptionLimitTimerRef.current = setTimeout(() => {
       setShowDescriptionLimit(false);
+    }, 3000);
+  }
+
+  function triggerShortDescriptionLimit() {
+    clearTimeout(shortDescriptionLimitTimerRef.current);
+
+    setShowShortDescriptionLimit(false);
+    setTimeout(() => setShowShortDescriptionLimit(true), 10);
+
+    shortDescriptionLimitTimerRef.current = setTimeout(() => {
+      setShowShortDescriptionLimit(false);
     }, 3000);
   }
 
@@ -142,6 +158,7 @@ function CreateGamePage() {
         {
           title,
           description,
+          shortDescription: shortDescription.trim() || null,
           bannerUrl: bannerUrl || undefined,
           gameTags,
           screenshots,
@@ -181,9 +198,49 @@ function CreateGamePage() {
               className="input"
               type="text"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              maxLength={50}
+              onChange={(e) => setTitle(e.target.value.slice(0, 50))}
               required
             />
+          </div>
+
+          <div className="form-group">
+            <label className="label" htmlFor="shortDescription">
+              Краткое описание
+            </label>
+
+            <div className="description-limit-wrap">
+              <textarea
+                id="shortDescription"
+                className="textarea"
+                value={shortDescription}
+                onChange={(e) => {
+                  if (e.target.value.length <= 300) {
+                    setShortDescription(e.target.value);
+                    setShowShortDescriptionLimit(false);
+                  } else {
+                    triggerShortDescriptionLimit();
+                  }
+                }}
+                placeholder="Кратко расскажите, о чём игра"
+              />
+
+              {showShortDescriptionLimit && (
+                <span className="input-hint-error description-limit-hint">
+                  Достигнут лимит в 300 символов
+                </span>
+              )}
+            </div>
+
+            <div className="textarea-counter-row">
+              <span
+                className={`textarea-counter ${
+                  showShortDescriptionLimit ? "limit-hit" : ""
+                }`}
+              >
+                {shortDescription.length}/300
+              </span>
+            </div>
           </div>
 
           <div className="form-group">
@@ -210,6 +267,14 @@ function CreateGamePage() {
                   Достигнут лимит в 1500 символов
                 </span>
               )}
+            </div>
+
+            <div className="textarea-counter-row">
+              <span
+                className={`textarea-counter ${showDescriptionLimit ? "limit-hit" : ""}`}
+              >
+                {description.length}/1500
+              </span>
             </div>
           </div>
 

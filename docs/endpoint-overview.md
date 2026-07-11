@@ -24,8 +24,12 @@ Base URL:
   - `page` (optional, default `0`)
   - `size` (optional, default `24`)
   - `tags` (optional, repeatable, e.g. `?tags=RPG&tags=Adventure`)
+- Notes:
+  - If `tags` are provided, the endpoint returns games that match at least one of the provided tags.
+  - Results are ordered by `createdAt` descending.
+  - The endpoint returns both approved and non-approved games; `isApproved` is exposed in each item but is not used as a filter.
 - Success response: `200 OK`
-- Response body: a paginated Spring Data `Page` object containing an array of games under `content`
+- Response body: a paginated Spring Data `Page` object containing an array of games under `content`. Each item has the shape of `GamesPageResponse` with fields `id`, `authorId`, `title`, `shortDescription`, `description`, `bannerUrl`, `createdAt`, `author`, `isApproved`, `gameTags`, and `pictures`.
 
 Example response:
 ```json
@@ -35,8 +39,10 @@ Example response:
       "id": 1,
       "authorId": 2,
       "title": "Example Game",
+      "shortDescription": "A short card description",
       "description": "A sample game",
       "bannerUrl": "https://example.com/banner.png",
+      "createdAt": "2026-01-01T12:00:00Z",
       "author": {
         "username": "alice",
         "profile_image_url": null,
@@ -44,8 +50,13 @@ Example response:
       },
       "isApproved": true,
       "gameTags": {
-        "GENRE": ["RPG", "Adventure"]
-      }
+        "GENRE": ["RPG", "Adventure"],
+        "MODE": []
+      },
+      "pictures": [
+        "https://example.com/screenshot1.png",
+        "https://example.com/screenshot2.png"
+      ]
     }
   ],
   "totalElements": 1
@@ -459,12 +470,151 @@ Success response: `200 OK`
 
 ---
 
+## Comment endpoints
+
+Comments are nested under a game. The base path is `/games/{game_id}/comments`.
+
+### 19. Get all comments of a game
+- Method: `GET`
+- Path: `/games/{game_id}/comments`
+- Purpose: Retrieve a paginated list of comments for a game, ordered by creation date descending.
+- Auth required: No
+- Query parameters:
+  - `page` (optional, default `0`)
+  - `size` (optional, default `5`)
+- Success response: `200 OK`
+- Response body: a paginated Spring Data `Page` object containing an array of comments under `content`
+
+Example response:
+```json
+{
+  "content": [
+    {
+      "id": 1,
+      "author": {
+        "username": "alice",
+        "profile_image_url": null,
+        "email": "alice@example.com"
+      },
+      "text": "Great game!",
+      "createdAt": "2026-01-02T10:00:00Z",
+      "updatedAt": "2026-01-02T10:00:00Z"
+    }
+  ],
+  "totalElements": 1
+}
+```
+
+---
+
+### 20. Create a comment
+- Method: `POST`
+- Path: `/games/{game_id}/comments`
+- Purpose: Create a new comment for a game on behalf of the authenticated user.
+- Auth required: Yes
+- Headers:
+  - `Authorization: Bearer <token>`
+  - `Content-Type: application/json`
+- Body:
+```json
+{
+  "text": "Great game!"
+}
+```
+
+Notes:
+- `text` is required and must be non-blank.
+
+Success response: `201 Created`
+
+Example response:
+```json
+{
+  "id": 1,
+  "author": {
+    "username": "alice",
+    "profile_image_url": null,
+    "email": "alice@example.com"
+  },
+  "text": "Great game!",
+  "createdAt": "2026-01-02T10:00:00Z",
+  "updatedAt": "2026-01-02T10:00:00Z"
+}
+```
+
+---
+
+### 21. Update a comment
+- Method: `PATCH`
+- Path: `/games/{game_id}/comments/{comment_id}`
+- Purpose: Update the text of an existing comment.
+- Auth required: Yes
+- Headers:
+  - `Authorization: Bearer <token>`
+  - `Content-Type: application/json`
+- Body:
+```json
+{
+  "text": "Updated comment text"
+}
+```
+
+Notes:
+- `text` is required and must be non-blank.
+
+Success response: `200 OK`
+
+Example response:
+```json
+{
+  "id": 1,
+  "author": {
+    "username": "alice",
+    "profile_image_url": null,
+    "email": "alice@example.com"
+  },
+  "text": "Updated comment text",
+  "createdAt": "2026-01-02T10:00:00Z",
+  "updatedAt": "2026-01-02T10:30:00Z"
+}
+```
+
+---
+
+### 22. Delete a comment
+- Method: `DELETE`
+- Path: `/games/{game_id}/comments/{comment_id}`
+- Purpose: Delete an existing comment. The author of the comment or an admin can delete it.
+- Auth required: Yes
+- Headers:
+  - `Authorization: Bearer <token>`
+- Success response: `204 No Content`
+- Response body: the deleted comment object
+
+Example response:
+```json
+{
+  "id": 1,
+  "author": {
+    "username": "alice",
+    "profile_image_url": null,
+    "email": "alice@example.com"
+  },
+  "text": "Great game!",
+  "createdAt": "2026-01-02T10:00:00Z",
+  "updatedAt": "2026-01-02T10:00:00Z"
+}
+```
+
+---
+
 ## Notes
 - The following endpoints are publicly accessible:
   - `GET /games`
   - `GET /games/{id}`
   - `GET /games/author/{id}`
   - `GET /games/tags/all`
+  - `GET /games/{game_id}/comments`
   - `POST /auth/login`
   - `POST /auth/register`
 
@@ -473,6 +623,9 @@ Success response: `200 OK`
   - `POST /games`
   - `PATCH /games/{id}`
   - `DELETE /games/{id}`
+  - `POST /games/{game_id}/comments`
+  - `PATCH /games/{game_id}/comments/{comment_id}`
+  - `DELETE /games/{game_id}/comments/{comment_id}`
 
 - Admin-only routes require a JWT with the `ADMIN` role.
 - The empty forum and store controllers currently do not expose any public REST endpoints.

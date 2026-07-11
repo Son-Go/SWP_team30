@@ -9,6 +9,13 @@ import lombok.Setter;
 
 import java.time.Instant;
 
+/**
+ * Persistent comment entity linked to a game and a user.
+ * Stores scalar foreign keys together with read-only entity relations,
+ * comment text and audit timestamps.
+ *
+ * @Author: Egor Grishin
+ */
 @Entity
 @Table(name = "comment")
 @Getter
@@ -43,6 +50,14 @@ public class CommentEntity {
     @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT now()")
     private Instant updatedAt;
 
+    /**
+     * Creates a new comment entity with scalar foreign keys and text.
+     * Audit timestamps are filled automatically by entity lifecycle callbacks.
+     *
+     * @param userId - id of comment author
+     * @param gameId - id of game that owns the comment
+     * @param text - comment text
+     */
     public CommentEntity(Long userId, Long gameId, String text) {
         this.userId = userId;
         this.gameId = gameId;

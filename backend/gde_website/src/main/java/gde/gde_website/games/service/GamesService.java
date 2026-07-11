@@ -58,9 +58,15 @@ public class GamesService {
         Map<Long, UserEntity> authorsMap = usersRepository.findAllById(authorIds).stream()
                 .collect(Collectors.toMap(UserEntity::getId, user -> user));
 
+        Map<Long, List<String>> picturesMap = allPicturesByGameIdsOnPage(gamesPage);
+
         List<String> tagTypeNames = allTagTypeNames();
 
-        return gamesPage.map(game -> mapper.gamesEntityToGamesPageResponse(game, tagTypeNames, authorsMap));
+        return gamesPage.map(game -> mapper.gamesEntityToGamesPageResponse(game,
+                tagTypeNames,
+                authorsMap,
+                picturesMap.getOrDefault(game.getId(), List.of())
+        ));
     }
 
     /**
@@ -89,9 +95,16 @@ public class GamesService {
         Map<Long, UserEntity> authorsMap = usersRepository.findAllById(authorIds).stream()
                 .collect(Collectors.toMap(UserEntity::getId, user -> user));
 
+        Map<Long, List<String>> picturesMap = allPicturesByGameIdsOnPage(gamesPage);
+
         List<String> tagTypeNames = allTagTypeNames();
 
-        return gamesPage.map(game -> mapper.gamesEntityToGamesPageResponse(game, tagTypeNames, authorsMap));
+        return gamesPage.map(game -> mapper.gamesEntityToGamesPageResponse(
+                game,
+                tagTypeNames,
+                authorsMap,
+                picturesMap.getOrDefault(game.getId(), List.of())
+        ));
     }
 
     /**
@@ -145,6 +158,9 @@ public class GamesService {
     @Transactional
     public Games createGame(GamesCreateRequest request, Long authorId) {
         gamesServiceLogger.info("Called GamesService createGame method");
+
+        checkNotBanned(authorId);
+
         GamesEntity game = new GamesEntity(
                 authorId,
                 request.title(),
@@ -172,6 +188,8 @@ public class GamesService {
         if (request.screenshots() != null) {
             saveScreenshots(request.screenshots(), savedGame);
         }
+
+        gamesServiceLogger.info("Successfully created game id={}", savedGame.getId());
 
         return mapper.entityToGames(savedGame, allTagTypeNames(), getScreenshotsByGameId(savedGame.getId()));
     }
@@ -415,6 +433,27 @@ public class GamesService {
     }
 
     /**
+     * Loads all non-video screenshots for games present on the current page and groups them by game id.
+     *
+     * @param gamesPage - page of games
+     * @return map where key is game id and value is list of picture URLs for that game
+     */
+    private Map<Long, List<String>> allPicturesByGameIdsOnPage(Page<GamesEntity> gamesPage) {
+        Set<Long> gameIds = gamesPage.getContent().stream()
+                .map(GamesEntity::getId)
+                .collect(Collectors.toSet());
+
+        Map<Long, List<String>> picturesMap = new LinkedHashMap<>();
+
+        for (GamesScreenshotEntity screenshot : gameScreenshotsRepository.findAllByGameIdInAndIsVideoFalse(gameIds)) {
+            picturesMap.computeIfAbsent(screenshot.getGameId(), ignored -> new ArrayList<>())
+                    .add(screenshot.getUrl());
+        }
+
+        return picturesMap;
+    }
+
+    /**
      * Checks whether the specified user is game owner or admin.
      *
      * @param gameId - id of game
@@ -426,12 +465,32 @@ public class GamesService {
         GamesEntity game = gamesRepository.findById(gameId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found"));
 
-        UserEntity user = usersRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+        UserEntity user = checkNotBanned(userId);
 
         if (!game.getAuthorId().equals(userId) && user.getRole() != UserRole.ADMIN) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to modify this game");
         }
+    }
+
+    /**
+     * Ensures that the specified user exists and is not banned.
+     * Used to prevent banned users from creating, updating or deleting games.
+     *
+     * @param userId - id of user to check
+     * @return found user entity, guaranteed not banned
+     * @throws ResponseStatusException with code {@code 401} if user does not exist
+     * @throws ResponseStatusException with code {@code 403} if user is banned
+     * @Author: Artemii Gorelov
+     */
+    private UserEntity checkNotBanned(Long userId) {
+        UserEntity user = usersRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+
+        if (user.getRole() == UserRole.BANNED) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Banned users cannot perform this action");
+        }
+
+        return user;
     }
 
     /**

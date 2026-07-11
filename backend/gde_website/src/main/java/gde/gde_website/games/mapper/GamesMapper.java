@@ -2,7 +2,6 @@ package gde.gde_website.games.mapper;
 
 import gde.gde_website.games.entity.*;
 import gde.gde_website.games.model.*;
-import gde.gde_website.games.repository.GameScreenshotsRepository;
 import gde.gde_website.users.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -99,7 +98,11 @@ public class GamesMapper {
      * @param authorsMap - map of authors indexed by author id for page items on current result page
      * @return paginated game response item with grouped tags and author info
      */
-    public GamesPageResponse gamesEntityToGamesPageResponse(GamesEntity game, List<String> tagTypesNames, Map<Long, UserEntity> authorsMap) {
+    public GamesPageResponse gamesEntityToGamesPageResponse(GamesEntity game,
+                                                            List<String> tagTypesNames,
+                                                            Map<Long, UserEntity> authorsMap,
+                                                            List<String> pictures
+    ) {
         List<TagEntity> tags = getTagsEntitiesByGamesEntity(game);
 
         Map<String, List<String>> separatedTags = getSeparatedTags(tagTypesNames, tags);
@@ -122,9 +125,11 @@ public class GamesMapper {
                 game.getShortDescription(),
                 game.getDescription(),
                 game.getBannerUrl(),
+                game.getCreatedAt(),
                 authorResp,
                 game.isApproved(),
-                separatedTags
+                separatedTags,
+                pictures
         );
     }
 

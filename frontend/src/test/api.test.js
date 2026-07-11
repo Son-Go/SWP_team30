@@ -1,14 +1,18 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import {
+  createGameComment,
+  deleteGameComment,
   deleteGame,
   getCurrentUser,
   getGameById,
   getGames,
+  getGameComments,
   getStoredToken,
   loginUser,
   registerUser,
   setStoredToken,
   clearStoredToken,
+  updateGameComment,
 } from "../api/api"
 
 const API_BASE = import.meta.env.VITE_API_URL
@@ -167,5 +171,56 @@ describe("api client", () => {
         },
       },
     )
+  })
+
+  it("lists comments for a game", async () => {
+    const comments = { content: [{ id: 4, text: "Great game" }] }
+    fetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: async () => comments,
+    })
+
+    await expect(getGameComments(7)).resolves.toEqual(comments)
+    expect(fetch).toHaveBeenCalledWith(`${API_BASE}/games/7/comments`, {})
+  })
+
+  it.each([
+    ["create", () => createGameComment(7, "New comment", "token-789"), `${API_BASE}/games/7/comments`, "POST", "New comment"],
+    ["update", () => updateGameComment(7, 4, "Updated comment", "token-789"), `${API_BASE}/games/7/comments/4`, "PATCH", "Updated comment"],
+  ])("sends authenticated JSON requests to %s a comment", async (_action, requestComment, url, method, text) => {
+    fetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: async () => ({ id: 4, text }),
+    })
+
+    await requestComment()
+
+    expect(fetch).toHaveBeenCalledWith(url, {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer token-789",
+      },
+      body: JSON.stringify({ text }),
+    })
+  })
+
+  it("deletes a comment with the bearer token", async () => {
+    fetch.mockResolvedValue({
+      ok: true,
+      status: 204,
+      headers: new Headers(),
+      text: async () => "",
+    })
+
+    await expect(deleteGameComment(7, 4, "token-789")).resolves.toBeNull()
+    expect(fetch).toHaveBeenCalledWith(`${API_BASE}/games/7/comments/4`, {
+      method: "DELETE",
+      headers: { Authorization: "Bearer token-789" },
+    })
   })
 })
