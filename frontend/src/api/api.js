@@ -202,3 +202,23 @@ export function createGameComment(gameId, text, token) {
     body: JSON.stringify({ text }),
   });
 }
+
+export function updateGameComment(gameId, commentId, text, token) {
+  return request(`/games/${gameId}/comments/${commentId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ text }),
+  });
+}
+
+export function deleteGameComment(gameId, commentId, token) {
+  return request(`/games/${gameId}/comments/${commentId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}

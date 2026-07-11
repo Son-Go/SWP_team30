@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createGameComment, getGameComments } from "../api/api";
+import {
+  createGameComment,
+  deleteGameComment,
+  getCurrentUser,
+  getGameComments,
+  updateGameComment,
+} from "../api/api";
 import { useAuth } from "../context/auth-context";
 
 function formatDate(iso) {
@@ -23,12 +29,47 @@ function AvatarPlaceholder({ username }) {
   );
 }
 
-function CommentItem({ comment, gameAuthorUsername }) {
+function CommentItem({
+  comment,
+  isOwnComment,
+  onUpdate,
+  onDelete,
+  isSubmitting,
+}) {
   const { author, text, createdAt } = comment;
-  const isGameAuthor = author.username === gameAuthorUsername;
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedText, setEditedText] = useState(text);
+  const [editError, setEditError] = useState("");
+
+  function handleCancelEdit() {
+    setEditedText(text);
+    setEditError("");
+    setIsEditing(false);
+  }
+
+  async function handleSaveEdit(event) {
+    event.preventDefault();
+
+    const trimmedText = editedText.trim();
+
+    if (!trimmedText) {
+      setEditError("Комментарий не может быть пустым");
+      return;
+    }
+
+    try {
+      setEditError("");
+      await onUpdate(comment.id, trimmedText);
+      setIsEditing(false);
+    } catch (err) {
+      setEditError(err.message || "Не удалось обновить комментарий");
+    }
+  }
 
   return (
-    <article className="comment-card">
+    <article
+      className={`comment-card ${isOwnComment ? "comment-card-own" : ""}`}
+    >
       <div className="comment-header">
         {author.profile_image_url ? (
           <img
@@ -41,17 +82,87 @@ function CommentItem({ comment, gameAuthorUsername }) {
         )}
 
         <div className="comment-author">
-          <a className="comment-author-name" href={`mailto:${author.email}`}>
-            {author.username}
-          </a>
-
-          {isGameAuthor && (
-            <span className="comment-author-role">разработчик</span>
-          )}
+          <span className="comment-author-name">{author.username}</span>
         </div>
+
+        {isOwnComment && !isEditing && (
+          <div className="comment-actions">
+            <button
+              type="button"
+              className="comment-action-button"
+              onClick={() => setIsEditing(true)}
+              aria-label="Редактировать комментарий"
+              title="Редактировать"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z" />
+              </svg>
+            </button>
+
+            <button
+              type="button"
+              className="comment-action-button comment-delete-button"
+              onClick={() => onDelete(comment.id)}
+              disabled={isSubmitting}
+              aria-label="Удалить комментарий"
+              title="Удалить"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6l-1 14H6L5 6" />
+                <path d="M10 11v6" />
+                <path d="M14 11v6" />
+                <path d="M9 6V4h6v2" />
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
 
-      <p className="comment-text">{text}</p>
+      {isEditing ? (
+        <form className="comment-edit-form" onSubmit={handleSaveEdit}>
+          <textarea
+            className="textarea comment-textarea"
+            value={editedText}
+            onChange={(event) => {
+              setEditedText(event.target.value);
+              setEditError("");
+            }}
+            maxLength={1000}
+            autoFocus
+          />
+
+          <div className="comment-form-footer">
+            {editError ? (
+              <span className="comment-form-error">{editError}</span>
+            ) : (
+              <span className="comment-counter">{editedText.length}/1000</span>
+            )}
+
+            <div className="comment-form-actions">
+              <button
+                type="button"
+                className="button button-ghost comment-cancel-button"
+                onClick={handleCancelEdit}
+                disabled={isSubmitting}
+              >
+                Отмена
+              </button>
+
+              <button
+                type="submit"
+                className="button button-secondary"
+                disabled={isSubmitting || !editedText.trim()}
+              >
+                {isSubmitting ? "Сохранение..." : "Сохранить"}
+              </button>
+            </div>
+          </div>
+        </form>
+      ) : (
+        <p className="comment-text">{text}</p>
+      )}
 
       <time className="comment-date" dateTime={createdAt}>
         {formatDate(createdAt)}
@@ -71,12 +182,25 @@ function CommentsSection({ gameId, gameAuthorUsername }) {
   const [error, setError] = useState("");
   const [submitError, setSubmitError] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [currentUsername, setCurrentUsername] = useState(null);
+  const [actionCommentId, setActionCommentId] = useState(null);
 
   useEffect(() => {
     if (!gameId) return;
 
     loadComments();
   }, [gameId]);
+
+  useEffect(() => {
+    if (!token) {
+      setCurrentUsername(null);
+      return;
+    }
+
+    getCurrentUser(token)
+      .then((user) => setCurrentUsername(user.username))
+      .catch(() => setCurrentUsername(null));
+  }, [token]);
 
   async function loadComments() {
     try {
@@ -121,6 +245,33 @@ function CommentsSection({ gameId, gameAuthorUsername }) {
       setSubmitError(err.message || "Не удалось отправить комментарий");
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleUpdateComment(commentId, text) {
+    try {
+      setActionCommentId(commentId);
+
+      await updateGameComment(gameId, commentId, text, token);
+      await loadComments();
+    } finally {
+      setActionCommentId(null);
+    }
+  }
+
+  async function handleDeleteComment(commentId) {
+    const confirmed = window.confirm("Удалить комментарий?");
+    if (!confirmed) return;
+
+    try {
+      setActionCommentId(commentId);
+
+      await deleteGameComment(gameId, commentId, token);
+      await loadComments();
+    } catch (err) {
+      setError(err.message || "Не удалось удалить комментарий");
+    } finally {
+      setActionCommentId(null);
     }
   }
 
@@ -212,7 +363,10 @@ function CommentsSection({ gameId, gameAuthorUsername }) {
             <CommentItem
               key={comment.id}
               comment={comment}
-              gameAuthorUsername={gameAuthorUsername}
+              isOwnComment={comment.author.username === currentUsername}
+              isSubmitting={actionCommentId === comment.id}
+              onUpdate={handleUpdateComment}
+              onDelete={handleDeleteComment}
             />
           ))}
         </div>
