@@ -1500,3 +1500,24 @@ textarea:focus-visible {
     padding: 16px;
   }
 }
+
+.comment-author {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.comment-author-role {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 3px 9px;
+  border: 1px solid rgba(139, 92, 246, 0.45);
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: #c8bef0;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+}

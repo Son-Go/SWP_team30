@@ -557,7 +557,7 @@ function GamePage() {
               )}
             </aside>
           </div>
-          <CommentsSection gameId={id} />
+          <CommentsSection gameId={id} gameAuthorUsername={authorName} />
         </>
       ) : (
         <article className="card create-game-card">

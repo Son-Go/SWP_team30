@@ -21,8 +21,9 @@ function AvatarPlaceholder({ username }) {
   );
 }
 
-function CommentItem({ comment }) {
+function CommentItem({ comment, gameAuthorUsername }) {
   const { author, text, createdAt } = comment;
+  const isGameAuthor = author.username === gameAuthorUsername;
 
   return (
     <article className="comment-card">
@@ -37,9 +38,15 @@ function CommentItem({ comment }) {
           <AvatarPlaceholder username={author.username} />
         )}
 
-        <a className="comment-author-name" href={`mailto:${author.email}`}>
-          {author.username}
-        </a>
+        <div className="comment-author">
+          <a className="comment-author-name" href={`mailto:${author.email}`}>
+            {author.username}
+          </a>
+
+          {isGameAuthor && (
+            <span className="comment-author-role">разработчик</span>
+          )}
+        </div>
       </div>
 
       <p className="comment-text">{text}</p>
@@ -51,7 +58,7 @@ function CommentItem({ comment }) {
   );
 }
 
-function CommentsSection({ gameId }) {
+function CommentsSection({ gameId, gameAuthorUsername }) {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -93,7 +100,11 @@ function CommentsSection({ gameId }) {
       {!loading && !error && comments.length > 0 && (
         <div className="comments-list">
           {comments.map((comment) => (
-            <CommentItem key={comment.id} comment={comment} />
+            <CommentItem
+              key={comment.id}
+              comment={comment}
+              gameAuthorUsername={gameAuthorUsername}
+            />
           ))}
         </div>
       )}
