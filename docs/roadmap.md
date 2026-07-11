@@ -42,7 +42,21 @@
 | PBI | Translate all the stuff to Russian | [#204](https://github.com/Son-Go/SWP_team30/issues/204) |
 | US-09 | Regional emphasis on Tatarstan users | [#51](https://github.com/Son-Go/SWP_team30/issues/51) |
 
-## Sprint 4 (06.07.2026 - 12.07.2025)
+## Sprint 4 (06.07.2026 - 12.07.2026)
 
-The customer has not yet decided on the scope of the sprint 4 
+**Milestone:** [Sprint 4](https://github.com/Son-Go/SWP_team30/milestone/4)
+
+**Goal** improve user management and moderation capabilities, protect game and comment actions from banned users, and verify the updated authorization flow.
+
+| ID | Summary | Issue |
+|---|---|---|
+| PBI | Add an ability to restore games of banned users | [#305](https://github.com/Son-Go/SWP_team30/issues/305)|
+| PBI | Add an ability to choose delete comments of banned user or no | [#306](https://github.com/Son-Go/SWP_team30/issues/306) |
+| PBI | Add page About us with information about club, contacts, club projects, and link for conducting event / creating new project | [#307](https://github.com/Son-Go/SWP_team30/issues/307) |
+| PBI | Add admin profile and messages about nwe event/project request to the admin profile | [#308](https://github.com/Son-Go/SWP_team30/issues/308) |
+
+
+## Sprint 5 (13.07.2026 - 19.07.2026)
+
+<!--Customer has not decided on sprint 5 goals yet-->
 
