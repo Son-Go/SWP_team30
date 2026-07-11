@@ -13,6 +13,21 @@ To access deployed Project open [link](http://gde.maxmir.ru/)
 
 ---
 
+## Quick Access
+
+**Production:** [http://gde.maxmir.ru/](http://gde.maxmir.ru/)
+
+**Local setup** (all MVPs after MVP-v0):
+```bash
+cp .env.example .env.secret   # fill in credentials
+docker compose up
+```
+Application available at `http://localhost:80`.
+
+For MVP-v0 (static only): open `temp-frontend/htmlFrontend/` with the VS Code Live Server extension.
+
+---
+
 ## Local setup instructions
 
 **MVP-v0:** Open https://github.com/Son-Go/SWP_team30/tree/8c2e78c353f0c7f9470b3c63cf59da54a8ecf47e/temp-frontend/htmlFrontend folder, and run VS code Live server extension. MVP-v0 has no backend functionality
@@ -81,13 +96,15 @@ Project supports following function:
 
 ## Documentation
 
-The maintained documentation is published as a browsable hosted site: [https://son-go.github.io/SWP_team30/](https://son-go.github.io/SWP_team30/)
-
-* [Development Process & Configuration Management](docs/development-process.md)
-* [Architecture Documentation](docs/architecture/README.md)
-* [Quality Requirements](docs/quality-requirements.md)
-* [Testing Documentation](docs/testing.md)
-* [endpoint-overview](/docs/endpoint-overview.md)
+| Resource | Link |
+|---|---|
+| Hosted documentation site | [https://son-go.github.io/SWP_team30/](https://son-go.github.io/SWP_team30/) |
+| Customer handover guide | [docs/customer-handover.md](docs/customer-handover.md) |
+| Architecture overview | [docs/architecture/README.md](docs/architecture/README.md) |
+| API endpoint reference | [docs/endpoint-overview.md](docs/endpoint-overview.md) |
+| Testing guide | [docs/testing.md](docs/testing.md) |
+| Quality requirements | [docs/quality-requirements.md](docs/quality-requirements.md) |
+| Development process | [docs/development-process.md](docs/development-process.md) |
 
 ### High-Level Architecture Summary
 
@@ -97,6 +114,13 @@ The maintained documentation is published as a browsable hosted site: [https://s
 | **Backend** | Spring Boot 4 + Java 21 | REST API with JWT authentication, JPA/Hibernate ORM, Flyway migrations |
 | **Database** | PostgreSQL | Persistent data store for users, games, tags, and relationships |
 | **Observability** | Grafana + Prometheus + Loki + Alloy + cAdvisor | Logging, metrics, and monitoring (optional overlay) |
+
+---
+
+## Contributing & Agent Guidance
+
+- [CONTRIBUTING.md](CONTRIBUTING.md) — workflow, branch rules, PR process
+- [AGENTS.md](AGENTS.md) — AI agent constraints, safe commands, verification steps
 
 ---
 
