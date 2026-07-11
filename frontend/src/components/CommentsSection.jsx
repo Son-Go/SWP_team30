@@ -32,6 +32,7 @@ function AvatarPlaceholder({ username }) {
 function CommentItem({
   comment,
   isOwnComment,
+  isGameAuthor,
   onUpdate,
   onDelete,
   isSubmitting,
@@ -83,6 +84,10 @@ function CommentItem({
 
         <div className="comment-author">
           <span className="comment-author-name">{author.username}</span>
+
+          {isGameAuthor && (
+            <span className="comment-author-role">разработчик</span>
+          )}
         </div>
 
         {isOwnComment && !isEditing && (
@@ -364,6 +369,7 @@ function CommentsSection({ gameId, gameAuthorUsername }) {
               key={comment.id}
               comment={comment}
               isOwnComment={comment.author.username === currentUsername}
+              isGameAuthor={comment.author.username === gameAuthorUsername}
               isSubmitting={actionCommentId === comment.id}
               onUpdate={handleUpdateComment}
               onDelete={handleDeleteComment}
