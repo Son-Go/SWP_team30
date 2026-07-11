@@ -34,7 +34,9 @@ test("user can register, log in, create a game, and view it through the real sta
 
   await expect(page).toHaveURL(/\/games\/\d+$/);
   await expect(page.locator("h1.page-title")).toContainText(gameTitle);
-  await expect(page.getByText(description)).toBeVisible();
+  await expect(
+    page.locator(".game-sidebar-short-description", { hasText: description }),
+  ).toBeVisible();
 
   await page.goto("/games");
   await expect(
