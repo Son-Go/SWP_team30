@@ -24,8 +24,12 @@ Base URL:
   - `page` (optional, default `0`)
   - `size` (optional, default `24`)
   - `tags` (optional, repeatable, e.g. `?tags=RPG&tags=Adventure`)
+- Notes:
+  - If `tags` are provided, the endpoint returns games that match at least one of the provided tags.
+  - Results are ordered by `createdAt` descending.
+  - The endpoint returns both approved and non-approved games; `isApproved` is exposed in each item but is not used as a filter.
 - Success response: `200 OK`
-- Response body: a paginated Spring Data `Page` object containing an array of games under `content`
+- Response body: a paginated Spring Data `Page` object containing an array of games under `content`. Each item has the shape of `GamesPageResponse` with fields `id`, `authorId`, `title`, `shortDescription`, `description`, `bannerUrl`, `createdAt`, `author`, `isApproved`, `gameTags`, and `pictures`.
 
 Example response:
 ```json
@@ -35,8 +39,10 @@ Example response:
       "id": 1,
       "authorId": 2,
       "title": "Example Game",
+      "shortDescription": "A short card description",
       "description": "A sample game",
       "bannerUrl": "https://example.com/banner.png",
+      "createdAt": "2026-01-01T12:00:00Z",
       "author": {
         "username": "alice",
         "profile_image_url": null,
@@ -44,8 +50,13 @@ Example response:
       },
       "isApproved": true,
       "gameTags": {
-        "GENRE": ["RPG", "Adventure"]
-      }
+        "GENRE": ["RPG", "Adventure"],
+        "MODE": []
+      },
+      "pictures": [
+        "https://example.com/screenshot1.png",
+        "https://example.com/screenshot2.png"
+      ]
     }
   ],
   "totalElements": 1

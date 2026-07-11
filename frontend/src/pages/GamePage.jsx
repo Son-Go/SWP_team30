@@ -5,6 +5,7 @@ import ErrorState from "../components/ErrorState";
 import Loader from "../components/Loader";
 import { useAuth } from "../context/auth-context";
 import TagSelector from "../components/TagSelector";
+import CommentsSection from "../components/CommentsSection";
 import {
   isImageUrl,
   isYoutubeUrl,
@@ -349,212 +350,215 @@ function GamePage() {
       {error ? <ErrorState message={error} /> : null}
 
       {!isEditing ? (
-        <div className="game-layout">
-          <div className="game-gallery">
-            {orderedMedia.length > 0 ? (
-              <>
-                <div className="game-gallery-viewer">
-                  <button
-                    className="gallery-arrow gallery-arrow-left"
-                    onClick={() =>
-                      setActiveMediaByIndex(
-                        currentIndex <= 0
-                          ? orderedMedia.length - 1
-                          : currentIndex - 1,
-                      )
-                    }
-                  >
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+        <>
+          <div className="game-layout">
+            <div className="game-gallery">
+              {orderedMedia.length > 0 ? (
+                <>
+                  <div className="game-gallery-viewer">
+                    <button
+                      className="gallery-arrow gallery-arrow-left"
+                      onClick={() =>
+                        setActiveMediaByIndex(
+                          currentIndex <= 0
+                            ? orderedMedia.length - 1
+                            : currentIndex - 1,
+                        )
+                      }
                     >
-                      <polyline points="15 18 9 12 15 6" />
-                    </svg>
-                  </button>
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="15 18 9 12 15 6" />
+                      </svg>
+                    </button>
 
-                  {currentMediaIsVideo ? (
-                    <iframe
-                      src={getYoutubeEmbedUrl(currentMedia)}
-                      title={`${game.title} video`}
-                      className="game-gallery-main game-video-frame"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  ) : (
-                    <img
-                      src={currentMedia}
-                      alt={game.title}
-                      className="game-gallery-main"
-                    />
-                  )}
+                    {currentMediaIsVideo ? (
+                      <iframe
+                        src={getYoutubeEmbedUrl(currentMedia)}
+                        title={`${game.title} video`}
+                        className="game-gallery-main game-video-frame"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <img
+                        src={currentMedia}
+                        alt={game.title}
+                        className="game-gallery-main"
+                      />
+                    )}
 
-                  <button
-                    className="gallery-arrow gallery-arrow-right"
-                    onClick={() =>
-                      setActiveMediaByIndex(
-                        currentIndex >= orderedMedia.length - 1
-                          ? 0
-                          : currentIndex + 1,
-                      )
-                    }
-                  >
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                    <button
+                      className="gallery-arrow gallery-arrow-right"
+                      onClick={() =>
+                        setActiveMediaByIndex(
+                          currentIndex >= orderedMedia.length - 1
+                            ? 0
+                            : currentIndex + 1,
+                        )
+                      }
                     >
-                      <polyline points="9 18 15 12 9 6" />
-                    </svg>
-                  </button>
-                </div>
-
-                <div className="game-gallery-thumbs-row">
-                  <button
-                    type="button"
-                    className="gallery-arrow-thumb gallery-arrow-thumb-left"
-                    onClick={() => setActiveMediaByIndex(currentIndex - 1)}
-                    disabled={currentIndex <= 0}
-                    aria-label="Показать предыдущие медиа"
-                  >
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <polyline points="15 18 9 12 15 6" />
-                    </svg>
-                  </button>
-
-                  <div className="game-gallery-thumbs">
-                    {visibleThumbs.map((url, i) => {
-                      const mediaIndex = safeThumbStart + i;
-
-                      return isYoutubeUrl(url) ? (
-                        <button
-                          key={`${url}-${mediaIndex}`}
-                          type="button"
-                          className={`game-gallery-thumb game-gallery-thumb-video ${currentMedia === url ? "active" : ""}`}
-                          onClick={() => setActiveMediaByIndex(mediaIndex)}
-                        >
-                          YouTube
-                        </button>
-                      ) : (
-                        <img
-                          key={`${url}-${mediaIndex}`}
-                          src={url}
-                          alt={`${game.title} media ${mediaIndex + 1}`}
-                          className={`game-gallery-thumb ${currentMedia === url ? "active" : ""}`}
-                          onClick={() => setActiveMediaByIndex(mediaIndex)}
-                        />
-                      );
-                    })}
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="9 18 15 12 9 6" />
+                      </svg>
+                    </button>
                   </div>
 
-                  <button
-                    type="button"
-                    className="gallery-arrow-thumb gallery-arrow-thumb-right"
-                    onClick={() => setActiveMediaByIndex(currentIndex + 1)}
-                    disabled={currentIndex >= orderedMedia.length - 1}
-                    aria-label="Показать следующие медиа"
-                  >
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                  <div className="game-gallery-thumbs-row">
+                    <button
+                      type="button"
+                      className="gallery-arrow-thumb gallery-arrow-thumb-left"
+                      onClick={() => setActiveMediaByIndex(currentIndex - 1)}
+                      disabled={currentIndex <= 0}
+                      aria-label="Показать предыдущие медиа"
                     >
-                      <polyline points="9 18 15 12 9 6" />
-                    </svg>
-                  </button>
-                </div>
-              </>
-            ) : game.bannerUrl ? (
-              <img
-                src={game.bannerUrl}
-                alt={game.title}
-                className="game-gallery-main"
-              />
-            ) : (
-              <div className="state-box game-gallery-main">
-                Медиа не загружены.
-              </div>
-            )}
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="15 18 9 12 15 6" />
+                      </svg>
+                    </button>
 
-            <div className="game-description">
-              <h2 className="card-title">Описание</h2>
-              <p className="card-text" style={{ whiteSpace: "pre-wrap" }}>
-                {game.description || "Описания нема."}
-              </p>
+                    <div className="game-gallery-thumbs">
+                      {visibleThumbs.map((url, i) => {
+                        const mediaIndex = safeThumbStart + i;
+
+                        return isYoutubeUrl(url) ? (
+                          <button
+                            key={`${url}-${mediaIndex}`}
+                            type="button"
+                            className={`game-gallery-thumb game-gallery-thumb-video ${currentMedia === url ? "active" : ""}`}
+                            onClick={() => setActiveMediaByIndex(mediaIndex)}
+                          >
+                            YouTube
+                          </button>
+                        ) : (
+                          <img
+                            key={`${url}-${mediaIndex}`}
+                            src={url}
+                            alt={`${game.title} media ${mediaIndex + 1}`}
+                            className={`game-gallery-thumb ${currentMedia === url ? "active" : ""}`}
+                            onClick={() => setActiveMediaByIndex(mediaIndex)}
+                          />
+                        );
+                      })}
+                    </div>
+
+                    <button
+                      type="button"
+                      className="gallery-arrow-thumb gallery-arrow-thumb-right"
+                      onClick={() => setActiveMediaByIndex(currentIndex + 1)}
+                      disabled={currentIndex >= orderedMedia.length - 1}
+                      aria-label="Показать следующие медиа"
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="9 18 15 12 9 6" />
+                      </svg>
+                    </button>
+                  </div>
+                </>
+              ) : game.bannerUrl ? (
+                <img
+                  src={game.bannerUrl}
+                  alt={game.title}
+                  className="game-gallery-main"
+                />
+              ) : (
+                <div className="state-box game-gallery-main">
+                  Медиа не загружены.
+                </div>
+              )}
+
+              <div className="game-description">
+                <h2 className="card-title">Описание</h2>
+                <p className="card-text" style={{ whiteSpace: "pre-wrap" }}>
+                  {game.description || "Описания нема."}
+                </p>
+              </div>
             </div>
-          </div>
 
-          <aside className="game-sidebar">
-            {game.bannerUrl && (
-              <img
-                src={game.bannerUrl}
-                alt={game.title}
-                className="game-sidebar-cover"
-              />
-            )}
-            {game.shortDescription?.trim() && (
-              <p className="game-sidebar-short-description">
-                {game.shortDescription}
-              </p>
-            )}
+            <aside className="game-sidebar">
+              {game.bannerUrl && (
+                <img
+                  src={game.bannerUrl}
+                  alt={game.title}
+                  className="game-sidebar-cover"
+                />
+              )}
+              {game.shortDescription?.trim() && (
+                <p className="game-sidebar-short-description">
+                  {game.shortDescription}
+                </p>
+              )}
 
-            {game.createdAt && (
-              <div className="game-sidebar-meta">
-                <span className="game-sidebar-label">Дата выхода</span>
-                <span className="card-author">
-                  {new Date(game.createdAt).toLocaleDateString("ru-RU", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </span>
-              </div>
-            )}
-
-            {authorName && (
-              <div className="game-sidebar-meta">
-                <span className="game-sidebar-label">Разработчик</span>
-                <span className="card-author">{authorName}</span>
-              </div>
-            )}
-
-            {visibleGameTags.length > 0 && (
-              <div className="game-sidebar-meta">
-                <div className="tag-list">
-                  {visibleGameTags.map(({ name, colorClass }) => (
-                    <span className={`tag-badge ${colorClass}`} key={name}>
-                      {name}
-                    </span>
-                  ))}
+              {game.createdAt && (
+                <div className="game-sidebar-meta">
+                  <span className="game-sidebar-label">Дата выхода</span>
+                  <span className="card-author">
+                    {new Date(game.createdAt).toLocaleDateString("ru-RU", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </span>
                 </div>
-              </div>
-            )}
-          </aside>
-        </div>
+              )}
+
+              {authorName && (
+                <div className="game-sidebar-meta">
+                  <span className="game-sidebar-label">Разработчик</span>
+                  <span className="card-author">{authorName}</span>
+                </div>
+              )}
+
+              {visibleGameTags.length > 0 && (
+                <div className="game-sidebar-meta">
+                  <div className="tag-list">
+                    {visibleGameTags.map(({ name, colorClass }) => (
+                      <span className={`tag-badge ${colorClass}`} key={name}>
+                        {name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </aside>
+          </div>
+          <CommentsSection gameId={id} gameAuthorUsername={authorName} />
+        </>
       ) : (
         <article className="card create-game-card">
           <form className="form" onSubmit={handleUpdate}>

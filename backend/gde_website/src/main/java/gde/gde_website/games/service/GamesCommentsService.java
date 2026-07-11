@@ -87,8 +87,7 @@ public class GamesCommentsService {
         commentsServiceLogger.info("Called createComment method");
 
         gamesRepository.findById(gameId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        UserEntity author = usersRepository.findById(authorId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+        UserEntity author = checkNotBannedComments(authorId);
 
         CommentEntity comment = new CommentEntity(
                 authorId,
@@ -210,8 +209,7 @@ public class GamesCommentsService {
             );
         }
 
-        UserEntity user = usersRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+        UserEntity user = checkNotBannedComments(userId);
 
         UserEntity author = usersRepository.findById(comment.getUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Author not found"));
@@ -221,5 +219,26 @@ public class GamesCommentsService {
         }
 
         return Pair.of(comment, author);
+    }
+
+    /**
+     * Ensures that the specified user exists and is not banned.
+     * Used to prevent banned users from creating or modifying comments.
+     *
+     * @param userId - id of user to check
+     * @return found user entity, guaranteed not banned
+     * @throws ResponseStatusException with code {@code 401} if user does not exist
+     * @throws ResponseStatusException with code {@code 403} if user is banned
+     * @Author: Egor Grishin
+     */
+    private UserEntity checkNotBannedComments(Long userId) {
+        UserEntity user = usersRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+
+        if (user.getRole() == UserRole.BANNED) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Banned users cannot perform this action");
+        }
+
+        return user;
     }
 }
