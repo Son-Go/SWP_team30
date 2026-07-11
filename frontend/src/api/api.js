@@ -187,3 +187,7 @@ export function getGameAuthor(authorId) {
 export function getAllTags() {
   return request("/games/tags/all");
 }
+
+export function getGameComments(gameId) {
+  return request(`/games/${gameId}/comments`);
+}
