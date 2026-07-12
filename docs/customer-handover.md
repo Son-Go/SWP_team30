@@ -2,7 +2,7 @@
 
 **Product:** GDE Website  
 **Repository:** [Son-Go/SWP_team30](https://github.com/Son-Go/SWP_team30)  
-**Current version:** v0.2.0 (MVP-v2)  
+**Current version:** v0.2.5 (MVP-v2.5)  
 **Handover status:** Assignment 6 — product and documentation are available for review; infrastructure ownership transfer is not yet recorded as complete.
 
 ---
@@ -77,6 +77,7 @@ Use the following documentation depending on the task:
 - Git
 - Docker Engine
 - Docker Compose
+- VM or any machine with at least 2 core CPU 2.4+ GHz, 4 GB RAM and 20+ GB disk space
 
 ### Start the application
 
@@ -93,7 +94,11 @@ Fill in the required local values in `.env.secret`. Do not commit this file.
 docker compose up --build
 ```
 
-After the containers start, open:
+After the containers start, use dedicated script to fill database with required game tags and Primary admin account:
+
+#TODO create db script when customer confirm, which game tags must be on website
+
+Open project on dedicated port:
 
 ```text
 http://localhost:80
@@ -178,8 +183,8 @@ A customer, TA, or future maintainer can verify the current product state using 
 | Local application does not start | Run `docker compose ps` and inspect logs with `docker compose logs` |
 | Backend fails to connect to database | Check values in `.env.secret`; confirm containers are running |
 | Frontend does not reflect recent changes | Run `docker compose build frontend` and restart the stack |
-| Local database is corrupted or disposable | Run `docker compose down -v`, then `docker compose up --build` |
-| Production site is unavailable | Contact the project team because production VM access remains retained |
+| Local database is corrupted or disposable | Open [db-backup-vm.md](db-backup-vm.md) for db recovery instructions |
+| Production site is unavailable | Restart project or check the logs in observability stack |
 | Metrics or logs are unavailable locally | Start the observability overlay and consult [observability.md](observability.md) |
 
 ---
@@ -224,9 +229,9 @@ Complete this checklist only when each transfer has actually happened.
 - [ ] Customer has confirmed access to the source repository.
 - [ ] Customer has confirmed access to the hosted documentation.
 - [ ] Customer has confirmed access to the production application.
-- [ ] Production VM access has been securely transferred or delegated.
+- [ ] Customer obtained VM for website
 - [ ] Production environment variables and secrets have been securely transferred or rotated.
-- [ ] Domain and DNS ownership has been transferred or delegated.
+- [ ] Customer obtained domain for website
 - [ ] Database backup and recovery responsibility has been agreed.
 - [ ] Customer has completed a deployment or recovery walkthrough.
 - [ ] Customer has accepted the final handover state.
@@ -239,7 +244,6 @@ Before full infrastructure ownership transfer, contact the project team for:
 
 - Production incidents.
 - Deployment requests.
-- Domain or DNS changes.
 - Production credential rotation.
 - Database restoration.
 - Questions not resolved by the documentation listed above.
