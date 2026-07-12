@@ -5,7 +5,7 @@ Each scenario is end-user-facing and can be executed by the customer during a re
 
 ---
 
-## UAT-001 — User can filter tasks by status
+## UAT-001 — User can login
 
 | Field | Value |
 |---|---|
@@ -41,6 +41,16 @@ Each scenario is end-user-facing and can be executed by the customer during a re
 | Field | Value |
 |---|---|
 | **Execution Date** | 04.07.2026 |
+| **Executed By** | Customer (during Sprint Review) |
+| **Result** | ✅ Pass |
+| **Customer Comments** | The customer confirmed that login (email and login) works correctly. No comments |
+| **Resulting PBIs** | No new PBI |
+
+#### Week 6 — Sprint 4
+
+| Field | Value |
+|---|---|
+| **Execution Date** | 11.07.2026 |
 | **Executed By** | Customer (during Sprint Review) |
 | **Result** | ✅ Pass |
 | **Customer Comments** | The customer confirmed that login (email and login) works correctly. No comments |
@@ -90,6 +100,16 @@ Each scenario is end-user-facing and can be executed by the customer during a re
 | **Customer Comments** | The customer confirmed that games are created correctly. Videos and descriptions work correctly |
 | **Resulting PBIs** | No new PBI |
 
+#### Week 6 — Sprint 4
+
+| Field | Value |
+|---|---|
+| **Execution Date** | 11.07.2026 |
+| **Executed By** | Customer (during Sprint Review) |
+| **Result** | ✅ Pass |
+| **Customer Comments** | The customer confirmed that games are created correctly. Videos and descriptions work correctly |
+| **Resulting PBIs** | No new PBI |
+
 ---
 
 ## UAT-003 — User can sort games by tags
@@ -131,6 +151,16 @@ Each scenario is end-user-facing and can be executed by the customer during a re
 | **Customer Comments** | Customer confirmed that tags sorting works successfully. Requested changing tags colors to make them more readable |
 | **Resulting PBIs** | [#252 (Add tags' color diversity)](https://github.com/Son-Go/SWP_team30/issues/252) |
 
+#### Week 6 — Sprint 4
+
+| Field | Value |
+|---|---|
+| **Execution Date** | 11.07.2026 |
+| **Executed By** | Customer (during Sprint Review) |
+| **Result** | ✅ Pass |
+| **Customer Comments** | Customer confirmed that tags sorting works successfully |
+| **Resulting PBIs** | No new PBI |
+
 ---
 
 > New for sprint 3
@@ -166,6 +196,16 @@ Each scenario is end-user-facing and can be executed by the customer during a re
 | **Customer Comments** | Customer confirmed that "Новинки" and "Все игры" sections work correctly. However "Избранное" shows nothing. Also customer requested mini-profile when user howers the game card|
 | **Resulting PBIs** | [#246 (Process the featured tag)](https://github.com/Son-Go/SWP_team30/issues/246), [#251 (Add the mini-profile attached to GameCard)](https://github.com/Son-Go/SWP_team30/issues/251) |
 
+#### Week 6 — Sprint 4
+
+| Field | Value |
+|---|---|
+| **Execution Date** | 11.07.2026 |
+| **Executed By** | Customer (during Sprint Review) |
+| **Result** | ✅ Pass |
+| **Customer Comments** | Customer confirmed that all sections sections work correctly. |
+| **Resulting PBIs** | No new PBI |
+
 ---
 
 ## UAT-005 — User can edit their games
@@ -198,6 +238,16 @@ Each scenario is end-user-facing and can be executed by the customer during a re
 | **Result** | ✅ Pass |
 | **Customer Comments** | Customer confirmed that editing works correctly. Customer requested to improve contrast of selected tags|
 | **Resulting PBIs** | [#247 (Increase the contrast of the tag selected in the filter)](https://github.com/Son-Go/SWP_team30/issues/247) |
+
+#### Week 6 — Sprint 4
+
+| Field | Value |
+|---|---|
+| **Execution Date** | 11.07.2026 |
+| **Executed By** | Customer (during Sprint Review) |
+| **Result** | ✅ Pass |
+| **Customer Comments** | Customer confirmed that editing works correctly |
+| **Resulting PBIs** | No new PBI |
 
 ---
 
@@ -234,5 +284,5 @@ Each scenario is end-user-facing and can be executed by the customer during a re
 | **Execution Date** | 11.07.2026 |
 | **Executed By** | Customer (during Sprint Review) |
 | **Result** | ✅ Pass |
-| **Customer Comments** | The customer created the comment “Great game! I like the visual style and gameplay.” on an existing game page. The comment was displayed successfully in the comments list and remained visible after the page was refreshed. No comments. |
+| **Customer Comments** | Customer confirmed that comments work correctly |
 | **Resulting PBIs** | No new PBI |
