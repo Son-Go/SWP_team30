@@ -1,110 +1,44 @@
-# SWP_team30 GDE website
+# GDE Website
 
-## Description
-GDE Website - website for GDE innopolis club, where local game developers can publish their indie games and russian gamer can explore new games
+> A community platform for the GDE Innopolis club where indie game developers can publish and manage their projects, while visitors can browse and discover new games.
+
+## 🚀 Quick access
+
+- Product access: [Open the current site](http://gde.maxmir.ru/)
+- Hosted documentation: [View the docs site](https://son-go.github.io/SWP_team30/)
+- MVP-v0 access: [Open the deployed MVP-v0](https://precious-toffee-52e805.netlify.app/)
+
+## 🎯 Product goal
+
+GDE Website gives local game developers a simple place to share their work and gives the wider community an easy way to discover indie games.
+
+## 📌 Current status
+
+- Status: active development
+- Current version: v0.2.5 (MVP-v2.5)
+- Current capabilities: user registration and login, browsing games, creating and editing games, and filtering by tags
+- Changelog: [CHANGELOG](./CHANGELOG.md)
 
 ---
 
-## Access instructions
+## 🧭 How to use it
 
-To access deployed MVP-v0 open [link](https://precious-toffee-52e805.netlify.app/)
+- Review the live product at [http://gde.maxmir.ru/](http://gde.maxmir.ru/)
+- For customer, TA, or handover review, start with [docs/customer-handover.md](docs/customer-handover.md)
+- For a static prototype of the earlier MVP, see [temp-frontend/htmlFrontend](temp-frontend/htmlFrontend)
 
-To access deployed Project open [link](http://gde.maxmir.ru/)
+## 🛠️ Local setup and deployment
 
----
+For local development or review, start from the handover guide and the repository setup instructions:
 
-## Quick Access
-
-**Production:** [http://gde.maxmir.ru/](http://gde.maxmir.ru/)
-
-**Local setup** (all MVPs after MVP-v0):
 ```bash
-cp .env.example .env.secret   # fill in credentials
-docker compose up
+cp .env.example .env.secret # fill in credentials
+docker compose up --build
 ```
-Application available at `http://localhost:80`.
 
-For MVP-v0 (static only): open `temp-frontend/htmlFrontend/` with the VS Code Live Server extension.
-
----
-
-## Local setup instructions
-
-**MVP-v0:** Open https://github.com/Son-Go/SWP_team30/tree/8c2e78c353f0c7f9470b3c63cf59da54a8ecf47e/temp-frontend/htmlFrontend folder, and run VS code Live server extension. MVP-v0 has no backend functionality
-
-**Other MVP:** Clone project, copy [.env.example](/.env.example) to `.env.secret`, run docker compose up. `http://localhost:80` will show working website
+Then open [http://localhost:80](http://localhost:80).
 
 ---
-
-## Weekly README reports
-
-- Week 2 [README.md](https://github.com/Son-Go/SWP_team30/blob/8b765b5d98da638555c6fb2a9f5be49d44b7cc38/reports/week2/README.md)
-- Week 3 [README.md](https://github.com/Son-Go/SWP_team30/blob/1214b680442a30e2ae7adfb5d748f33b7229d92b/reports/week3/README.md)
-- Week 4 [README.md](https://github.com/Son-Go/SWP_team30/blob/main/reports/week4/README.md)
-- Week 5 [README.md](https://github.com/Son-Go/SWP_team30/blob/main/reports/week5/README.md)
-
----
-
-## Testing
-
-All testing info can be found in:
-
-- [testing.md](/docs/testing.md) - all automated tests
-- [endpoint-testing.md](/docs/endpoint-testing.md) - manual endpoint testing
-- [user-acceptance-tests.md](/docs/user-acceptance-tests.md) - UAT tests
-- [quality-requirements.md](/docs/quality-requirements.md) - qualiy requirements with links to automated tests
-- [endpoint-overview](/docs/endpoint-overview.md) - overeview of all endpoints with their bodies and purposes
-
---- 
-
-## Logging
-
-Project contain several logging tools to log container health and system stability
-
-List of tools:
-
-- cAdvisor - tracks hardware usage
-- Prometheus - logs hardware usage
-- Loki - logs docker logs
-- Alloy - unifies logs from Prometheus and Loki
-- Grafana control panel and UI for all logs
-
-Grafana panel can be accessed on port 3000
-
-Full observability info: [observability.md](/docs/observability.md)
-
----
-
-## Current functionality
-
-Project supports following function:
-
-- account registration
-- viewing existing games
-- adding new games
-- editing your games
-- filtering games by tags
-
----
-
-## Project status
-**Active development**
-
-**Version:** v0.2.0 (MVP-v2 status)
-
-[CHANGELOG](./CHANGELOG.md)
-
-## Documentation
-
-| Resource | Link |
-|---|---|
-| Hosted documentation site | [https://son-go.github.io/SWP_team30/](https://son-go.github.io/SWP_team30/) |
-| Customer handover guide | [docs/customer-handover.md](docs/customer-handover.md) |
-| Architecture overview | [docs/architecture/README.md](docs/architecture/README.md) |
-| API endpoint reference | [docs/endpoint-overview.md](docs/endpoint-overview.md) |
-| Testing guide | [docs/testing.md](docs/testing.md) |
-| Quality requirements | [docs/quality-requirements.md](docs/quality-requirements.md) |
-| Development process | [docs/development-process.md](docs/development-process.md) |
 
 ### High-Level Architecture Summary
 
@@ -115,16 +49,54 @@ Project supports following function:
 | **Database** | PostgreSQL | Persistent data store for users, games, tags, and relationships |
 | **Observability** | Grafana + Prometheus + Loki + Alloy + cAdvisor | Logging, metrics, and monitoring (optional overlay) |
 
+
+## 📚 Customer and reviewer documentation
+
+The most relevant maintained documents for product review are:
+
+- [docs/customer-handover.md](docs/customer-handover.md) - access, setup, support, troubleshooting, and known limitations
+- [docs/architecture/README.md](docs/architecture/README.md) - architecture overview
+- [docs/endpoint-overview.md](docs/endpoint-overview.md) - API reference
+- [docs/testing.md](docs/testing.md) - test guidance
+- [docs/quality-requirements.md](docs/quality-requirements.md) - quality expectations
+- [docs/observability.md](docs/observability.md) - monitoring and logging
+- [docs/architecture/README.md](docs/architecture/README.md) - architecture overview
+- [docs](./docs/) - document folder
+
+## 🤝 Repository guidance
+
+- [CONTRIBUTING.md](CONTRIBUTING.md) - contribution workflow and pull request process
+- [AGENTS.md](AGENTS.md) - safe agent operating rules and verification steps
+- [CHANGELOG.md](CHANGELOG.md) - recent user-visible changes
+
 ---
 
-## Contributing & Agent Guidance
+## 📈 Logging and observability
 
-- [CONTRIBUTING.md](CONTRIBUTING.md) — workflow, branch rules, PR process
-- [AGENTS.md](AGENTS.md) — AI agent constraints, safe commands, verification steps
+Project contain several logging tools to log container health and system stability.
+
+List of tools:
+
+- cAdvisor - tracks hardware usage
+- Prometheus - logs hardware usage
+- Loki - logs docker logs
+- Alloy - unifies logs from Prometheus and Loki
+- Grafana control panel and UI for all logs
+
+Grafana panel can be accessed on port 3000.
+
+Full observability info: [docs/observability.md](docs/observability.md)
 
 ---
 
-## License
-[LICENCE](https://github.com/Son-Go/SWP_team30/blob/8b765b5d98da638555c6fb2a9f5be49d44b7cc38/LICENSE)
+## 📝 Weekly README reports
 
----
+- Week 2 [README.md](./reports/week2/README.md)
+- Week 3 [README.md](./reports/week3/README.md)
+- Week 4 [README.md](./reports/week4/README.md)
+- Week 5 [README.md](./reports/week5/README.md)
+- Week 6 [README.md](./reports/week6/README.md)
+
+## 📄 License
+
+See [LICENSE](LICENSE).

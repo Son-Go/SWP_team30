@@ -46,7 +46,21 @@
 
 **Milestone:** [Sprint 4](https://github.com/Son-Go/SWP_team30/milestone/4)
 
-**Goal** improve user management and moderation capabilities, protect game and comment actions from banned users, and verify the updated authorization flow.
+**Goal** Improve UI on /game page, add comments and mini-profile
+
+| ID | Summary | Issue |
+|---|---|---|
+| PBI | Add comments to games cards | [#281](https://github.com/Son-Go/SWP_team30/issues/281)|
+| PBI | Add the mini-profile attached to GameCard | [#251](https://github.com/Son-Go/SWP_team30/issues/251) |
+| PBI | Add tags' color diversity | [#252](https://github.com/Son-Go/SWP_team30/issues/252) |
+| PBI | Add short description to the game returning endpoints | [#276](https://github.com/Son-Go/SWP_team30/issues/276) |
+
+
+## Sprint 5 (13.07.2026 - 19.07.2026)
+
+**Milestone:** [Sprint 5](https://github.com/Son-Go/SWP_team30/milestone/5)
+
+**Goal** Implement admin profile page with neccessary functional (user/game management), create "About us" page from customer's template
 
 | ID | Summary | Issue |
 |---|---|---|
@@ -54,9 +68,3 @@
 | PBI | Add an ability to choose delete comments of banned user or no | [#306](https://github.com/Son-Go/SWP_team30/issues/306) |
 | PBI | Add page About us with information about club, contacts, club projects, and link for conducting event / creating new project | [#307](https://github.com/Son-Go/SWP_team30/issues/307) |
 | PBI | Add admin profile and messages about nwe event/project request to the admin profile | [#308](https://github.com/Son-Go/SWP_team30/issues/308) |
-
-
-## Sprint 5 (13.07.2026 - 19.07.2026)
-
-<!--Customer has not decided on sprint 5 goals yet-->
-
