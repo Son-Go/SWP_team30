@@ -8,7 +8,16 @@
 
 ## [Unreleased](https://github.com/Son-Go/SWP_team30)
 
-Additional documentation, images and readme updates for v0.2.0
+Additional documentation, images and readme updates for v0.2.5
+
+## [v0.2.5](https://github.com/Son-Go/SWP_team30/releases/tag/MVP-v2.5)
+
+### Added
+- Mini profile
+- comment functionality
+- color coded tags
+- fixed "Featured" section
+- Additional documentation, images and readme updates for v0.2.0
 
 ## [v0.2.0](https://github.com/Son-Go/SWP_team30/releases/tag/MVP-v2)
 

@@ -88,9 +88,9 @@ Because each team member closed up to 10 issues, we will provide links to projec
 
 - [archiecture readme](../../docs/architecture/README.md)
   
-- [Sprint-3 release](https://github.com/Son-Go/SWP_team30/releases/tag/MVP-v2)
+- [Sprint-4 release](https://github.com/Son-Go/SWP_team30/releases/tag/MVP-v2.5)
 - [Changelog](../../CHANGELOG.md)
-- [demo video](https://disk.yandex.ru/i/fDmV7AJWlhSSrg)
+- [demo video](https://disk.yandex.ru/i/Hn1ay1o6K_BwFg)
 - [transcript](./sprint-review-transcript.md)
 - [review summary](./sprint-review-summary.md)
 - [reflection](./reflection.md)
