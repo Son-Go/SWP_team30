@@ -162,7 +162,7 @@ public class UsersProfileService {
         UserEntity author = usersRepository.findById(authorId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        Page<GamesEntity> gamesPage = gamesRepository.findAllByAuthorId(authorId, pageable);
+        Page<GamesEntity> gamesPage = gamesRepository.findAllByAuthorIdAndIsHiddenFalse(authorId, pageable);
 
         List<String> tagTypesNames = tagTypeRepository.findAll().stream()
                 .map(TagTypeEntity::getType)

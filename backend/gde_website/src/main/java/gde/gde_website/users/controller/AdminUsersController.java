@@ -74,7 +74,24 @@ public class AdminUsersController {
             @RequestBody BanRequest request,
             Authentication authentication
     ) {
-        usersService.banUser(request.userId(), (Long) authentication.getPrincipal());
+        usersService.banUser(request.userId(),
+                (Long) authentication.getPrincipal(),
+                request.deleteComments(),
+                request.hideGames());
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * This method is used for handling restoring games request
+     * @param userId - id of user whoos games we want to restore
+     * @param authentication - auth principal
+     * @return HTTP status with code {@code 200} without body
+     * @Author: Artemii Gorelov
+     */
+    @PostMapping("/{userId}/games/restore")
+    public ResponseEntity<Void> restoreUserGames(@PathVariable Long userId,
+                                                 Authentication authentication) {
+        usersService.restoreUserGames(userId, (Long) authentication.getPrincipal());
         return ResponseEntity.ok().build();
     }
 
