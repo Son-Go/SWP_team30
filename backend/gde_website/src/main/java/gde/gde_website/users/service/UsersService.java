@@ -207,13 +207,34 @@ public class UsersService {
      * @Author: Artemii Gorelov
      */
     @Transactional
-    public void banUser(Long userId, Long adminId) {
+    public void banUser(Long userId, Long adminId, boolean deleteComments, boolean hideGames) {
         checkAdminRights(adminId);
         UserEntity targetUser = getUserOrThrow(userId);
         if (targetUser.getRole() == UserRole.BANNED) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is already banned");
         targetUser.setRole(UserRole.BANNED);
         userRepository.save(targetUser);
-        commentRepository.deleteAllByUserId(userId);
+
+        if (deleteComments) {
+            commentRepository.deleteAllByUserId(userId);
+        }
+
+        if (hideGames) {
+            gamesService.hideGamesByAuthor(userId);
+        }
+    }
+
+    /**
+     * This method is used for restoring hidden games
+     * @param userId - id of user whoos games we want to restore
+     * @param adminId - admin who perform this action
+     * @Author: Artemii Gorelov
+     */
+    @Transactional
+    public void restoreUserGames(Long userId, Long adminId) {
+        checkAdminRights(adminId);
+        getUserOrThrow(userId);
+
+        gamesService.restoreGamesByAuthor(userId);
     }
 
     /**

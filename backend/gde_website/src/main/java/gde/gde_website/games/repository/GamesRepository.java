@@ -27,7 +27,7 @@ public interface GamesRepository extends JpaRepository<GamesEntity, Long> {
      * @Author: Artemii Gorelov, Egor Grishin
      */
     @EntityGraph(attributePaths = {"gameTags", "gameTags.tag", "gameTags.tag.tagType"})
-    Page<GamesEntity> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    Page<GamesEntity> findAllByIsHiddenFalseOrderByCreatedAtDesc(Pageable pageable);
 
     /**
      * Finds a game by id and loads related tags together with it.
@@ -50,9 +50,10 @@ public interface GamesRepository extends JpaRepository<GamesEntity, Long> {
     @Query("SELECT DISTINCT g FROM GamesEntity g " +
             "JOIN g.gameTags gt " +
             "JOIN gt.tag t " +
-            "WHERE t.name IN :tagNames " + "ORDER BY g.createdAt DESC")
+            "WHERE t.name IN :tagNames AND g.isHidden = false " +
+            "ORDER BY g.createdAt DESC")
     @EntityGraph(attributePaths = {"gameTags", "gameTags.tag", "gameTags.tag.tagType"})
-    Page<GamesEntity> findByTagNames(List<String> tagNames, Pageable pageable);
+    Page<GamesEntity> findVisibleByTagNames(List<String> tagNames, Pageable pageable);
 
     /**
      * This method is used for deleting all games by author after author was deleted
@@ -76,6 +77,15 @@ public interface GamesRepository extends JpaRepository<GamesEntity, Long> {
      * @param pageable - list of games divided by pages
      * @return return list of games divided by pages
      */
-    @EntityGraph(attributePaths = {"gameTags", "gameTags.tag"})
-    Page<GamesEntity> findAllByAuthorId(Long userId, Pageable pageable);
+    @EntityGraph(attributePaths = {"gameTags", "gameTags.tag", "gameTags.tag.tagType"})
+    Page<GamesEntity> findAllByAuthorIdAndIsHiddenFalse(Long userId, Pageable pageable);
+
+    /**
+     * Returns all games of author including hidden ones.
+     * Used for admin moderation actions such as hide/restore.
+     *
+     * @param userId - author id
+     * @return list of all author games
+     */
+    List<GamesEntity> findAllByAuthorId(Long userId);
 }

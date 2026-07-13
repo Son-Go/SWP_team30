@@ -51,7 +51,7 @@ public class GamesService {
     public Page<GamesPageResponse> getAllGames(Pageable pageable) {
         gamesServiceLogger.info("Called getAllGames method");
 
-        Page<GamesEntity> gamesPage = gamesRepository.findAllByOrderByCreatedAtDesc(pageable);
+        Page<GamesEntity> gamesPage = gamesRepository.findAllByIsHiddenFalseOrderByCreatedAtDesc(pageable);
 
         Set<Long> authorIds = allAuthorsIdsOnPage(gamesPage);
 
@@ -88,7 +88,7 @@ public class GamesService {
             return getAllGames(pageable);
         }
 
-        Page<GamesEntity> gamesPage = gamesRepository.findByTagNames(tagsRequest, pageable);
+        Page<GamesEntity> gamesPage = gamesRepository.findVisibleByTagNames(tagsRequest, pageable);
 
         Set<Long> authorIds = allAuthorsIdsOnPage(gamesPage);
 
@@ -123,6 +123,10 @@ public class GamesService {
         gamesServiceLogger.info("Called GamesService getGameById method");
         GamesEntity game = gamesRepository.findDetailedById(gameId).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (game.isHidden()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found");
+        }
 
         UserEntity author = usersRepository.findById(game.getAuthorId())
                 .orElse(null);
@@ -406,6 +410,38 @@ public class GamesService {
     @Transactional
     public void deleteGamesByAuthor(Long authorId) {
         gamesRepository.deleteAllByAuthorId(authorId);
+    }
+
+    /**
+     * This method is used for deciding to hide games of banned user
+     * @param authorId - games author id
+     * @Author: Artemii Gorelov
+     */
+    @Transactional
+    public void hideGamesByAuthor(Long authorId) {
+        List<GamesEntity> games = gamesRepository.findAllByAuthorId(authorId);
+
+        for (GamesEntity game : games) {
+            game.setHidden(true);
+        }
+
+        gamesRepository.saveAll(games);
+    }
+
+    /**
+     * This method is used for restoring hiden games after banning user
+     * @param authorId - banned user
+     * @Author: Artemii Gorelov
+     */
+    @Transactional
+    public void restoreGamesByAuthor(Long authorId) {
+        List<GamesEntity> games = gamesRepository.findAllByAuthorId(authorId);
+
+        for (GamesEntity game : games) {
+            game.setHidden(false);
+        }
+
+        gamesRepository.saveAll(games);
     }
 
     /**

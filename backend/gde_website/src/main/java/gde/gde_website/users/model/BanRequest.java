@@ -6,6 +6,8 @@ package gde.gde_website.users.model;
  * @Author: Artemii Gorelov
  */
 public record BanRequest(
-        Long userId
+        Long userId,
+        boolean deleteComments,
+        boolean hideGames
 ) {
 }
