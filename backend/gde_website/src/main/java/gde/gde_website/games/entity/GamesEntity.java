@@ -39,6 +39,9 @@ public class GamesEntity {
     @Column(name = "is_approved", nullable = false)
     private boolean isApproved = true;
 
+    @Column(name = "is_hidden", nullable = false)
+    private boolean isHidden = false;
+
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMPTZ DEFAULT now()")
     private Instant createdAt;
 

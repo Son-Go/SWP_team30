@@ -7,6 +7,7 @@ These scripts seed the PostgreSQL database with realistic mock data for local de
 Run the backend migrations before using these seed scripts. The seed data expects the current schema, including:
 
 - `games.is_approved`
+- `games.is_hidden`
 - `game_screenshots.is_video`
 
 If seeding fails with an error such as `column "is_approved" of relation "games" does not exist`, your local database schema is behind the current migrations. Recreate or migrate the local database first, then run the seed command again.
