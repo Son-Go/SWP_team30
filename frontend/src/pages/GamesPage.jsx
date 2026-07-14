@@ -26,24 +26,6 @@ function GamesRow({
     <section className="section-lg">
       <div className="catalog-row-header">
         <h2 className="page-title catalog-row-title">{title}</h2>
-        <div className="catalog-row-controls">
-          <button
-            type="button"
-            className="button button-ghost catalog-arrow"
-            onClick={onScrollLeft}
-            aria-label={`Прокрутить раздел ${title} влево`}
-          >
-            ←
-          </button>
-          <button
-            type="button"
-            className="button button-ghost catalog-arrow"
-            onClick={onScrollRight}
-            aria-label={`Прокрутить раздел ${title} вправо`}
-          >
-            →
-          </button>
-        </div>
       </div>
 
       {loading ? (
@@ -53,14 +35,56 @@ function GamesRow({
       ) : !games.length ? (
         <EmptyState title="Игры не найдены" message="Пока здесь пусто" />
       ) : (
-        <div className="catalog-row-viewport">
-          <div className="catalog-row-track" ref={trackRef}>
-            {games.map((game) => (
-              <div className="catalog-row-item" key={game.id}>
-                <GameCard game={game} />
-              </div>
-            ))}
+        <div className="catalog-row-content">
+          <button
+            type="button"
+            className="gallery-arrow-thumb catalog-row-arrow"
+            onClick={onScrollLeft}
+            aria-label={`Прокрутить раздел ${title} влево`}
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+
+          <div className="catalog-row-viewport">
+            <div className="catalog-row-track" ref={trackRef}>
+              {games.map((game) => (
+                <div className="catalog-row-item" key={game.id}>
+                  <GameCard game={game} />
+                </div>
+              ))}
+            </div>
           </div>
+
+          <button
+            type="button"
+            className="gallery-arrow-thumb catalog-row-arrow"
+            onClick={onScrollRight}
+            aria-label={`Прокрутить раздел ${title} вправо`}
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
         </div>
       )}
     </section>
