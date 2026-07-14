@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import GameCard from "../components/GameCard";
 import Loader from "../components/Loader";
 import ErrorState from "../components/ErrorState";
@@ -69,6 +69,7 @@ function GamesRow({
 
 function GamesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
   const [filterOpen, setFilterOpen] = useState(false);
   const [allTags, setAllTags] = useState({
     genre: [],
@@ -100,6 +101,7 @@ function GamesPage() {
   const sentinelRef = useRef(null);
   const newTrackRef = useRef(null);
   const featuredTrackRef = useRef(null);
+  const allGamesSectionRef = useRef(null);
 
   useEffect(() => {
     getAllTags()
@@ -119,6 +121,29 @@ function GamesPage() {
     setPendingTags(activeTags);
     setFilterTags(activeTags);
   }, [activeTags, setFilterTags]);
+
+  useEffect(() => {
+    if (
+      initialLoading ||
+      !location.state?.scrollToAllGames ||
+      !allGamesSectionRef.current
+    ) {
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      const extraOffset = 350;
+      const sectionTop =
+        allGamesSectionRef.current.getBoundingClientRect().top + window.scrollY;
+
+      window.scrollTo({
+        top: sectionTop + extraOffset,
+        behavior: "smooth",
+      });
+    }, 0);
+
+    return () => clearTimeout(timeoutId);
+  }, [initialLoading, location.state]);
 
   useEffect(() => {
     async function loadRows() {
@@ -236,7 +261,7 @@ function GamesPage() {
         onScrollRight={() => scrollRow(featuredTrackRef, "right")}
       />
 
-      <section className="section-lg">
+      <section className="section-lg" ref={allGamesSectionRef}>
         <div className="page-header">
           <div>
             <div className="page-title">Все игры</div>

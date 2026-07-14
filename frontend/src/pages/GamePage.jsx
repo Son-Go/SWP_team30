@@ -548,9 +548,14 @@ function GamePage() {
                 <div className="game-sidebar-meta">
                   <div className="tag-list">
                     {visibleGameTags.map(({ name, colorClass }) => (
-                      <span className={`tag-badge ${colorClass}`} key={name}>
+                      <Link
+                        to={`/games?tags=${encodeURIComponent(name)}`}
+                        state={{ scrollToAllGames: true }}
+                        className={`tag-badge ${colorClass} tag-badge-selectable`}
+                        key={name}
+                      >
                         {name}
-                      </span>
+                      </Link>
                     ))}
                   </div>
                 </div>
