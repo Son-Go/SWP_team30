@@ -550,6 +550,7 @@ function GamePage() {
                     {visibleGameTags.map(({ name, colorClass }) => (
                       <Link
                         to={`/games?tags=${encodeURIComponent(name)}`}
+                        state={{ scrollToAllGames: true }}
                         className={`tag-badge ${colorClass} tag-badge-selectable`}
                         key={name}
                       >
