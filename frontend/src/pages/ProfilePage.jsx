@@ -144,7 +144,7 @@ function ProfilePage() {
           </div>
         </article>
 
-        <article className="card">
+        <article className="card create-game-card">
           {profileError ? <ErrorState message={profileError} /> : null}
 
           {profileSuccess ? (
@@ -226,7 +226,7 @@ function ProfilePage() {
           </form>
         </article>
 
-        <article className="card">
+        <article className="card create-game-card">
           {passwordError ? <ErrorState message={passwordError} /> : null}
 
           {passwordSuccess ? (
