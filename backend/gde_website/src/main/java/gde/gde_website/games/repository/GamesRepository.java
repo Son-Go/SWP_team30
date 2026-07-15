@@ -88,4 +88,11 @@ public interface GamesRepository extends JpaRepository<GamesEntity, Long> {
      * @return list of all author games
      */
     List<GamesEntity> findAllByAuthorId(Long userId);
+
+    /**
+     * This method is used for getting all games hidden and unhidden
+     * @return list of all games sorted by date of their creation
+     * @Author: Artemii Gorelov
+     */
+    List<GamesEntity> findAllByOrderByCreatedAtDesc();
 }

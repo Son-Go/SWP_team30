@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import gde.gde_website.games.model.AdminGamesListResponse;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,7 +37,6 @@ public class GamesService {
     private final UsersRepository usersRepository;
     private final GameScreenshotsRepository gameScreenshotsRepository;
     private final TagTypeRepository tagTypeRepository;
-
     /**
      * Returns a page of all games ordered by creation date descending.
      * For the current page, loads authors in batch and maps each game to response DTO
@@ -338,6 +338,56 @@ public class GamesService {
         }
 
         return new TagsResponse(separatedTags);
+    }
+
+    /**
+     * This method is used for getting all games for admin panel
+     * @param adminId - id of admin who requested
+     * @return return list of all games with users information
+     * @Author: Artemii Gorelov
+     */
+    @Transactional(readOnly = true)
+    public AdminGamesListResponse getAllGamesForAdmin(Long adminId) {
+        UserEntity admin = usersRepository.findById(adminId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED,
+                        "User not found"
+                ));
+
+        if (admin.getRole() != UserRole.ADMIN) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
+        List<AdminGamesListResponse.AdminGameInfo> games = gamesRepository
+                .findAllByOrderByCreatedAtDesc()
+                .stream()
+                .map(game -> {
+                    UserEntity author = usersRepository
+                            .findById(game.getAuthorId())
+                            .orElse(null);
+
+                    AdminGamesListResponse.AuthorInfo authorInfo = author == null
+                            ? null
+                            : new AdminGamesListResponse.AuthorInfo(
+                            author.getId(),
+                            author.getUsername(),
+                            author.getProfileImageUrl()
+                    );
+
+                    return new AdminGamesListResponse.AdminGameInfo(
+                            game.getId(),
+                            game.getTitle(),
+                            game.getShortDescription(),
+                            game.getBannerUrl(),
+                            game.isApproved(),
+                            game.isHidden(),
+                            game.getCreatedAt(),
+                            authorInfo
+                    );
+                })
+                .toList();
+
+        return new AdminGamesListResponse(games);
     }
 
     /**
