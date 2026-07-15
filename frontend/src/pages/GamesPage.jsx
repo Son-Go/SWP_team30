@@ -156,7 +156,7 @@ function GamesPage() {
     }
 
     const timeoutId = setTimeout(() => {
-      const extraOffset = 350;
+      const extraOffset = 325;
       const sectionTop =
         allGamesSectionRef.current.getBoundingClientRect().top + window.scrollY;
 
