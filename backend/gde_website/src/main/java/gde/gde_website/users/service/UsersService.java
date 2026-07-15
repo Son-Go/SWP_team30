@@ -141,7 +141,8 @@ public class UsersService {
                 userEntity.getEmail(),
                 userEntity.getProfileImageUrl(),
                 userEntity.getIsFromTatarstan(),
-                userEntity.getRole()
+                userEntity.getRole(),
+                userEntity.getCreatedAt()
         );
     }
 

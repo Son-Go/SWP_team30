@@ -119,30 +119,23 @@ function ProfilePage() {
   return (
     <main className="auth-page">
       <section className="section-lg auth-section">
-        <div className="section">
-          <Link to="/games" className="nav-link">
-            ← К каталогу
-          </Link>
-
-          <div className="section">
-            <h1 className="page-title">Профиль</h1>
-            <p className="page-subtitle">
-              Управляйте учётной записью и настройками.
-            </p>
-          </div>
-        </div>
+        <Link to="/games" className="nav-link">
+          ← К каталогу
+        </Link>
 
         <article className="card">
           <div className="section">
-            <h2 className="page-title">Информация</h2>
-            <p className="page-subtitle">
-              Имя пользователя: {profile.username || "—"}
-            </p>
+            {profile.profileImageUrl ? (
+              <img
+                src={profile.profileImageUrl}
+                alt={profile.username}
+                className="card-author-avatar"
+              />
+            ) : (
+              <p className="page-subtitle">Аватар не задан</p>
+            )}
+            <h1 className="page-title">{profile.username || "—"}</h1>
             <p className="page-subtitle">Почта: {profile.email || "—"}</p>
-            <p className="page-subtitle">
-              Аватар:{" "}
-              {profile.profileImageUrl ? profile.profileImageUrl : "не задан"}
-            </p>
             <p className="page-subtitle">
               Дата регистрации:{" "}
               {user?.createdAt
