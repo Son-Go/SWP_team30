@@ -370,7 +370,8 @@ class EndpointHttpIntegrationTest {
                         15L,
                         "supergiant",
                         "https://example.com/studio.png",
-                        3L
+                        3L,
+                        null
                 ));
 
         mockMvc.perform(get("/users/15"))

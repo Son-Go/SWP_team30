@@ -117,9 +117,8 @@ function ProfilePage() {
   }
 
   return (
-    <main className="auth-page">
-      <section className="section-lg auth-section">
-        <Link to="/games" className="nav-link">
+    <section className="section-lg">
+      <Link to="/games" className="nav-link">
           ← К каталогу
         </Link>
 
@@ -322,7 +321,6 @@ function ProfilePage() {
           </div>
         </article>
       </section>
-    </main>
   );
 }
 

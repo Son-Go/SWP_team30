@@ -102,7 +102,8 @@ public class UsersProfileService {
                 user.getId(),
                 user.getUsername(),
                 user.getProfileImageUrl(),
-                gamesCount
+                gamesCount,
+                user.getCreatedAt()
         );
     }
 

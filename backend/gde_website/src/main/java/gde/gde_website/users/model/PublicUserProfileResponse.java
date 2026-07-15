@@ -7,12 +7,14 @@ package gde.gde_website.users.model;
  * @param username - username of the user
  * @param profileImageUrl - profile image URL of the user, or null if not set
  * @param gameCount - total number of games created by this user
+ * @param createdAt - registration timestamp of the user
  * @Author: Artemii Gorelov
  */
 public record PublicUserProfileResponse(
         Long id,
         String username,
         String profileImageUrl,
-        Long gameCount
+        Long gameCount,
+        java.time.Instant createdAt
 ) {
 }
