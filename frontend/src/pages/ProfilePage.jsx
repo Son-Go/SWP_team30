@@ -14,7 +14,7 @@ import {
 
 function ProfilePage() {
   const navigate = useNavigate();
-  const { token, user, logout, updateUser } = useAuth();
+  const { token, user, authLoading, logout, updateUser } = useAuth();
 
   const [profile, setProfile] = useState({
     username: user?.username ?? "",
@@ -40,7 +40,7 @@ function ProfilePage() {
   const [games, setGames] = useState([]);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [gamesLoading, setGamesLoading] = useState(true);
+  const [gamesLoading, setGamesLoading] = useState(false);
   const [gamesError, setGamesError] = useState("");
 
   useEffect(() => {
@@ -59,7 +59,7 @@ function ProfilePage() {
       }
     }
     loadGames();
-  }, [user?.id, page]);
+  }, [user?.id, page, authLoading]);
 
   async function handleProfileSubmit(event) {
     event.preventDefault();
