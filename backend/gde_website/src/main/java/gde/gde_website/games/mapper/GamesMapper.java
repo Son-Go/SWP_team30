@@ -112,6 +112,7 @@ public class GamesMapper {
         AuthorResponse authorResp = null;
         if (author != null) {
             authorResp = new AuthorResponse(
+                    author.getId(),
                     author.getUsername(),
                     author.getProfileImageUrl(),
                     author.getEmail()

@@ -130,7 +130,7 @@ class EndpointHttpIntegrationTest {
                                 "Puzzle platformer",
                                 "https://example.com/portal.png",
                                 Instant.parse("2026-01-01T00:00:00Z"),
-                                new AuthorResponse("valve", null, "valve@example.com"),
+                                new AuthorResponse(11L, "valve", null, "valve@example.com"),
                                 true,
                                 pageTags(),
                                 List.of("https://example.com/portal-shot.png")
@@ -267,7 +267,7 @@ class EndpointHttpIntegrationTest {
     @Test
     void authorEndpointReturnsPublicAuthorContractOverHttp() throws Exception {
         when(gamesService.getAuthorById(15L))
-                .thenReturn(new AuthorResponse("supergiant", null, "studio@example.com"));
+                .thenReturn(new AuthorResponse(15L, "supergiant", null, "studio@example.com"));
 
         mockMvc.perform(get("/games/author/15"))
                 .andExpect(status().isOk())
@@ -393,7 +393,7 @@ class EndpointHttpIntegrationTest {
                                 "Roguelike action",
                                 "https://example.com/hades.png",
                                 Instant.parse("2026-01-01T00:00:00Z"),
-                                new AuthorResponse("supergiant", null, "studio@example.com"),
+                                new AuthorResponse(15L, "supergiant", null, "studio@example.com"),
                                 true,
                                 pageTags(),
                                 List.of("https://example.com/hades-shot.png")
@@ -478,7 +478,7 @@ class EndpointHttpIntegrationTest {
                 Instant.parse("2026-01-02T00:00:00Z"),
                 isOwner,
                 true,
-                new AuthorResponse("supergiant", null, "studio@example.com"),
+                new AuthorResponse(15L, "supergiant", null, "studio@example.com"),
                 groupedTags("action"),
                 groupedScreenshots()
         );
