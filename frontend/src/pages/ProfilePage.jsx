@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import ErrorState from "../components/ErrorState";
+import GameCard from "../components/GameCard";
+import Loader from "../components/Loader";
+import EmptyState from "../components/EmptyState";
 import { useAuth } from "../context/auth-context";
 import {
   changeUserPassword,
   deleteUserAccount,
+  getUserGamesList,
   updateUserProfile,
 } from "../api/api";
 
@@ -32,6 +36,30 @@ function ProfilePage() {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteError, setDeleteError] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(false);
+
+  const [games, setGames] = useState([]);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [gamesLoading, setGamesLoading] = useState(true);
+  const [gamesError, setGamesError] = useState("");
+
+  useEffect(() => {
+    if (!user?.id) return;
+    async function loadGames() {
+      try {
+        setGamesLoading(true);
+        setGamesError("");
+        const data = await getUserGamesList(user.id, page);
+        setGames(data?.content || []);
+        setTotalPages(data?.totalPages ?? 0);
+      } catch (err) {
+        setGamesError(err.message || "Не удалось загрузить игры");
+      } finally {
+        setGamesLoading(false);
+      }
+    }
+    loadGames();
+  }, [user?.id, page]);
 
   async function handleProfileSubmit(event) {
     event.preventDefault();
@@ -143,6 +171,49 @@ function ProfilePage() {
             </p>
           </div>
         </article>
+
+        <div className="section">
+          <h2 className="page-title">Мои игры</h2>
+
+          {gamesLoading ? (
+            <Loader text="Загружаем игры..." />
+          ) : gamesError ? (
+            <ErrorState message={gamesError} />
+          ) : !games.length ? (
+            <EmptyState message="У вас пока нет игр" />
+          ) : (
+            <>
+              <div className="games-grid">
+                {games.map((game) => (
+                  <GameCard key={game.id} game={game} />
+                ))}
+              </div>
+
+              <div className="card-actions">
+                <button
+                  type="button"
+                  className="button button-ghost"
+                  onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
+                  disabled={page === 0}
+                >
+                  ← Назад
+                </button>
+                <span className="page-subtitle">
+                  Страница {page + 1}
+                  {totalPages ? ` из ${totalPages}` : ""}
+                </span>
+                <button
+                  type="button"
+                  className="button button-ghost"
+                  onClick={() => setPage((prev) => prev + 1)}
+                  disabled={totalPages ? page >= totalPages - 1 : true}
+                >
+                  Вперёд →
+                </button>
+              </div>
+            </>
+          )}
+        </div>
 
         <article className="card create-game-card">
           {profileError ? <ErrorState message={profileError} /> : null}
