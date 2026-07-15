@@ -10,7 +10,7 @@ import {
 
 function ProfilePage() {
   const navigate = useNavigate();
-  const { token, user, logout } = useAuth();
+  const { token, user, logout, updateUser } = useAuth();
 
   const [profile, setProfile] = useState({
     username: user?.username ?? "",
@@ -52,10 +52,20 @@ function ProfilePage() {
 
       const updated = await updateUserProfile(body, token);
 
+      const nextUsername = updated?.username ?? trimmedUsername;
+      const nextEmail = updated?.email ?? trimmedEmail;
+      const nextImageUrl = updated?.profileImageUrl ?? trimmedUrl;
+
       setProfile({
-        username: updated?.username ?? trimmedUsername,
-        email: updated?.email ?? trimmedEmail,
-        profileImageUrl: updated?.profileImageUrl ?? trimmedUrl,
+        username: nextUsername,
+        email: nextEmail,
+        profileImageUrl: nextImageUrl,
+      });
+
+      updateUser({
+        username: nextUsername,
+        email: nextEmail,
+        profileImageUrl: nextImageUrl,
       });
 
       setProfileSuccess("Профиль успешно обновлён.");
