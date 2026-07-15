@@ -7,6 +7,8 @@ import CreateGamePage from "./pages/CreateGamePage";
 import GamePage from "./pages/GamePage";
 import GamesPage from "./pages/GamesPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import AdminRoute from "./components/AdminRoute";
+import AdminProfilePage from "./pages/AdminProfilePage";
 
 const router = createBrowserRouter([
   {
@@ -27,6 +29,15 @@ const router = createBrowserRouter([
           {
             path: "games/create",
             element: <CreateGamePage />,
+          },
+        ],
+      },
+      {
+        element: <AdminRoute />,
+        children: [
+          {
+            path: "admin",
+            element: <AdminProfilePage />,
           },
         ],
       },

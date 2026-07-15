@@ -26,6 +26,12 @@ function Navbar() {
           <NavLink to="/games" className={getNavLinkClassName}>
             Игры Сообщества
           </NavLink>
+
+          {user?.userRole === "ADMIN" ? (
+              <NavLink to="/admin" className={getNavLinkClassName}>
+                Админ панель
+              </NavLink>
+          ) : null}
         </div>
 
         <div className="navbar-right">

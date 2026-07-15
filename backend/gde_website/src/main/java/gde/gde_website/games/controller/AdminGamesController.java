@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import gde.gde_website.games.model.AdminGamesListResponse;
+import org.springframework.web.bind.annotation.GetMapping;
 
 /**
  * This class is used for handling admin HTTP requests for games
@@ -18,6 +20,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AdminGamesController {
     private final GamesService gamesService;
+
+    /**
+     * This method is used for handling getting all games with their status of aprooving request. Used for admin panel
+     * @param authentication - token
+     * @return HTTP status OK with {@code 200} and list of games in body
+     * @Author: Artemii Gorelov
+     */
+    @GetMapping
+    public ResponseEntity<AdminGamesListResponse> getAllGames(
+            Authentication authentication
+    ) {
+        return ResponseEntity.ok(
+                gamesService.getAllGamesForAdmin(
+                        (Long) authentication.getPrincipal()
+                )
+        );
+    }
 
     /**
      * This method is used for handling game approving request
