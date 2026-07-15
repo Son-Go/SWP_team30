@@ -287,45 +287,45 @@ function ProfilePage() {
         </article>
 
         <article className="card">
-          {deleteError ? <ErrorState message={deleteError} /> : null}
-
           <div className="section">
+            {deleteError ? <ErrorState message={deleteError} /> : null}
+
             <h2 className="page-title">Удалить аккаунт</h2>
             <p className="page-subtitle">
               Это действие нельзя отменить. Все данные будут удалены.
             </p>
-          </div>
 
-          <div className="card-actions">
-            {confirmDelete ? (
-              <>
-                <span className="page-subtitle">Вы уверены?</span>
+            <div className="card-actions">
+              {confirmDelete ? (
+                <>
+                  <span className="page-subtitle">Вы уверены?</span>
+                  <button
+                    type="button"
+                    className="button button-secondary"
+                    onClick={handleDeleteAccount}
+                    disabled={deleteLoading}
+                  >
+                    {deleteLoading ? "Удаление..." : "Подтвердить"}
+                  </button>
+                  <button
+                    type="button"
+                    className="button button-ghost"
+                    onClick={() => setConfirmDelete(false)}
+                    disabled={deleteLoading}
+                  >
+                    Отмена
+                  </button>
+                </>
+              ) : (
                 <button
                   type="button"
-                  className="button button-secondary"
-                  onClick={handleDeleteAccount}
-                  disabled={deleteLoading}
+                  className="button button-danger"
+                  onClick={() => setConfirmDelete(true)}
                 >
-                  {deleteLoading ? "Удаление..." : "Подтвердить"}
+                  Удалить аккаунт
                 </button>
-                <button
-                  type="button"
-                  className="button button-ghost"
-                  onClick={() => setConfirmDelete(false)}
-                  disabled={deleteLoading}
-                >
-                  Отмена
-                </button>
-              </>
-            ) : (
-              <button
-                type="button"
-                className="button button-danger"
-                onClick={() => setConfirmDelete(true)}
-              >
-                Удалить аккаунт
-              </button>
-            )}
+              )}
+            </div>
           </div>
         </article>
       </section>
