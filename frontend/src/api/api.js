@@ -222,3 +222,42 @@ export function deleteGameComment(gameId, commentId, token) {
     },
   });
 }
+
+export function updateUserProfile(body, token) {
+  return request("/users/me", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+  });
+}
+
+export function changeUserPassword(body, token) {
+  return request("/users/me/password", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+  });
+}
+
+export function deleteUserAccount(token) {
+  return request("/users/me", {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+export function getPublicUserProfile(id) {
+  return request(`/users/${id}`);
+}
+
+export function getUserGamesList(id, page = 0, size = 24) {
+  return request(`/users/${id}/games?page=${page}&size=${size}`);
+}

@@ -7,6 +7,8 @@ import CreateGamePage from "./pages/CreateGamePage";
 import GamePage from "./pages/GamePage";
 import GamesPage from "./pages/GamesPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import ProfilePage from "./pages/ProfilePage";
+import PublicProfilePage from "./pages/PublicProfilePage";
 
 const router = createBrowserRouter([
   {
@@ -28,11 +30,19 @@ const router = createBrowserRouter([
             path: "games/create",
             element: <CreateGamePage />,
           },
+          {
+            path: "profile",
+            element: <ProfilePage />,
+          },
         ],
       },
       {
         path: "games/:id",
         element: <GamePage />,
+      },
+      {
+        path: "users/:id",
+        element: <PublicProfilePage />,
       },
       {
         path: "*",
