@@ -134,7 +134,7 @@ function CommentItem({
               setEditedText(event.target.value);
               setEditError("");
             }}
-            maxLength={1000}
+            maxLength={1500}
             autoFocus
           />
 
@@ -142,7 +142,7 @@ function CommentItem({
             {editError ? (
               <span className="comment-form-error">{editError}</span>
             ) : (
-              <span className="comment-counter">{editedText.length}/1000</span>
+              <span className="comment-counter">{editedText.length}/1500</span>
             )}
 
             <div className="comment-form-actions">
@@ -312,7 +312,7 @@ function CommentsSection({ gameId, gameAuthorUsername }) {
               setSubmitError("");
             }}
             placeholder="Напишите, что думаете об игре..."
-            maxLength={1000}
+            maxLength={1500}
             required
             autoFocus
           />
@@ -325,7 +325,7 @@ function CommentsSection({ gameId, gameAuthorUsername }) {
             </div>
 
             <div className="comment-form-actions">
-              <span className="comment-counter">{commentText.length}/1000</span>
+              <span className="comment-counter">{commentText.length}/1500</span>
 
               <button
                 type="button"
