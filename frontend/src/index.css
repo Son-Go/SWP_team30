@@ -1692,3 +1692,10 @@ textarea:focus-visible {
     transform: none;
   }
 }
+
+.navbar-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}

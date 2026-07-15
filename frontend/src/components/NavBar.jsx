@@ -30,13 +30,29 @@ function Navbar() {
 
         <div className="navbar-right">
           {user ? (
-            <button
-              type="button"
-              className="button button-ghost"
-              onClick={handleLogout}
+            <div
+              className="navbar-right-actions"
+              style={{ display: "flex", alignItems: "center", gap: "12px" }}
             >
-              Выйти
-            </button>
+              <NavLink to="/profile" className={getNavLinkClassName}>
+                {user.profileImageUrl ? (
+                  <img
+                    src={user.profileImageUrl}
+                    alt={user.username}
+                    className="navbar-avatar"
+                  />
+                ) : (
+                  user.username
+                )}
+              </NavLink>
+              <button
+                type="button"
+                className="button button-ghost"
+                onClick={handleLogout}
+              >
+                Выйти
+              </button>
+            </div>
           ) : (
             <NavLink to="/auth" className={getNavLinkClassName}>
               Войти
