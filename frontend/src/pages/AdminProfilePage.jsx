@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     approveGameByAdmin,
     banUser,
@@ -68,6 +69,7 @@ function formatDate(value) {
 
 function AdminProfilePage() {
     const { token, user: currentUser } = useAuth();
+    const navigate = useNavigate();
 
     const [activeTab, setActiveTab] = useState("users");
 
@@ -83,6 +85,7 @@ function AdminProfilePage() {
     const [successMessage, setSuccessMessage] = useState("");
     const [actionKey, setActionKey] = useState("");
     const [banTarget, setBanTarget] = useState(null);
+
     const [banOptions, setBanOptions] = useState({
         deleteComments: false,
         hideGames: true,
@@ -119,6 +122,7 @@ function AdminProfilePage() {
 
     useEffect(() => {
         if (!token) return;
+
         loadUsers();
     }, [token]);
 
@@ -174,6 +178,7 @@ function AdminProfilePage() {
 
     function closeBanModal() {
         if (actionKey) return;
+
         setBanTarget(null);
     }
 
@@ -251,6 +256,7 @@ function AdminProfilePage() {
             `delete-${targetUser.id}`,
             async () => {
                 await deleteUserByAdmin(targetUser.id, token);
+
                 setUsers((previous) =>
                     previous.filter((item) => item.id !== targetUser.id),
                 );
@@ -292,6 +298,7 @@ function AdminProfilePage() {
             <div className="page-header">
                 <div className="section">
                     <h1 className="page-title">Панель администратора</h1>
+
                     <p className="page-subtitle">
                         Управление пользователями и модерация игр.
                     </p>
@@ -475,7 +482,19 @@ function AdminProfilePage() {
                                 const isSubmitting = actionKey.includes(`-${game.id}`);
 
                                 return (
-                                    <article className="card admin-game-card" key={game.id}>
+                                    <article
+                                        className="card admin-game-card admin-game-card-clickable"
+                                        key={game.id}
+                                        role="button"
+                                        tabIndex={0}
+                                        onClick={() => navigate(`/games/${game.id}`)}
+                                        onKeyDown={(event) => {
+                                            if (event.key === "Enter" || event.key === " ") {
+                                                event.preventDefault();
+                                                navigate(`/games/${game.id}`);
+                                            }
+                                        }}
+                                    >
                                         {game.bannerUrl ? (
                                             <img
                                                 src={game.bannerUrl}
@@ -514,7 +533,10 @@ function AdminProfilePage() {
                                             </p>
                                         </div>
 
-                                        <div className="admin-actions">
+                                        <div
+                                            className="admin-actions"
+                                            onClick={(event) => event.stopPropagation()}
+                                        >
                                             {!game.approved ? (
                                                 <button
                                                     type="button"
@@ -524,9 +546,7 @@ function AdminProfilePage() {
                                                 >
                                                     {isSubmitting ? "Обработка..." : "Одобрить"}
                                                 </button>
-                                            ) : null}
-
-                                            {game.approved ? (
+                                            ) : (
                                                 <button
                                                     type="button"
                                                     className="button button-danger"
@@ -535,7 +555,7 @@ function AdminProfilePage() {
                                                 >
                                                     {isSubmitting ? "Обработка..." : "Отклонить"}
                                                 </button>
-                                            ) : null}
+                                            )}
                                         </div>
                                     </article>
                                 );
