@@ -19,7 +19,7 @@ function Footer() {
               hello@gde.ru
             </a>
 
-            <p className="footer-label footer-label-spaced">О сообществе</p>
+            <p className="footer-label footer-label-spaced">Адрес</p>
             <p className="footer-text">
               Площадка для разработчиков, игроков и игровых проектов.
             </p>
@@ -66,9 +66,7 @@ function Footer() {
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} GDE. Все права защищены.</span>
 
-          <Link to="/privacy" className="footer-bottom-link">
-            Политика конфиденциальности
-          </Link>
+          <span>Политика конфиденциальности</span>
 
           <button
             type="button"
