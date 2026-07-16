@@ -19,8 +19,12 @@ function Navbar() {
     <header className="navbar">
       <div className="navbar-inner">
         <div className="navbar-left">
-          <NavLink to="/games" className="brand">
+          <NavLink to="/" className="brand">
             GDE
+          </NavLink>
+
+          <NavLink to="/" end className={getNavLinkClassName}>
+            О Сообществе
           </NavLink>
 
           <NavLink to="/games" className={getNavLinkClassName}>
@@ -28,9 +32,9 @@ function Navbar() {
           </NavLink>
 
           {user?.userRole === "ADMIN" ? (
-              <NavLink to="/admin" className={getNavLinkClassName}>
-                Админ панель
-              </NavLink>
+            <NavLink to="/admin" className={getNavLinkClassName}>
+              Админ панель
+            </NavLink>
           ) : null}
         </div>
 
