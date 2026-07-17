@@ -57,9 +57,12 @@ function Footer() {
 
           <section className="footer-brand">
             <Link to="/" className="footer-logo" aria-label="GDE — на главную">
-              GDE
+              <img
+                src="/logo_imp.png"
+                alt="GDE"
+                className="footer-logo-image"
+              />
             </Link>
-            <p className="footer-brand-description">Игры. Люди. Сообщество.</p>
           </section>
         </div>
 
