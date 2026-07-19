@@ -1230,8 +1230,13 @@ textarea:focus-visible {
 }
 
 .catalog-row-title {
-  font-size: 28px;
   margin: 0;
+  font-family: "Unbounded", Inter, system-ui, sans-serif;
+  font-size: clamp(1.05rem, 1.7vw, 1.4rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.055em;
+  text-transform: uppercase;
 }
 
 /* .catalog-row-controls {

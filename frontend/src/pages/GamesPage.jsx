@@ -276,7 +276,7 @@ function GamesPage() {
       />
 
       <GamesRow
-        title="Избранное"
+        title="Избранные"
         games={featuredGames}
         loading={featuredLoading}
         error={featuredError}
@@ -288,7 +288,7 @@ function GamesPage() {
       <section className="section-lg" ref={allGamesSectionRef}>
         <div className="page-header">
           <div>
-            <div className="page-title">Все игры</div>
+            <h2 className="page-title catalog-row-title">Все игры</h2>
           </div>
           <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
             <button
