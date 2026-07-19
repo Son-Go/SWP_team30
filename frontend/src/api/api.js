@@ -226,6 +226,14 @@ export function deleteGameComment(gameId, commentId, token) {
 export function updateUserProfile(body, token) {
   return request("/users/me", {
     method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+  });
+}
+
 export function getAdminUsers(token) {
   return request("/admin/users", {
     headers: {
@@ -323,6 +331,8 @@ export function getPublicUserProfile(id) {
 
 export function getUserGamesList(id, page = 0, size = 24) {
   return request(`/users/${id}/games?page=${page}&size=${size}`);
+}
+
 export function getAdminGames(token) {
   return request("/admin/games", {
     headers: {
