@@ -223,6 +223,9 @@ export function deleteGameComment(gameId, commentId, token) {
   });
 }
 
+export function updateUserProfile(body, token) {
+  return request("/users/me", {
+    method: "PATCH",
 export function getAdminUsers(token) {
   return request("/admin/users", {
     headers: {
@@ -238,6 +241,13 @@ export function promoteUser(userId, token) {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
+    body: JSON.stringify(body),
+  });
+}
+
+export function changeUserPassword(body, token) {
+  return request("/users/me/password", {
+    method: "PATCH",
     body: JSON.stringify({ userId }),
   });
 }
@@ -275,6 +285,12 @@ export function unbanUser(userId, token) {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
+    body: JSON.stringify(body),
+  });
+}
+
+export function deleteUserAccount(token) {
+  return request("/users/me", {
     body: JSON.stringify({
       userId,
       deleteComments: false,
@@ -300,6 +316,13 @@ export function deleteUserByAdmin(userId, token) {
     },
   });
 }
+
+export function getPublicUserProfile(id) {
+  return request(`/users/${id}`);
+}
+
+export function getUserGamesList(id, page = 0, size = 24) {
+  return request(`/users/${id}/games?page=${page}&size=${size}`);
 export function getAdminGames(token) {
   return request("/admin/games", {
     headers: {

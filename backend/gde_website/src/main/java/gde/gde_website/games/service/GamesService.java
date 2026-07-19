@@ -133,6 +133,7 @@ public class GamesService {
         AuthorResponse authorResponse = null;
         if (author != null) {
             authorResponse = new AuthorResponse(
+                    author.getId(),
                     author.getUsername(),
                     author.getProfileImageUrl(),
                     author.getEmail()
@@ -309,6 +310,7 @@ public class GamesService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Author with id = " + id + " not found"));
 
         return new AuthorResponse(
+          author.getId(),
           author.getUsername(),
           author.getProfileImageUrl(),
           author.getEmail()

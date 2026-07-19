@@ -540,7 +540,9 @@ function GamePage() {
               {authorName && (
                 <div className="game-sidebar-meta">
                   <span className="game-sidebar-label">Разработчик</span>
-                  <span className="card-author">{authorName}</span>
+                  <Link to={`/users/${game.authorId}`} className="card-author card-author-link">
+                    {authorName}
+                  </Link>
                 </div>
               )}
 

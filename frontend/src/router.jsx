@@ -7,6 +7,8 @@ import CreateGamePage from "./pages/CreateGamePage";
 import GamePage from "./pages/GamePage";
 import GamesPage from "./pages/GamesPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import ProfilePage from "./pages/ProfilePage";
+import PublicProfilePage from "./pages/PublicProfilePage";
 import AdminRoute from "./components/AdminRoute";
 import AdminProfilePage from "./pages/AdminProfilePage";
 import AboutPage from "./pages/AboutPage";
@@ -31,6 +33,10 @@ const router = createBrowserRouter([
             path: "games/create",
             element: <CreateGamePage />,
           },
+          {
+            path: "profile",
+            element: <ProfilePage />,
+          },
         ],
       },
       {
@@ -45,6 +51,10 @@ const router = createBrowserRouter([
       {
         path: "games/:id",
         element: <GamePage />,
+      },
+      {
+        path: "users/:id",
+        element: <PublicProfilePage />,
       },
       {
         path: "*",

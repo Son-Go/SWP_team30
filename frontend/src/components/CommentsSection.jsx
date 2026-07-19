@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   createGameComment,
   deleteGameComment,
@@ -83,7 +83,12 @@ function CommentItem({
         )}
 
         <div className="comment-author">
-          <span className="comment-author-name">{author.username}</span>
+          <Link
+            to={`/users/${author.id}`}
+            className="comment-author-name comment-author-link"
+          >
+            {author.username}
+          </Link>
 
           {isGameAuthor && (
             <span className="comment-author-role">разработчик</span>
