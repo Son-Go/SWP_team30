@@ -1,16 +1,17 @@
 # Checks links inside Markdown and HTML repo files
 
 # What type of files need to be checked
-include = ["**/*.md", "**/*.html"]
+extensions = ["md", "html"]
 
 # Excluded links
 exclude = [
     "https://localhost",
     "http://localhost",
+    "^https://www\\.figma\\.com/",
 ]
 
 # Тimeout in seconds
 timeout = 10
 
-# Maximum number of parralel requests
-max_parallel = 10
+# Maximum number of parallel requests
+max_concurrency = 10

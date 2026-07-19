@@ -249,14 +249,18 @@ export function promoteUser(userId, token) {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify({ userId }),
   });
 }
 
 export function changeUserPassword(body, token) {
   return request("/users/me/password", {
     method: "PATCH",
-    body: JSON.stringify({ userId }),
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
   });
 }
 
@@ -293,17 +297,20 @@ export function unbanUser(userId, token) {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(body),
-  });
-}
-
-export function deleteUserAccount(token) {
-  return request("/users/me", {
     body: JSON.stringify({
       userId,
       deleteComments: false,
       hideGames: false,
     }),
+  });
+}
+
+export function deleteUserAccount(token) {
+  return request("/users/me", {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
 }
 

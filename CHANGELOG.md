@@ -13,6 +13,10 @@ Additional documentation, images and readme updates for v0.2.5
 ### Added
 - Hidden-state support for games
 
+### Fixed
+- Account and administrator actions now send the expected authenticated API requests
+- Restored the missing CSS boundary between navigation avatars and admin-panel styles
+
 ## [v0.2.5](https://github.com/Son-Go/SWP_team30/releases/tag/MVP-v2.5)
 
 ### Added
