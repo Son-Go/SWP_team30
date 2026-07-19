@@ -1498,7 +1498,7 @@ textarea:focus-visible {
   flex-direction: column;
   gap: 10px;
   padding: 18px 20px;
-  background: var(--surface);
+  background: #241d31;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
 }
