@@ -540,7 +540,9 @@ function GamePage() {
               {authorName && (
                 <div className="game-sidebar-meta">
                   <span className="game-sidebar-label">Разработчик</span>
-                  <span className="card-author">{authorName}</span>
+                  <Link to={`/users/${game.authorId}`} className="card-author card-author-link">
+                    {authorName}
+                  </Link>
                 </div>
               )}
 
@@ -548,9 +550,14 @@ function GamePage() {
                 <div className="game-sidebar-meta">
                   <div className="tag-list">
                     {visibleGameTags.map(({ name, colorClass }) => (
-                      <span className={`tag-badge ${colorClass}`} key={name}>
+                      <Link
+                        to={`/games?tags=${encodeURIComponent(name)}`}
+                        state={{ scrollToAllGames: true }}
+                        className={`tag-badge ${colorClass} tag-badge-selectable`}
+                        key={name}
+                      >
                         {name}
-                      </span>
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -638,7 +645,7 @@ function GamePage() {
                   className="textarea"
                   value={description}
                   onChange={(e) => {
-                    if (e.target.value.length <= 1500) {
+                    if (e.target.value.length <= 3000) {
                       setDescription(e.target.value);
                       setShowLimit(false);
                     } else {
@@ -654,7 +661,7 @@ function GamePage() {
                 />
                 {showLimit && (
                   <span className="input-hint-error description-limit-hint">
-                    Достигнут лимит в 1500 символов
+                    Достигнут лимит в 3000 символов
                   </span>
                 )}
               </div>
@@ -663,7 +670,7 @@ function GamePage() {
                 <span
                   className={`textarea-counter ${showLimit ? "limit-hit" : ""}`}
                 >
-                  {description.length}/1500
+                  {description.length}/3000
                 </span>
               </div>
             </div>

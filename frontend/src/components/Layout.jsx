@@ -1,10 +1,14 @@
 import React from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Navbar from "./NavBar";
 import { useAuth } from "../context/auth-context";
 
 function Layout() {
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const isAboutPage = location.pathname === "/";
+
   const { user, isAuthenticated, logout } = useAuth();
 
   function handleLogout() {
@@ -22,7 +26,7 @@ function Layout() {
         />
       </div>
 
-      <main className="page">
+      <main className={isAboutPage ? "about-page-outlet" : "page"}>
         <Outlet />
       </main>
     </div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import GameCard from "../components/GameCard";
 import Loader from "../components/Loader";
 import ErrorState from "../components/ErrorState";
@@ -26,24 +26,6 @@ function GamesRow({
     <section className="section-lg">
       <div className="catalog-row-header">
         <h2 className="page-title catalog-row-title">{title}</h2>
-        <div className="catalog-row-controls">
-          <button
-            type="button"
-            className="button button-ghost catalog-arrow"
-            onClick={onScrollLeft}
-            aria-label={`Прокрутить раздел ${title} влево`}
-          >
-            ←
-          </button>
-          <button
-            type="button"
-            className="button button-ghost catalog-arrow"
-            onClick={onScrollRight}
-            aria-label={`Прокрутить раздел ${title} вправо`}
-          >
-            →
-          </button>
-        </div>
       </div>
 
       {loading ? (
@@ -53,14 +35,56 @@ function GamesRow({
       ) : !games.length ? (
         <EmptyState title="Игры не найдены" message="Пока здесь пусто" />
       ) : (
-        <div className="catalog-row-viewport">
-          <div className="catalog-row-track" ref={trackRef}>
-            {games.map((game) => (
-              <div className="catalog-row-item" key={game.id}>
-                <GameCard game={game} />
-              </div>
-            ))}
+        <div className="catalog-row-content">
+          <button
+            type="button"
+            className="gallery-arrow-thumb catalog-row-arrow"
+            onClick={onScrollLeft}
+            aria-label={`Прокрутить раздел ${title} влево`}
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+
+          <div className="catalog-row-viewport">
+            <div className="catalog-row-track" ref={trackRef}>
+              {games.map((game) => (
+                <div className="catalog-row-item" key={game.id}>
+                  <GameCard game={game} />
+                </div>
+              ))}
+            </div>
           </div>
+
+          <button
+            type="button"
+            className="gallery-arrow-thumb catalog-row-arrow"
+            onClick={onScrollRight}
+            aria-label={`Прокрутить раздел ${title} вправо`}
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
         </div>
       )}
     </section>
@@ -69,6 +93,7 @@ function GamesRow({
 
 function GamesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
   const [filterOpen, setFilterOpen] = useState(false);
   const [allTags, setAllTags] = useState({
     genre: [],
@@ -100,6 +125,7 @@ function GamesPage() {
   const sentinelRef = useRef(null);
   const newTrackRef = useRef(null);
   const featuredTrackRef = useRef(null);
+  const allGamesSectionRef = useRef(null);
 
   useEffect(() => {
     getAllTags()
@@ -119,6 +145,29 @@ function GamesPage() {
     setPendingTags(activeTags);
     setFilterTags(activeTags);
   }, [activeTags, setFilterTags]);
+
+  useEffect(() => {
+    if (
+      initialLoading ||
+      !location.state?.scrollToAllGames ||
+      !allGamesSectionRef.current
+    ) {
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      const extraOffset = 325;
+      const sectionTop =
+        allGamesSectionRef.current.getBoundingClientRect().top + window.scrollY;
+
+      window.scrollTo({
+        top: sectionTop + extraOffset,
+        behavior: "smooth",
+      });
+    }, 0);
+
+    return () => clearTimeout(timeoutId);
+  }, [initialLoading, location.state]);
 
   useEffect(() => {
     async function loadRows() {
@@ -209,7 +258,7 @@ function GamesPage() {
   }
 
   return (
-    <section className="section-lg">
+    <section className="section-lg games-page">
       <div className="page-header" style={{ justifyContent: "flex-end" }}>
         <Link to="/games/create" className="button button-secondary">
           Выложить игру
@@ -227,7 +276,7 @@ function GamesPage() {
       />
 
       <GamesRow
-        title="Избранное"
+        title="Избранные"
         games={featuredGames}
         loading={featuredLoading}
         error={featuredError}
@@ -236,10 +285,10 @@ function GamesPage() {
         onScrollRight={() => scrollRow(featuredTrackRef, "right")}
       />
 
-      <section className="section-lg">
+      <section className="section-lg" ref={allGamesSectionRef}>
         <div className="page-header">
           <div>
-            <div className="page-title">Все игры</div>
+            <h2 className="page-title catalog-row-title">Все игры</h2>
           </div>
           <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
             <button

@@ -62,6 +62,10 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const updateUser = (updatedFields) => {
+    setUser((prev) => ({ ...prev, ...updatedFields }));
+  };
+
   const value = {
     token,
     user,
@@ -69,6 +73,7 @@ export function AuthProvider({ children }) {
     authLoading,
     login,
     logout,
+    updateUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

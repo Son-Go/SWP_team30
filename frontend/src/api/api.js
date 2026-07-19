@@ -222,3 +222,146 @@ export function deleteGameComment(gameId, commentId, token) {
     },
   });
 }
+
+export function updateUserProfile(body, token) {
+  return request("/users/me", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+  });
+}
+
+export function getAdminUsers(token) {
+  return request("/admin/users", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+export function promoteUser(userId, token) {
+  return request("/admin/users/promote", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ userId }),
+  });
+}
+
+export function changeUserPassword(body, token) {
+  return request("/users/me/password", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+  });
+}
+
+export function demoteUser(userId, token) {
+  return request("/admin/users/demote", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ userId }),
+  });
+}
+
+export function banUser(userId, options, token) {
+  return request("/admin/users/ban", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      userId,
+      deleteComments: Boolean(options.deleteComments),
+      hideGames: Boolean(options.hideGames),
+    }),
+  });
+}
+
+export function unbanUser(userId, token) {
+  return request("/admin/users/unban", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      userId,
+      deleteComments: false,
+      hideGames: false,
+    }),
+  });
+}
+
+export function deleteUserAccount(token) {
+  return request("/users/me", {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+export function restoreUserGames(userId, token) {
+  return request(`/admin/users/${userId}/games/restore`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+export function deleteUserByAdmin(userId, token) {
+  return request(`/admin/users/${userId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+export function getPublicUserProfile(id) {
+  return request(`/users/${id}`);
+}
+
+export function getUserGamesList(id, page = 0, size = 24) {
+  return request(`/users/${id}/games?page=${page}&size=${size}`);
+}
+
+export function getAdminGames(token) {
+  return request("/admin/games", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+export function approveGameByAdmin(gameId, token) {
+  return request(`/admin/games/${gameId}/approve`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+export function rejectGameByAdmin(gameId, token) {
+  return request(`/admin/games/${gameId}/reject`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}

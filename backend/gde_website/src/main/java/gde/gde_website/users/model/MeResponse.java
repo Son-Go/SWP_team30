@@ -14,5 +14,6 @@ public record MeResponse(
         String email,
         String profileImageUrl,
         Boolean isFromTatarstan,
-        UserRole userRole
+        UserRole userRole,
+        java.time.Instant createdAt
 ) {}

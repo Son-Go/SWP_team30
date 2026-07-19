@@ -21,6 +21,7 @@ function GameCard({ game }) {
 
   const cardRef = useRef(null);
   const leaveTimer = useRef(null);
+  const enterTimer = useRef(null);
 
   const visibleTags =
     game.gameTags && typeof game.gameTags === "object"
@@ -39,13 +40,16 @@ function GameCard({ game }) {
 
   function handleMouseEnter() {
     clearTimeout(leaveTimer.current);
-    if (cardRef.current) {
-      setAnchorRect(cardRef.current.getBoundingClientRect());
-    }
-    setHovered(true);
+    enterTimer.current = setTimeout(() => {
+      if (cardRef.current) {
+        setAnchorRect(cardRef.current.getBoundingClientRect());
+      }
+      setHovered(true);
+    }, 1000);
   }
 
   function handleMouseLeave() {
+    clearTimeout(enterTimer.current);
     leaveTimer.current = setTimeout(() => {
       setHovered(false);
       setAnchorRect(null);

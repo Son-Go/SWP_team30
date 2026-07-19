@@ -65,6 +65,7 @@ public class GamesCommentsMapper {
 
     private AuthorResponse getAuthorResponseFromUserEntity(UserEntity user) {
         return new AuthorResponse(
+                user.getId(),
                 user.getUsername(),
                 user.getProfileImageUrl(),
                 user.getEmail()

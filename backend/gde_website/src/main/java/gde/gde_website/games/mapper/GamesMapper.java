@@ -3,6 +3,8 @@ package gde.gde_website.games.mapper;
 import gde.gde_website.games.entity.*;
 import gde.gde_website.games.model.*;
 import gde.gde_website.users.entity.UserEntity;
+import gde.gde_website.users.model.UserRole;
+import gde.gde_website.users.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +20,8 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 public class GamesMapper {
+    private final UsersRepository usersRepository;
+
     /**
      * This method is used to transform game response entity to response.
      * Groups tags by tag type and keeps all provided tag types in the result map,
@@ -36,7 +40,12 @@ public class GamesMapper {
                                                             AuthorResponse author,
                                                             Map<String, List<String>> screenshots,
                                                             List<String> tagTypesNames) {
-        boolean isOwner = currentUserId != null && currentUserId.equals(game.getAuthorId());
+        boolean isOwner = false;
+
+        if (currentUserId != null) {
+            UserEntity currentUser = usersRepository.findById(currentUserId).orElse(null);
+            isOwner = game.getAuthorId().equals(currentUserId) || (currentUser != null && currentUser.getRole() == UserRole.ADMIN);
+        }
 
         boolean isApproved = game.isApproved();
 
@@ -112,6 +121,7 @@ public class GamesMapper {
         AuthorResponse authorResp = null;
         if (author != null) {
             authorResp = new AuthorResponse(
+                    author.getId(),
                     author.getUsername(),
                     author.getProfileImageUrl(),
                     author.getEmail()

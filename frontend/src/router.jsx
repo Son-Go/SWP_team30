@@ -1,5 +1,5 @@
 import React from "react";
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthPage from "./pages/AuthPage";
@@ -7,6 +7,11 @@ import CreateGamePage from "./pages/CreateGamePage";
 import GamePage from "./pages/GamePage";
 import GamesPage from "./pages/GamesPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import ProfilePage from "./pages/ProfilePage";
+import PublicProfilePage from "./pages/PublicProfilePage";
+import AdminRoute from "./components/AdminRoute";
+import AdminProfilePage from "./pages/AdminProfilePage";
+import AboutPage from "./pages/AboutPage";
 
 const router = createBrowserRouter([
   {
@@ -15,7 +20,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Navigate to="/games" replace />,
+        element: <AboutPage />,
       },
       {
         path: "games",
@@ -28,11 +33,28 @@ const router = createBrowserRouter([
             path: "games/create",
             element: <CreateGamePage />,
           },
+          {
+            path: "profile",
+            element: <ProfilePage />,
+          },
+        ],
+      },
+      {
+        element: <AdminRoute />,
+        children: [
+          {
+            path: "admin",
+            element: <AdminProfilePage />,
+          },
         ],
       },
       {
         path: "games/:id",
         element: <GamePage />,
+      },
+      {
+        path: "users/:id",
+        element: <PublicProfilePage />,
       },
       {
         path: "*",

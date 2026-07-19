@@ -70,8 +70,12 @@ function AuthPage() {
     } catch (err) {
       if (err.message.includes("401")) {
         setError("Неверный логин или пароль");
+      } else if (err.message.includes("409")) {
+        setError("Аккаунт с такими логином или почтой уже существует");
       } else {
-        setError(err.message || "Не удалось выполнить действие");
+        setError(
+          err.message || "Не удалось зарегистрироваться. Попробуйте ещё раз.",
+        );
       }
     } finally {
       setSubmitting(false);
