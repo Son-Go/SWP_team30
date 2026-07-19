@@ -19,13 +19,23 @@ function Navbar() {
     <header className="navbar">
       <div className="navbar-inner">
         <div className="navbar-left">
-          <NavLink to="/games" className="brand">
-            GDE
+          <NavLink to="/" className="brand" aria-label="GDE — на главную">
+            <img src="/gde_logo.jpg" alt="GDE" className="brand-logo" />
+          </NavLink>
+
+          <NavLink to="/" end className={getNavLinkClassName}>
+            О Сообществе
           </NavLink>
 
           <NavLink to="/games" className={getNavLinkClassName}>
-            Игры
+            Игры Сообщества
           </NavLink>
+
+          {user?.userRole === "ADMIN" ? (
+            <NavLink to="/admin" className={getNavLinkClassName}>
+              Админ панель
+            </NavLink>
+          ) : null}
         </div>
 
         <div className="navbar-right">

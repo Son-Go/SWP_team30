@@ -254,7 +254,7 @@ function CreateGamePage() {
                 className="textarea"
                 value={description}
                 onChange={(e) => {
-                  if (e.target.value.length <= 1500) {
+                  if (e.target.value.length <= 3000) {
                     setDescription(e.target.value);
                     setShowDescriptionLimit(false);
                   } else {
@@ -264,7 +264,7 @@ function CreateGamePage() {
               />
               {showDescriptionLimit && (
                 <span className="input-hint-error description-limit-hint">
-                  Достигнут лимит в 1500 символов
+                  Достигнут лимит в 3000 символов
                 </span>
               )}
             </div>
@@ -273,7 +273,7 @@ function CreateGamePage() {
               <span
                 className={`textarea-counter ${showDescriptionLimit ? "limit-hit" : ""}`}
               >
-                {description.length}/1500
+                {description.length}/3000
               </span>
             </div>
           </div>

@@ -63,6 +63,7 @@ public class SecurityConfig {
 
                         // Admin endpoints
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/games/**").hasRole("ADMIN")
 
                         // All other endpoints
                         .anyRequest().denyAll()
