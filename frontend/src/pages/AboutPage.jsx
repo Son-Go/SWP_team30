@@ -56,44 +56,29 @@ function ServicesAccordion() {
         </h2>
 
         <div className="partners-list">
-          <a
+          <img
             className="partner-card"
-            href="https://picsum.photos/seed/gde-partner-1/320/320"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Партнёр 1"
-          >
-            <img
-              src="https://picsum.photos/seed/gde-partner-1/320/320"
-              alt="Логотип партнёра 1"
-            />
-          </a>
+            src="/media/morgenPartner.png"
+            alt="Логотип партнёра 1"
+            width="320"
+            height="320"
+          />
 
-          <a
+          <img
             className="partner-card"
-            href="https://picsum.photos/seed/gde-partner-2/320/320"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Партнёр 2"
-          >
-            <img
-              src="https://picsum.photos/seed/gde-partner-2/320/320"
-              alt="Логотип партнёра 2"
-            />
-          </a>
+            src="/media/morgenPartner.png"
+            alt="Логотип партнёра 2"
+            width="320"
+            height="320"
+          />
 
-          <a
+          <img
             className="partner-card"
-            href="https://picsum.photos/seed/gde-partner-3/320/320"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Партнёр 3"
-          >
-            <img
-              src="https://picsum.photos/seed/gde-partner-3/320/320"
-              alt="Логотип партнёра 3"
-            />
-          </a>
+            src="/media/morgenPartner.png"
+            alt="Логотип партнёра 3"
+            width="320"
+            height="320"
+          />
         </div>
       </section>
     </section>
