@@ -258,7 +258,7 @@ function GamesPage() {
   }
 
   return (
-    <section className="section-lg">
+    <section className="section-lg games-page">
       <div className="page-header" style={{ justifyContent: "flex-end" }}>
         <Link to="/games/create" className="button button-secondary">
           Выложить игру

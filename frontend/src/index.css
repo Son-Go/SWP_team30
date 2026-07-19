@@ -1327,6 +1327,16 @@ textarea:focus-visible {
   }
 }
 
+.games-page > .section-lg + .section-lg {
+  margin-top: 50px;
+}
+
+@media (max-width: 640px) {
+  .games-page > .section-lg + .section-lg {
+    margin-top: 32px;
+  }
+}
+
 .textarea-counter-row {
   display: flex;
   justify-content: flex-end;
