@@ -2389,7 +2389,7 @@ body:has(.about-community-layout),
     min-height: 60px;
     margin-top: 36px;
     padding: 0 24px;
-    font-size: 16px;
+    font-size: 0.66rem;
   }
 }
 
@@ -2399,18 +2399,12 @@ body:has(.about-community-layout),
 .about-telegram-button:hover,
 .about-telegram-button:active {
   color: #ffffff;
-  font-family:
-    Inter,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
-  font-size: 20px;
-  font-weight: 700;
+  font-family: "Unbounded", Inter, system-ui, sans-serif;
+  font-size: clamp(0.68rem, 1vw, 1rem);
+  font-weight: 600;
   font-style: normal;
-  line-height: 1;
-  letter-spacing: 0;
+  line-height: 1.15;
+  letter-spacing: -0.04em;
   text-decoration: none;
 }
 
@@ -2430,10 +2424,11 @@ body:has(.about-community-layout),
 .services-title {
   margin: 0 0 56px;
   color: #fff;
-  font-size: clamp(1.7rem, 3.3vw, 3rem);
+  font-family: "Unbounded", Inter, system-ui, sans-serif;
+  font-size: clamp(1.5rem, 3vw, 2.65rem);
   font-weight: 600;
+  letter-spacing: -0.055em;
   line-height: 1.06;
-  letter-spacing: -0.04em;
   text-align: center;
   text-transform: uppercase;
 }
@@ -2466,9 +2461,11 @@ body:has(.about-community-layout),
   background: #241d31;
   color: #f8f8f8;
   cursor: default;
-  font: inherit;
-  font-size: clamp(0.85rem, 1.45vw, 1.28rem);
+  /* font: inherit; */
+  font-family: "Unbounded", Inter, system-ui, sans-serif;
+  font-size: clamp(0.7rem, 0.95vw, 0.88rem);
   font-weight: 600;
+  letter-spacing: -0.045em;
   line-height: 1;
   text-align: center;
   text-transform: uppercase;
@@ -2508,9 +2505,11 @@ body:has(.about-community-layout),
   max-width: 100%;
   margin: 0;
   overflow-wrap: break-word;
-  font-size: clamp(0.82rem, 1.1vw, 1.05rem);
-  font-weight: 500;
-  line-height: 1.32;
+  font-family: "Manrope", Inter, system-ui, sans-serif;
+  font-size: clamp(0.76rem, 1vw, 0.94rem);
+  font-weight: 600;
+  line-height: 1.38;
+  letter-spacing: -0.025em;
   opacity: 0;
   transform: translateY(9px);
   transition:
@@ -2552,7 +2551,7 @@ body:has(.about-community-layout),
 }
 
 /* Пропорции пилюлей в строках */
-.services-pill-wrapper:nth-child(1),
+/* .services-pill-wrapper:nth-child(1),
 .services-pill-wrapper:nth-child(2),
 .services-pill-wrapper:nth-child(3) {
   width: min(31%, 370px);
@@ -2561,6 +2560,11 @@ body:has(.about-community-layout),
 .services-pill-wrapper:nth-child(4),
 .services-pill-wrapper:nth-child(5) {
   width: min(48%, 570px);
+} */
+
+.services-pill-wrapper:nth-child(n) {
+  width: calc((100% - 48px) / 4);
+  /* max-width: 280px; */
 }
 
 /* ── Services: tablet ── */
@@ -2624,7 +2628,8 @@ body:has(.about-community-layout),
   .services-pill {
     min-height: 62px;
     padding: 14px 18px;
-    font-size: 0.85rem;
+    font-size: 0.68rem;
+    letter-spacing: -0.04em;
   }
 
   .services-pill-content {
