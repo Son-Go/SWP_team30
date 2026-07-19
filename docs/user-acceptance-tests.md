@@ -56,6 +56,17 @@ Each scenario is end-user-facing and can be executed by the customer during a re
 | **Customer Comments** | The customer confirmed that login (email and login) works correctly. No comments |
 | **Resulting PBIs** | No new PBI |
 
+#### Week 7 — Sprint 5
+
+| Field | Value |
+|---|---|
+| **Execution Date** | 19.07.2026 |
+| **Executed By** | Customer (on his own, without dev team) |
+| **Result** | ✅ Pass |
+| **Customer Comments** | The customer confirmed that login (email and login) works correctly. No comments |
+| **Resulting PBIs** | No new PBI |
+
+
 ---
 
 ## UAT-002 — User can create game
@@ -110,6 +121,17 @@ Each scenario is end-user-facing and can be executed by the customer during a re
 | **Customer Comments** | The customer confirmed that games are created correctly. Videos and descriptions work correctly |
 | **Resulting PBIs** | No new PBI |
 
+
+#### Week 7 — Sprint 5
+
+| Field | Value |
+|---|---|
+| **Execution Date** | 19.07.2026 |
+| **Executed By** | Customer (on his own, without dev team) |
+| **Result** | ✅ Pass |
+| **Customer Comments** | The customer confirmed that games are created correctly. Videos and descriptions work correctly. No comments |
+| **Resulting PBIs** | No new PBI |
+
 ---
 
 ## UAT-003 — User can sort games by tags
@@ -161,6 +183,17 @@ Each scenario is end-user-facing and can be executed by the customer during a re
 | **Customer Comments** | Customer confirmed that tags sorting works successfully |
 | **Resulting PBIs** | No new PBI |
 
+
+#### Week 7 — Sprint 5
+
+| Field | Value |
+|---|---|
+| **Execution Date** | 19.07.2026 |
+| **Executed By** | Customer (on his own, without dev team) |
+| **Result** | ✅ Pass |
+| **Customer Comments** | Customer confirmed that tags sorting works successfully. No comments |
+| **Resulting PBIs** | No new PBI |
+
 ---
 
 > New for sprint 3
@@ -206,6 +239,17 @@ Each scenario is end-user-facing and can be executed by the customer during a re
 | **Customer Comments** | Customer confirmed that all sections sections work correctly. |
 | **Resulting PBIs** | No new PBI |
 
+
+#### Week 7 — Sprint 5
+
+| Field | Value |
+|---|---|
+| **Execution Date** | 19.07.2026 |
+| **Executed By** | Customer (on his own, without dev team) |
+| **Result** | ✅ Pass |
+| **Customer Comments** | Customer confirmed that all sections sections work correctly. No comments |
+| **Resulting PBIs** | No new PBI |
+
 ---
 
 ## UAT-005 — User can edit their games
@@ -249,6 +293,17 @@ Each scenario is end-user-facing and can be executed by the customer during a re
 | **Customer Comments** | Customer confirmed that editing works correctly |
 | **Resulting PBIs** | No new PBI |
 
+
+#### Week 7 — Sprint 5
+
+| Field | Value |
+|---|---|
+| **Execution Date** | 19.07.2026 |
+| **Executed By** | Customer (on his own, without dev team) |
+| **Result** | ✅ Pass |
+| **Customer Comments** | Customer confirmed that editing works correctly. No comments |
+| **Resulting PBIs** | No new PBI |
+
 ---
 
 > New for sprint 4
@@ -285,4 +340,15 @@ Each scenario is end-user-facing and can be executed by the customer during a re
 | **Executed By** | Customer (during Sprint Review) |
 | **Result** | ✅ Pass |
 | **Customer Comments** | Customer confirmed that comments work correctly |
+| **Resulting PBIs** | No new PBI |
+
+
+#### Week 7 — Sprint 5
+
+| Field | Value |
+|---|---|
+| **Execution Date** | 19.07.2026 |
+| **Executed By** | Customer (on his own, without dev team) |
+| **Result** | ✅ Pass |
+| **Customer Comments** | Customer confirmed that comments work correctly. No comments |
 | **Resulting PBIs** | No new PBI |

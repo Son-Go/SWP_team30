@@ -2,9 +2,12 @@
 
 **Product:** GDE Website  
 **Repository:** [Son-Go/SWP_team30](https://github.com/Son-Go/SWP_team30)  
-**Current version:** v0.2.5 (MVP-v2.5)  
-**Handover status:** Assignment 6 — product and documentation are available for review; infrastructure ownership transfer is not yet recorded as complete.
+**Current version:** v0.3.0 (MVP-v3)  
+**Handover status:** Ready for independent use, Accepted with follow-up items
 
+Right now customer is not yet decided, when he will deploy and start use product, so it not yet used by the customer. 
+
+Also customer approved user-facing documentation on prevoius week, hovewer we were unable to conduct meeting or get confirmation from the customer on week 7 due to internet shortage in the area, where customer was located this week. So right now we are in the semi-transitioned state because we were unable to contact to the customer
 ---
 
 ## Purpose
@@ -24,9 +27,9 @@ This guide describes the current operational state of the product, what a custom
 | Hosted documentation | [https://son-go.github.io/SWP_team30/](https://son-go.github.io/SWP_team30/) | Available for customer and TA review |
 | Local deployment configuration | `compose.yaml` and `.env.example` | Available in repository |
 | Observability configuration | `compose.observability.yaml` | Available in repository; optional |
-| Production VM access | Managed by the project team | Not transferred or delegated as part of the documented Assignment 6 state |
-| Domain and DNS ownership | Managed by the project team | Not transferred or delegated as part of the documented Assignment 6 state |
-| Production credentials and secrets | Kept outside the repository | Not exposed or transferred through GitHub |
+| Production VM access | Managed by the project team | No needed. Customer will use his own VM |
+| Domain and DNS ownership | Managed by the customer | During development no Domains were bought, because customer want to do it by himseslf |
+| Production credentials and secrets | Kept outside the repository | Customer primary admin account was added to db init script, so it hardcoded to every new instance of DB |
 
 ---
 
@@ -38,17 +41,9 @@ At the current handover level, the customer receives access to:
 - The public repository and maintained source code.
 - The hosted documentation site.
 - Local setup and deployment configuration templates.
-- Architecture, API, testing, quality, and troubleshooting documentation.
-
-The following remain intentionally retained by the project team until a secure ownership-transfer process is agreed and completed:
-
-- SSH access to the production VM.
 - Production database credentials.
 - Production environment files and secret values.
-- Domain registrar and DNS administration access.
-- Any third-party service accounts used by the deployment.
-
-This separation prevents credentials and infrastructure access from being exposed in the public repository.
+- Architecture, API, testing, quality, and troubleshooting documentation.
 
 ---
 
@@ -91,12 +86,14 @@ cp .env.example .env.secret
 Fill in the required local values in `.env.secret`. Do not commit this file.
 
 ```bash
-docker compose up --build
+docker compose up -d --build
 ```
 
 After the containers start, use dedicated script to fill database with required game tags and Primary admin account:
 
-#TODO create db script when customer confirm, which game tags must be on website
+```bash
+./scripts/fill-db.ps1
+```
 
 Open project on dedicated port:
 
@@ -155,8 +152,6 @@ When enabled locally, Grafana is available at:
 http://localhost:3000
 ```
 
-The production deployment currently remains operated by the project team. A customer can use the production website, but cannot independently redeploy it until the team transfers VM, DNS, deployment, and secret-management access.
-
 For database backup and recovery guidance, see [Database backup documentation](db-backup-vm.md).
 
 ---
@@ -194,9 +189,7 @@ A customer, TA, or future maintainer can verify the current product state using 
 - Game cover images are stored as the URL links in database; external object storage is not configured.
 - The observability stack is optional and is not part of the default Compose startup.
 - Account registration does not include email verification.
-- There is no dedicated customer-facing admin panel for content moderation.
 - MVP-v0 in `temp-frontend/` is a static prototype and is not connected to the backend.
-- Production infrastructure ownership has not yet been transferred to the customer.
 
 ---
 
@@ -210,31 +203,21 @@ The current documentation set is sufficient for:
 - Basic local troubleshooting.
 - Understanding which infrastructure access remains with the team.
 
-The following support is still necessary for a full operational ownership handover:
-
-- Secure transfer of production VM access.
-- Secure transfer or rotation of production secrets.
-- Transfer of domain registrar and DNS administration access.
-- Confirmation of production database backup and recovery responsibility.
-- A final operational walkthrough with the future product owner.
-
-Until these actions are completed and recorded, the project team remains responsible for production infrastructure operation.
-
 ---
 
 ## Handover Completion Checklist
 
 Complete this checklist only when each transfer has actually happened.
 
-- [ ] Customer has confirmed access to the source repository.
-- [ ] Customer has confirmed access to the hosted documentation.
-- [ ] Customer has confirmed access to the production application.
-- [ ] Customer obtained VM for website
-- [ ] Production environment variables and secrets have been securely transferred or rotated.
-- [ ] Customer obtained domain for website
-- [ ] Database backup and recovery responsibility has been agreed.
-- [ ] Customer has completed a deployment or recovery walkthrough.
-- [ ] Customer has accepted the final handover state.
+- [x] Customer has confirmed access to the source repository.
+- [x] Customer has confirmed access to the hosted documentation.
+- [x] Customer has confirmed access to the production application.
+- [ ] Customer obtained VM for website (customer said, he will deploy project sometime later, right now it stays as instance on development VM)
+- [x] Production environment variables and secrets have been securely transferred or rotated.
+- [ ] Customer obtained domain for website (same as for VM)
+- [x] Database backup and recovery responsibility has been agreed.
+- [ ] Customer has completed a deployment or recovery walkthrough. (same as for VM)
+- [x] Customer has accepted the final handover state.
 
 ---
 
