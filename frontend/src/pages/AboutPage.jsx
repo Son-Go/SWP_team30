@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Footer from "../components/Footer";
 
 const SERVICES = [
@@ -30,12 +30,6 @@ const SERVICES = [
 ];
 
 function ServicesAccordion() {
-  const [activeId, setActiveId] = useState(null);
-
-  const handleClick = (id) => {
-    setActiveId((prev) => (prev === id ? null : id));
-  };
-
   return (
     <section className="services-section">
       <h2 className="services-title">
@@ -43,21 +37,24 @@ function ServicesAccordion() {
         <br />
         БРЕНДОВ И ЛЮДЕЙ
       </h2>
+
       <div className="services-pills">
         {SERVICES.map((item) => (
-          <div key={item.id} className="services-pill-wrapper">
+          <div className="services-pill-wrapper" key={item.id}>
             <button
-              className={`services-pill${activeId === item.id ? " services-pill--active" : ""}`}
-              onClick={() => handleClick(item.id)}
-              aria-expanded={activeId === item.id}
+              className="services-pill"
+              type="button"
+              aria-describedby={`service-description-${item.id}`}
             >
               {item.label}
             </button>
-            {activeId === item.id && (
-              <div className="services-pill-content">
-                <p>{item.text}</p>
-              </div>
-            )}
+
+            <div
+              className="services-pill-content"
+              id={`service-description-${item.id}`}
+            >
+              <p>{item.text}</p>
+            </div>
           </div>
         ))}
       </div>

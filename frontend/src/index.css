@@ -2291,34 +2291,20 @@ textarea:focus-visible {
   }
 }
 
-/* .about-community-layout {
-  display: flex;
-  min-height: 100vh;
-  flex-direction: column;
-  background: #111111;
-}
-
-.about-community-page {
-  flex: 1;
-} */
-
-body:has(.about-community-layout) {
-  background: #111111;
-}
-
-#root:has(.about-community-layout) {
-  min-height: 100vh;
-  background: #111111;
-}
-
 .about-community-layout {
   min-height: 100vh;
-  background: #111111;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a0a35 100%);
+}
+
+body:has(.about-community-layout),
+#root:has(.about-community-layout) {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a0a35 100%);
 }
 
 .about-community-page {
   width: 100%;
-  background: #111111;
+  background: transparent;
 }
 
 .about-hero {
@@ -2428,76 +2414,222 @@ body:has(.about-community-layout) {
   transform: translateY(-3px);
 }
 
-/* ── Services Accordion ── */
+/* ── Services ── */
 .services-section {
-  padding: 80px 40px;
-  background: #000;
+  padding: 76px 40px 210px;
+  overflow: visible;
   color: #fff;
 }
 
 .services-title {
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  font-weight: 800;
+  margin: 0 0 56px;
+  color: #fff;
+  font-size: clamp(1.7rem, 3.3vw, 3rem);
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: -0.04em;
   text-align: center;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
-  margin-bottom: 60px;
-  line-height: 1.1;
 }
 
 .services-pills {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
-  max-width: 960px;
-  margin: 0 auto;
   align-items: flex-start;
+  justify-content: center;
+  gap: 18px 16px;
+  max-width: 1180px;
+  margin: 0 auto;
 }
 
 .services-pill-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
 }
 
 .services-pill {
-  background: #1a1a1a;
-  color: #fff;
-  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 76px;
+  width: 100%;
+  padding: 16px 40px;
+  border: 0;
   border-radius: 999px;
-  padding: 18px 36px;
-  font-size: 1rem;
-  font-weight: 700;
+  background: #202020;
+  color: #f8f8f8;
+  cursor: default;
+  font: inherit;
+  font-size: clamp(0.85rem, 1.45vw, 1.28rem);
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  cursor: pointer;
-  transition:
-    background 200ms ease,
-    color 200ms ease;
   white-space: nowrap;
-  text-align: left;
+  transition:
+    background-color 220ms ease,
+    border-radius 220ms ease;
 }
 
-.services-pill:hover {
-  background: #2a2a2a;
-}
-
-.services-pill--active {
-  background: #7b2fff;
-  color: #fff;
-  border-radius: 24px 24px 0 0;
-}
-
+/* Высота определяется текстом и внутренними отступами */
 .services-pill-content {
-  background: #1a1a1a;
-  border-radius: 0 0 24px 24px;
-  padding: 20px 24px 24px;
-  max-width: 420px;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 5;
+  width: 100%;
+  box-sizing: border-box;
+  padding: clamp(18px, 2.2vw, 28px) clamp(20px, 2.7vw, 34px)
+    clamp(24px, 3vw, 36px);
+  border-radius: 0 0 46px 46px;
+  background: #202020;
+  color: #f4f4f4;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-12px);
+  transition:
+    opacity 280ms ease,
+    transform 280ms ease,
+    visibility 0ms linear 280ms;
 }
 
 .services-pill-content p {
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: #ccc;
+  width: 100%;
+  max-width: 100%;
   margin: 0;
+  overflow-wrap: break-word;
+  font-size: clamp(0.82rem, 1.1vw, 1.05rem);
+  font-weight: 500;
+  line-height: 1.32;
+  opacity: 0;
+  transform: translateY(9px);
+  transition:
+    opacity 210ms ease 90ms,
+    transform 210ms ease 90ms;
+}
+
+.services-pill-wrapper:hover {
+  z-index: 10;
+}
+
+.services-pill-wrapper:hover .services-pill {
+  border-radius: 46px 46px 0 0;
+  background: #8100ff;
+}
+
+.services-pill-wrapper:hover .services-pill-content {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition:
+    opacity 280ms ease,
+    transform 280ms ease,
+    visibility 0ms linear 0ms;
+}
+
+.services-pill-wrapper:hover .services-pill-content p {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 210ms ease 90ms,
+    transform 210ms ease 90ms;
+}
+
+.services-pill:focus-visible {
+  outline: 2px solid #a54dff;
+  outline-offset: 4px;
+}
+
+/* Пропорции пилюлей в строках */
+.services-pill-wrapper:nth-child(1),
+.services-pill-wrapper:nth-child(2),
+.services-pill-wrapper:nth-child(3) {
+  width: min(31%, 370px);
+}
+
+.services-pill-wrapper:nth-child(4),
+.services-pill-wrapper:nth-child(5) {
+  width: min(48%, 570px);
+}
+
+/* ── Services: tablet ── */
+@media (max-width: 900px) {
+  .services-section {
+    padding: 62px 24px 180px;
+  }
+
+  .services-title {
+    margin-bottom: 44px;
+    font-size: clamp(1.55rem, 4vw, 2.4rem);
+  }
+
+  .services-pills {
+    gap: 16px 12px;
+  }
+
+  .services-pill {
+    min-height: 68px;
+    padding: 14px 24px;
+    font-size: clamp(0.78rem, 1.7vw, 1rem);
+  }
+
+  .services-pill-content {
+    padding: 24px 26px 30px;
+    border-radius: 0 0 36px 36px;
+  }
+
+  .services-pill-content p {
+    font-size: 0.9rem;
+    line-height: 1.35;
+  }
+
+  .services-pill-wrapper:hover .services-pill {
+    border-radius: 36px 36px 0 0;
+  }
+}
+
+/* ── Services: mobile ── */
+@media (max-width: 640px) {
+  .services-section {
+    padding: 52px 16px 240px;
+  }
+
+  .services-title {
+    margin-bottom: 32px;
+    font-size: clamp(1.45rem, 8vw, 2.1rem);
+    line-height: 1.08;
+  }
+
+  .services-pills {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .services-pill-wrapper:nth-child(n) {
+    width: 100%;
+  }
+
+  .services-pill {
+    min-height: 62px;
+    padding: 14px 18px;
+    font-size: 0.85rem;
+  }
+
+  .services-pill-content {
+    padding: 20px 22px 26px;
+    border-radius: 0 0 28px 28px;
+  }
+
+  .services-pill-content p {
+    font-size: 0.9rem;
+    line-height: 1.35;
+  }
+
+  .services-pill-wrapper:hover .services-pill {
+    border-radius: 28px 28px 0 0;
+  }
 }
