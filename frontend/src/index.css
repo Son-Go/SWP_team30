@@ -2422,7 +2422,7 @@ body:has(.about-community-layout),
 
 /* ── Services ── */
 .services-section {
-  padding: 76px 40px 210px;
+  padding: 28px 40px 210px;
   overflow: visible;
   color: #fff;
 }
@@ -2461,9 +2461,9 @@ body:has(.about-community-layout),
   min-height: 76px;
   width: 100%;
   padding: 16px 40px;
-  border: 0;
+  border: 1px solid rgba(164, 101, 255, 0.16);
   border-radius: 999px;
-  background: #202020;
+  background: #241d31;
   color: #f8f8f8;
   cursor: default;
   font: inherit;
@@ -2488,8 +2488,10 @@ body:has(.about-community-layout),
   box-sizing: border-box;
   padding: clamp(18px, 2.2vw, 28px) clamp(20px, 2.7vw, 34px)
     clamp(24px, 3vw, 36px);
+  border: 1px solid rgba(164, 101, 255, 0.16);
+  border-top: 0;
   border-radius: 0 0 46px 46px;
-  background: #202020;
+  background: #241d31;
   color: #f4f4f4;
   visibility: hidden;
   opacity: 0;
@@ -2564,7 +2566,7 @@ body:has(.about-community-layout),
 /* ── Services: tablet ── */
 @media (max-width: 900px) {
   .services-section {
-    padding: 62px 24px 180px;
+    padding: 30px 24px 180px;
   }
 
   .services-title {
@@ -2600,7 +2602,7 @@ body:has(.about-community-layout),
 /* ── Services: mobile ── */
 @media (max-width: 640px) {
   .services-section {
-    padding: 52px 16px 240px;
+    padding: 26px 16px 240px;
   }
 
   .services-title {
