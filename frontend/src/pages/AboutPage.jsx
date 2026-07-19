@@ -49,6 +49,53 @@ function ServicesAccordion() {
           </div>
         ))}
       </div>
+
+      <section className="partners-section" aria-labelledby="partners-title">
+        <h2 id="partners-title" className="partners-title">
+          Наши партнёры
+        </h2>
+
+        <div className="partners-list">
+          <a
+            className="partner-card"
+            href="https://picsum.photos/seed/gde-partner-1/320/320"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Партнёр 1"
+          >
+            <img
+              src="https://picsum.photos/seed/gde-partner-1/320/320"
+              alt="Логотип партнёра 1"
+            />
+          </a>
+
+          <a
+            className="partner-card"
+            href="https://picsum.photos/seed/gde-partner-2/320/320"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Партнёр 2"
+          >
+            <img
+              src="https://picsum.photos/seed/gde-partner-2/320/320"
+              alt="Логотип партнёра 2"
+            />
+          </a>
+
+          <a
+            className="partner-card"
+            href="https://picsum.photos/seed/gde-partner-3/320/320"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Партнёр 3"
+          >
+            <img
+              src="https://picsum.photos/seed/gde-partner-3/320/320"
+              alt="Логотип партнёра 3"
+            />
+          </a>
+        </div>
+      </section>
     </section>
   );
 }
