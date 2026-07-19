@@ -54,6 +54,10 @@ Also customer approved user-facing documentation on prevoius week, hovewer we we
 
 all handover info in [customer-handover.md](/docs/customer-handover.md)
 
+## Preparation summary
+
+Team recapped project architecture, rewatched the documentation and splitted roles for final project presentation. After implementing customer follow-up requirements we will re-record project demo and rehearse presentation to be sure, that we can present our project as good as we can
+
 ## Tracebility table
 
 Because each team member closed up to 10 issues, we will provide links to project issue page filtered by isssues for each team member
@@ -104,9 +108,6 @@ Branch protection rules
 ![image1](./images/Branch_ruleset_1.jpg)
 ![image2](./images/Branch_ruleset_2.jpg)
 ![image3](./images/Branch_ruleset_3.jpg)
-
-CI run
-![image4](./images/CI_run.png)
 
 PR_issue
 ![image5](./images/PR_issue.png)
