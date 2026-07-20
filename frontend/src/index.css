@@ -2743,3 +2743,23 @@ body:has(.about-community-layout),
     height: clamp(86px, 26vw, 132px);
   }
 }
+
+.footer-social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  outline: none;
+  background: transparent;
+}
+
+.footer-social-icon {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border: none;
+  border-radius: 0;
+}
