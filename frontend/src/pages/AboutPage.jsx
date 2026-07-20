@@ -58,7 +58,7 @@ function ServicesAccordion() {
         <div className="partners-list">
           <img
             className="partner-card"
-            src="/media/morgenPartner.png"
+            src="https://picsum.photos/seed/gde-partner-3/320/320"
             alt="Логотип партнёра 1"
             width="320"
             height="320"
@@ -66,7 +66,7 @@ function ServicesAccordion() {
 
           <img
             className="partner-card"
-            src="/media/morgenPartner.png"
+            src="https://picsum.photos/seed/gde-partner-2/320/320"
             alt="Логотип партнёра 2"
             width="320"
             height="320"
@@ -74,7 +74,7 @@ function ServicesAccordion() {
 
           <img
             className="partner-card"
-            src="/media/morgenPartner.png"
+            src="https://picsum.photos/seed/gde-partner-1/320/320"
             alt="Логотип партнёра 3"
             width="320"
             height="320"
@@ -91,7 +91,7 @@ function AboutCommunityPage() {
       <main className="about-community-page">
         <section className="about-hero">
           <div className="about-hero-media">
-            <img src="/media/Alisher_2.jpg" />
+            <img src="/media/core_media.png" />
           </div>
 
           <a
