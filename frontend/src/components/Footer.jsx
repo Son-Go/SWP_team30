@@ -1,75 +1,110 @@
 import React from "react";
-import { Link } from "react-router-dom";
 
 function Footer() {
   function scrollToTop() {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   return (
-    <footer className="footer">
-      <div className="footer-content">
-        <div className="footer-main">
-          <section className="footer-column">
-            <p className="footer-label">Почта</p>
-            <p className="footer-text">hello@gde.ru</p>
+      <footer className="footer">
+        <div className="footer-content">
+          <div className="footer-main">
+            <div className="footer-column">
+              <p className="footer-label">Контакты</p>
 
-            <p className="footer-label footer-label-spaced">Адрес</p>
-            <p className="footer-text">ул. Университетская 1, г. Иннополис</p>
-          </section>
-
-          <section className="footer-column">
-            <p className="footer-label">Телефон</p>
-            <p className="footer-text">8 (800) 555-35-35</p>
-
-            <p className="footer-label footer-label-spaced">Социальные сети</p>
-            <div className="footer-socials">
               <a
-                className="footer-social-link"
-                href="https://t.me/lopufeed"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Telegram"
+                  className="footer-contact-link"
+                  href="mailto:workspacegde@gmail.com"
               >
+                workspacegde@gmail.com
+              </a>
+
+              <p className="footer-label footer-label-spaced">Соцсети</p>
+
+              <div className="footer-socials">
+                <a
+                    className="footer-social-link"
+                    href="https://vk.ru/gdevenings"
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="ВКонтакте"
+                >
+                  <img
+                      className="footer-social-icon"
+                      src="/media/vk.webp"
+                      alt="ВКонтакте"
+                  />
+                </a>
+
+                <a
+                    className="footer-social-link"
+                    href="https://www.youtube.com/@InnoGameDev"
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="YouTube"
+                >
+                  <img
+                      className="footer-social-icon"
+                      src="/media/youtube.svg"
+                      alt="YouTube"
+                  />
+                </a>
+
+                <a
+                    className="footer-social-link"
+                    href="https://t.me/gdevenings"
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="Telegram"
+                >
+                  <img
+                      className="footer-social-icon"
+                      src="/media/tg_icon_wht.svg"
+                      alt="Telegram"
+                  />
+                </a>
+              </div>
+            </div>
+
+            <div className="footer-column">
+              <p className="footer-label">О сообществе</p>
+
+              <p className="footer-text">
+                Сообщество разработчиков игр Иннополиса и Татарстана. Хакатоны,
+                практики и совместные проекты с 2022 года.
+              </p>
+            </div>
+
+            <div className="footer-brand">
+              <a className="footer-logo" href="/">
                 <img
-                  src="/tg_icon_wht.svg"
-                  alt=""
-                  className="footer-social-icon"
+                    className="footer-logo-image"
+                    src="/media/logo_imp.png"
+                    alt="GDE Evenings"
                 />
               </a>
+
+              <p className="footer-brand-description">Game Dev Evenings</p>
             </div>
-          </section>
+          </div>
 
-          <section className="footer-brand">
-            <Link to="/" className="footer-logo" aria-label="GDE — на главную">
-              <img
-                src="/logo_imp.png"
-                alt="GDE"
-                className="footer-logo-image"
-              />
-            </Link>
-          </section>
+          <div className="footer-bottom">
+            <a className="footer-bottom-link" href="/about-community">
+              О нас
+            </a>
+
+            <span>© {new Date().getFullYear()} GDE Evenings</span>
+
+            <button
+                type="button"
+                className="footer-top-button"
+                onClick={scrollToTop}
+            >
+              <span>↑</span> Наверх
+            </button>
+          </div>
         </div>
-
-        <div className="footer-bottom">
-          <span>© {new Date().getFullYear()} GDE. Все права защищены.</span>
-
-          <span>Политика конфиденциальности</span>
-
-          <button
-            type="button"
-            className="footer-top-button"
-            onClick={scrollToTop}
-          >
-            <span aria-hidden="true">↗</span>
-            Наверх
-          </button>
-        </div>
-      </div>
-    </footer>
+      </footer>
   );
 }
 

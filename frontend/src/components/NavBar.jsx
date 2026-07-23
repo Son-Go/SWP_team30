@@ -24,7 +24,7 @@ function Navbar() {
           </NavLink>
 
           <NavLink to="/" end className={getNavLinkClassName}>
-            О Сообществе
+            О нас
           </NavLink>
 
           <NavLink to="/games" className={getNavLinkClassName}>
