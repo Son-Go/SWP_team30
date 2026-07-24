@@ -330,7 +330,7 @@ function AdminProfilePage() {
     }
 
     function handleToggleFeatured(game) {
-        const nextFeatured = !Boolean(game.featured);
+        const nextFeatured = !game.featured;
 
         runAction(
             `featured-${game.id}`,
