@@ -2126,7 +2126,7 @@ body:has(.about-community-layout),
 }
 
 .about-community-page {
-  width: min(1180px, calc(100% - 40px));
+  width: min(1440px, calc(100% - 40px));
   margin: 0 auto;
   padding: 24px 0 84px;
   background: transparent;
@@ -2175,8 +2175,8 @@ body:has(.about-community-layout),
   position: relative;
   z-index: 1;
   width: fit-content;
-  max-width: min(100% - 96px, 960px);
-  margin: 0 auto 0 max(48px, calc((100% - 1280px) / 2));
+  max-width: min(100% - 96px, 1100px);
+  margin: 0 auto 0 max(48px, calc((100% - 1440px) / 2));
   padding: 36px 40px 210px;
   color: #ffffff;
   border-radius: 20px;
@@ -2224,7 +2224,7 @@ body:has(.about-community-layout),
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   min-height: 170px;
-  padding: 0 max(48px, calc((100% - 1280px) / 2));
+  padding: 0 max(48px, calc((100% - 1440px) / 2));
   background: rgba(4, 4, 4, 0.94);
   backdrop-filter: blur(14px);
 }
