@@ -78,25 +78,50 @@ const EXPERTS = [
 ];
 
 function ActivityAccordion({ items }) {
-  const [activeIndex, setActiveIndex] = React.useState(null);
+  const [activeItem, setActiveItem] = React.useState(null);
+
+  const mid = Math.ceil(items.length / 2);
+  const leftItems = items.slice(0, mid);
+  const rightItems = items.slice(mid);
 
   return (
     <div className="activity-accordion">
-      {items.map((item, index) => (
-        <div
-          key={item.title}
-          className={`activity-accordion-item ${activeIndex === index ? "active" : ""}`}
-          onMouseEnter={() => setActiveIndex(index)}
-          onMouseLeave={() => setActiveIndex(null)}
-        >
-          <div className="activity-accordion-btn">
-            {item.title}
-          </div>
-          <div className="activity-accordion-desc">
-            {item.description}
-          </div>
+      <div className="activity-accordion-columns">
+        <div className="activity-accordion-col">
+          {leftItems.map((item) => (
+            <div
+              key={item.title}
+              className={`activity-accordion-item ${activeItem === item.title ? "active" : ""}`}
+              onMouseEnter={() => setActiveItem(item.title)}
+              onMouseLeave={() => setActiveItem(null)}
+            >
+              <div className="activity-accordion-btn">
+                {item.title}
+              </div>
+              <div className="activity-accordion-desc">
+                {item.description}
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
+        <div className="activity-accordion-col">
+          {rightItems.map((item) => (
+            <div
+              key={item.title}
+              className={`activity-accordion-item ${activeItem === item.title ? "active" : ""}`}
+              onMouseEnter={() => setActiveItem(item.title)}
+              onMouseLeave={() => setActiveItem(null)}
+            >
+              <div className="activity-accordion-btn">
+                {item.title}
+              </div>
+              <div className="activity-accordion-desc">
+                {item.description}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -179,14 +204,7 @@ function AboutCommunityPage() {
                 <h2>Что мы делаем?</h2>
               </div>
 
-              <div className="about-split-grid">
-                <img
-                    className="about-section-image"
-                    src="/media/core_media.png"
-                    alt="Участники сообщества на игровом мероприятии"
-                />
-
-          <div className="about-section-content">
+              <div className="about-section-content about-section-content-wide">
                   <p>
                     GDE объединяет начинающих и опытных специалистов игровой
                     индустрии. Мы создаём пространство для развития навыков,
@@ -195,7 +213,6 @@ function AboutCommunityPage() {
 
                   <ActivityAccordion items={ACTIVITIES} />
                 </div>
-              </div>
             </section>
 
             <section className="about-section">
