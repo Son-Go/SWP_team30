@@ -2351,9 +2351,79 @@ body:has(.about-community-layout),
   line-height: 1.7;
 }
 
+/* ── Activity accordion ── */
+.activity-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 32px 0 0;
+}
+
+.activity-accordion-item {
+  display: flex;
+  flex-direction: column;
+  border-radius: 999px;
+  transition: border-radius 0.3s ease;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.activity-accordion-item.active {
+  border-radius: 24px;
+}
+
+.activity-accordion-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 18px 28px;
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 999px;
+  color: var(--text);
+  font-family: "Unbounded", Inter, system-ui, sans-serif;
+  font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  text-align: center;
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  white-space: nowrap;
+}
+
+.activity-accordion-item:hover .activity-accordion-btn,
+.activity-accordion-item.active .activity-accordion-btn {
+  background: linear-gradient(135deg, var(--primary), #a855f7);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 4px 18px rgba(139, 92, 246, 0.4);
+}
+
+.activity-accordion-desc {
+  max-height: 0;
+  overflow: hidden;
+  padding: 0 24px;
+  color: rgba(255, 255, 255, 0.78);
+  font-family: "Manrope", Inter, system-ui, sans-serif;
+  font-size: clamp(0.85rem, 1vw, 0.95rem);
+  font-weight: 500;
+  line-height: 1.65;
+  text-align: center;
+  background: rgba(139, 92, 246, 0.08);
+  transition: max-height 0.35s ease, padding 0.35s ease, opacity 0.35s ease;
+  opacity: 0;
+}
+
+.activity-accordion-item.active .activity-accordion-desc {
+  max-height: 300px;
+  padding: 16px 24px 20px;
+  opacity: 1;
+}
+
+/* ── Cases list (plain) ── */
 .about-list {
   display: grid;
-  gap: 16px; /* Чуть увеличили отступ между пунктами для массивности */
+  gap: 16px;
   padding: 0;
   margin: 32px 0 0;
   list-style: none;
@@ -2362,19 +2432,19 @@ body:has(.about-community-layout),
 .about-list li {
   display: flex;
   gap: 12px;
-  align-items: flex-start; /* Чтобы длинные строки выравнивались по верху тире */
-  font-size: 1.25rem; /* Увеличили размер шрифта */
-  font-weight: 500; /* Сделали более жирным */
+  align-items: flex-start;
+  font-size: 1.25rem;
+  font-weight: 500;
   line-height: 1.45;
-  color: #fcfcfc; /* Сделали текст чуть ярче */
+  color: #fcfcfc;
 }
 
 .about-list li::before {
   color: #9d7cff;
   content: "—";
-  font-weight: 900; /* Сделали тире еще массивнее */
-  font-size: 1.2em; /* Немного увеличили тире относительно текста */
-  line-height: 1.1; /* Выравнивание тире по первой строке */
+  font-weight: 900;
+  font-size: 1.2em;
+  line-height: 1.1;
 }
 
 /* ── Partners marquee ── */

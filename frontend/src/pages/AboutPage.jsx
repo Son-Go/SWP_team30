@@ -2,12 +2,36 @@ import React from "react";
 import Footer from "../components/Footer";
 
 const ACTIVITIES = [
-  "Растим разработчиков игр",
-  "Проводим практики",
-  "Организуем хакатоны",
-  "Разрабатываем игры",
-  "Создаем геймификацию",
-  "Помогаем с грантами и издателями",
+  {
+    title: "Растим разработчиков игр",
+    description:
+      "Наше сообщество — это пространство для развития навыков. Мы помогаем начинающим и опытным разработчикам расти через менторство, обучение и совместную работу над проектами.",
+  },
+  {
+    title: "Проводим практики",
+    description:
+      "Регулярно устраиваем практические занятия, воркшопы и мастер-классы, где участники могут применять знания на реальных задачах и обмениваться опытом с коллегами.",
+  },
+  {
+    title: "Организуем хакатоны",
+    description:
+      "Проводим игровые джемы и хакатоны, где за ограниченное время команды создают прототипы и полноценные игры, развивая креативность и командную работу.",
+  },
+  {
+    title: "Разрабатываем игры",
+    description:
+      "Совместно создаём игры — от идеи до релиза. Наши участники работают над реальными проектами, получая практический опыт разработки и издания игр.",
+  },
+  {
+    title: "Создаем геймификацию",
+    description:
+      "Помогаем компаниям и организациям внедрять игровые механики в продукты, мероприятия и бизнес-процессы, делая их более вовлекающими и запоминающимися.",
+  },
+  {
+    title: "Помогаем с грантами и издателями",
+    description:
+      "Поддерживаем разработчиков в поиске финансирования и издателей. Помогаем с подготовкой питч-материалов и взаимодействием с индустрией.",
+  },
 ];
 
 const CASES = [
@@ -53,13 +77,27 @@ const EXPERTS = [
   { name: "Владислав Полевик", photo: "vPolevik.jpg" },
 ];
 
-function AboutList({ items }) {
+function ActivityAccordion({ items }) {
+  const [activeIndex, setActiveIndex] = React.useState(null);
+
   return (
-      <ul className="about-list">
-        {items.map((item) => (
-            <li key={item}>{item}</li>
-        ))}
-      </ul>
+    <div className="activity-accordion">
+      {items.map((item, index) => (
+        <div
+          key={item.title}
+          className={`activity-accordion-item ${activeIndex === index ? "active" : ""}`}
+          onMouseEnter={() => setActiveIndex(index)}
+          onMouseLeave={() => setActiveIndex(null)}
+        >
+          <div className="activity-accordion-btn">
+            {item.title}
+          </div>
+          <div className="activity-accordion-desc">
+            {item.description}
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -148,14 +186,14 @@ function AboutCommunityPage() {
                     alt="Участники сообщества на игровом мероприятии"
                 />
 
-                <div className="about-section-content">
+          <div className="about-section-content">
                   <p>
                     GDE объединяет начинающих и опытных специалистов игровой
                     индустрии. Мы создаём пространство для развития навыков,
                     совместных проектов, практики и профессиональных знакомств.
                   </p>
 
-                  <AboutList items={ACTIVITIES} />
+                  <ActivityAccordion items={ACTIVITIES} />
                 </div>
               </div>
             </section>
@@ -174,7 +212,11 @@ function AboutCommunityPage() {
                     продуктах и мероприятиях.
                   </p>
 
-                  <AboutList items={CASES} />
+                  <ul className="about-list">
+                    {CASES.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
                 </div>
 
                 <img
