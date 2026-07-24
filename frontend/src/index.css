@@ -2667,6 +2667,11 @@ body:has(.about-community-layout),
 .about-expert-card {
   overflow: hidden;
   padding: 0 0 20px;
+  transition: border-color 0.25s ease;
+}
+
+.about-expert-card:hover {
+  border-color: rgba(139, 92, 246, 0.3);
 }
 
 .about-expert-card h3,
@@ -2692,6 +2697,11 @@ body:has(.about-community-layout),
   width: 100%;
   aspect-ratio: 1;
   object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.about-expert-card:hover .about-expert-photo {
+  transform: scale(1.03);
 }
 
 /* ── CTA ── */
