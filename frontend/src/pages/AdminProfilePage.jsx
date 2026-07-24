@@ -598,8 +598,8 @@ function AdminProfilePage() {
                                                 {isSubmitting
                                                     ? "Обработка..."
                                                     : game.featured
-                                                        ? "Удалить из Featured"
-                                                        : "Сделать Featured"}
+                                                        ? "Удалить из Избранного"
+                                                        : "Добавить в Избранное"}
                                             </button>
 
                                             {!game.approved ? (
