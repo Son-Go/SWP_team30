@@ -108,6 +108,30 @@ export function updateGame(id, body, token) {
   }).then(normalizeGameResponse);
 }
 
+export function setGameFeaturedState(game, token, currentGame, isFeatured) {
+  const currentTags = currentGame?.gameTags || {};
+  const nextGameTags = {
+    genre: [...(currentTags.genre || [])],
+    town: [...(currentTags.town || [])],
+    stage: [...(currentTags.stage || [])],
+    featured: [...(currentTags.featured || [])],
+  };
+
+  const featuredTag = "Featured";
+  const featuredTagExists = nextGameTags.featured.includes(featuredTag);
+
+  if (isFeatured && !featuredTagExists) {
+    nextGameTags.featured = [...nextGameTags.featured, featuredTag];
+  } else if (!isFeatured && featuredTagExists) {
+    nextGameTags.featured = nextGameTags.featured.filter((tag) => tag !== featuredTag);
+  }
+
+  return updateGame(game, {
+    gameTags: nextGameTags,
+    screenshots: currentGame?.screenshots || { videos: [], pictures: [] },
+  }, token);
+}
+
 export function deleteGame(id, token) {
   return request(`/games/${id}`, {
     method: "DELETE",

@@ -7,9 +7,11 @@ import {
     demoteUser,
     getAdminGames,
     getAdminUsers,
+    getGameById,
     promoteUser,
     rejectGameByAdmin,
     restoreUserGames,
+    setGameFeaturedState,
     unbanUser,
 } from "../api/api";
 import ErrorState from "../components/ErrorState";
@@ -55,6 +57,14 @@ function getGameStatus(game) {
         label: "На модерации",
         className: "admin-game-status-pending",
     };
+}
+
+function getFeaturedState(gameData) {
+    const featuredTags = gameData?.gameTags?.featured || [];
+
+    return featuredTags.some(
+        (tag) => typeof tag === "string" && tag.toLowerCase() === "featured",
+    );
 }
 
 function formatDate(value) {
@@ -111,7 +121,25 @@ function AdminProfilePage() {
             setGamesError("");
 
             const data = await getAdminGames(token);
-            setGames(getGamesFromResponse(data));
+            const adminGames = getGamesFromResponse(data);
+            const hydratedGames = await Promise.all(
+                adminGames.map(async (game) => {
+                    try {
+                        const detailedGame = await getGameById(game.id, token);
+                        return {
+                            ...game,
+                            featured: getFeaturedState(detailedGame),
+                        };
+                    } catch {
+                        return {
+                            ...game,
+                            featured: false,
+                        };
+                    }
+                }),
+            );
+
+            setGames(hydratedGames);
             setGamesLoaded(true);
         } catch (err) {
             setGamesError(err.message || "Не удалось загрузить игры");
@@ -142,6 +170,14 @@ function AdminProfilePage() {
         setGames((previous) =>
             previous.map((item) =>
                 item.id === gameId ? { ...item, approved } : item,
+            ),
+        );
+    }
+
+    function updateGameFeaturedState(gameId, featured) {
+        setGames((previous) =>
+            previous.map((item) =>
+                item.id === gameId ? { ...item, featured } : item,
             ),
         );
     }
@@ -290,6 +326,22 @@ function AdminProfilePage() {
                 updateGameApproval(game.id, false);
             },
             `Игра «${game.title}» отклонена`,
+        );
+    }
+
+    function handleToggleFeatured(game) {
+        const nextFeatured = !Boolean(game.featured);
+
+        runAction(
+            `featured-${game.id}`,
+            async () => {
+                const currentGame = await getGameById(game.id, token);
+                await setGameFeaturedState(game.id, token, currentGame, nextFeatured);
+                updateGameFeaturedState(game.id, nextFeatured);
+            },
+            nextFeatured
+                ? `Игра «${game.title}» отмечена как Featured`
+                : `Игра «${game.title}» убрана из Featured`,
         );
     }
 
@@ -537,6 +589,19 @@ function AdminProfilePage() {
                                             className="admin-actions"
                                             onClick={(event) => event.stopPropagation()}
                                         >
+                                            <button
+                                                type="button"
+                                                className={`button ${game.featured ? "button-secondary" : "button-outline"}`}
+                                                onClick={() => handleToggleFeatured(game)}
+                                                disabled={isSubmitting}
+                                            >
+                                                {isSubmitting
+                                                    ? "Обработка..."
+                                                    : game.featured
+                                                        ? "Удалить из Featured"
+                                                        : "Сделать Featured"}
+                                            </button>
+
                                             {!game.approved ? (
                                                 <button
                                                     type="button"
