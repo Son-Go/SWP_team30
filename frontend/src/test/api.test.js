@@ -243,7 +243,10 @@ describe("api client", () => {
         },
         true,
       ),
-    ).resolves.toEqual({ id: 7 })
+    ).resolves.toEqual({
+      id: 7,
+      screenshots: { videos: [], pictures: [] },
+    })
 
     expect(fetch).toHaveBeenCalledWith(`${API_BASE}/games/7`, {
       method: "PATCH",
