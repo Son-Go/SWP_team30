@@ -207,6 +207,25 @@ function PartnersMarquee({ partners }) {
   );
 }
 
+function FloatingCTAButton() {
+  const handleClick = () => {
+    const el = document.getElementById("about-cta");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  return (
+    <button
+      className="about-floating-cta"
+      onClick={handleClick}
+      aria-label="Сотрудничать"
+    >
+      <span className="about-floating-cta-text">Сотрудничать</span>
+    </button>
+  );
+}
+
 function AboutCommunityPage() {
   return (
       <div className="about-community-layout">
@@ -344,7 +363,7 @@ function AboutCommunityPage() {
               </div>
             </section>
 
-            <section className="about-cta">
+            <section className="about-cta" id="about-cta">
               <div>
                 <p className="about-section-kicker">Присоединяйтесь</p>
 
@@ -379,6 +398,7 @@ function AboutCommunityPage() {
 
         <div className="about-footer-divider" />
         <Footer />
+        <FloatingCTAButton />
       </div>
   );
 }

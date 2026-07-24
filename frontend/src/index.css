@@ -2760,6 +2760,75 @@ body:has(.about-community-layout),
   }
 }
 
+/* ── Floating CTA button ── */
+.about-floating-cta {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px;
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  border-radius: 999px;
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(12px);
+  color: #ffffff;
+  font-family: "Manrope", Inter, system-ui, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.2);
+}
+
+.about-floating-cta:hover {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.7);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.35);
+}
+
+.about-floating-cta-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.6);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.about-floating-cta:hover .about-floating-cta-icon {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #ffffff;
+}
+
+.about-floating-cta-text {
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .about-floating-cta {
+    bottom: 20px;
+    left: 16px;
+    padding: 12px 18px;
+    font-size: 0.78rem;
+  }
+
+  .about-floating-cta-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 0.9rem;
+  }
+}
+
 /* ── Footer ── */
 .about-footer-divider {
   width: 100%;
