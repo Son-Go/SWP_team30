@@ -251,6 +251,7 @@ public class UsersService {
         if (targetUser.getRole() != UserRole.BANNED) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not banned");
         targetUser.setRole(UserRole.DEVELOPER);
         userRepository.save(targetUser);
+        gamesService.restoreGamesByAuthor(userId);
     }
 
     /**
