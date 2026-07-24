@@ -12,6 +12,7 @@ import {
   registerUser,
   setStoredToken,
   clearStoredToken,
+  setGameFeaturedState,
   updateGameComment,
 } from "../api/api"
 
@@ -221,6 +222,42 @@ describe("api client", () => {
     expect(fetch).toHaveBeenCalledWith(`${API_BASE}/games/7/comments/4`, {
       method: "DELETE",
       headers: { Authorization: "Bearer token-789" },
+    })
+  })
+
+  it("promotes a game to featured while preserving existing tags", async () => {
+    fetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: new Headers({ "content-type": "application/json" }),
+      json: async () => ({ id: 7 }),
+    })
+
+    await expect(
+      setGameFeaturedState(
+        7,
+        "token-789",
+        {
+          id: 7,
+          gameTags: { genre: ["Action"], town: ["Kazan"], stage: [], featured: [] },
+        },
+        true,
+      ),
+    ).resolves.toEqual({
+      id: 7,
+      screenshots: { videos: [], pictures: [] },
+    })
+
+    expect(fetch).toHaveBeenCalledWith(`${API_BASE}/games/7`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer token-789",
+      },
+      body: JSON.stringify({
+        gameTags: ["Action", "Kazan", "Featured"],
+        screenshots: { videos: [], pictures: [] },
+      }),
     })
   })
 })
