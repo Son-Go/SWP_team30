@@ -2457,6 +2457,140 @@ body:has(.about-community-layout),
   line-height: 1.1;
 }
 
+/* ── Case cards ── */
+.cases-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.case-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: border-color 0.25s ease;
+}
+
+.case-card:hover {
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.case-card-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40px 44px;
+  gap: 16px;
+}
+
+.case-card-title {
+  margin: 0;
+  font-family: "Unbounded", Inter, system-ui, sans-serif;
+  font-size: clamp(1.4rem, 2.4vw, 2.2rem);
+  font-weight: 500;
+  letter-spacing: -0.05em;
+  line-height: 1.1;
+  color: #ffffff;
+}
+
+.case-card-tag {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  min-height: 28px;
+  padding: 4px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: "Manrope", Inter, system-ui, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.case-card-desc {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: "Manrope", Inter, system-ui, sans-serif;
+  font-size: clamp(0.85rem, 1vw, 0.95rem);
+  font-weight: 500;
+  line-height: 1.65;
+}
+
+.case-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: "Manrope", Inter, system-ui, sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.case-card-link:hover {
+  color: #ffffff;
+}
+
+.case-card-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.5);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.case-card-link:hover .case-card-arrow {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #ffffff;
+}
+
+.case-card-image-wrap {
+  overflow: hidden;
+}
+
+.case-card-image {
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.case-card:hover .case-card-image {
+  transform: scale(1.03);
+}
+
+@media (max-width: 760px) {
+  .case-card {
+    grid-template-columns: 1fr;
+  }
+
+  .case-card-content {
+    padding: 28px 24px;
+  }
+
+  .case-card-image {
+    min-height: 220px;
+  }
+}
+
 /* ── Partners marquee ── */
 .about-partners-marquee {
   position: relative;

@@ -35,16 +35,76 @@ const ACTIVITIES = [
 ];
 
 const CASES = [
-  "Game Open Lab",
-  "GAICA",
-  "Anlaut Jam",
-  "Дружный джем",
-  "Т-Банк — игра",
-  "Полка чудес — игра",
-  "Simple Sandbox — игра",
-  "Breadborn — игра",
-  "Геймификация ОЭЗ",
-  "Питч-сессия на DID",
+  {
+    title: "Game Open Lab",
+    tag: "СОБЫТИЯ",
+    description: "Описание кейса Game Open Lab. Заполните позже.",
+    image: "Game_Open_Lab.jpg",
+    link: "https://gameopenlab.ru/",
+  },
+  {
+    title: "GAICA",
+    tag: "СОБЫТИЯ",
+    description: "Описание кейса GAICA. Заполните позже.",
+    image: "GAICA.jpg",
+    link: "https://gaica.pro/",
+  },
+  {
+    title: "Anlaut Jam",
+    tag: "СОБЫТИЯ",
+    description: "Описание кейса Anlaut Jam. Заполните позже.",
+    image: "Anlaut_Jam.jpg",
+    link: "https://itch.io/jam/anlaut-4",
+  },
+  {
+    title: "Самые спортивные выживатели — игра",
+    tag: "СОБЫТИЯ",
+    description: "Описание кейса Дружный джем. Заполните позже.",
+    image: "Most_sport_survivors.jpg",
+    link: "https://store.steampowered.com/app/3032360/SAMYE_SPORTIVNYE_VYZHIVATELI/",
+  },
+  {
+    title: "Т-Банк — игра",
+    tag: "ИГРА",
+    description: "Описание кейса Т-Банк — игра. Заполните позже.",
+    image: "T_bank_game.jpg",
+    link: "#",
+  },
+  {
+    title: "Полка чудес — игра",
+    tag: "ИГРА",
+    description: "Описание кейса Полка чудес — игра. Заполните позже.",
+    image: "Miracle_shelf.jpg",
+    link: "https://polkachudesgame.github.io/game/",
+  },
+  {
+    title: "Simple Sandbox — игра",
+    tag: "ИГРА",
+    description: "Описание кейса Simple Sandbox — игра. Заполните позже.",
+    image: "Simple_sandbox.jpg",
+    link: "https://play.google.com/store/apps/details?id=com.MadnessGames.SimpleSandbox3&hl=ru",
+  },
+  {
+    title: "Breadborn — игра",
+    tag: "ИГРА",
+    description: "Описание кейса Breadborn — игра. Заполните позже.",
+    image: "Breadborn.jpg",
+    link: "https://store.steampowered.com/app/2996970/Breadborn/",
+  },
+  {
+    title: "Геймификация ОЭЗ",
+    tag: "ГЕЙМИФИКАЦИЯ",
+    description: "Описание кейса Геймификация ОЭЗ. Заполните позже.",
+    image: "Tech_park_gamification.jpg",
+    link: "t.me/oez_loyalty_bot",
+  },
+  {
+    title: "Питч-сессия на DID",
+    tag: "СОБЫТИЯ",
+    description: "Описание кейса Питч-сессия на DID. Заполните позже.",
+    image: "GameDay_2024.jpg",
+    link: "#",
+  },
 ];
 
 // Плоский массив партнёров, собранный из старого объекта
@@ -221,26 +281,33 @@ function AboutCommunityPage() {
                 <h2>Наши кейсы</h2>
               </div>
 
-              <div className="about-split-grid about-split-grid-reverse">
-                <div className="about-section-content">
-                  <p>
-                    Мы проводим образовательные программы и джемы, создаём игры
-                    и помогаем компаниям использовать игровые механики в
-                    продуктах и мероприятиях.
-                  </p>
-
-                  <ul className="about-list">
-                    {CASES.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                <img
-                    className="about-section-image"
-                    src="/media/core_media.png"
-                    alt="Игровые проекты сообщества"
-                />
+              <div className="cases-list">
+                {CASES.map((c) => (
+                  <article className="case-card" key={c.title}>
+                    <div className="case-card-content">
+                      <h3 className="case-card-title">{c.title}</h3>
+                      <span className="case-card-tag">{c.tag}</span>
+                      <p className="case-card-desc">{c.description}</p>
+                      <a
+                        className="case-card-link"
+                        href={c.link}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        ПОСМОТРЕТЬ КЕЙС
+                        <span className="case-card-arrow">↗</span>
+                      </a>
+                    </div>
+                    <div className="case-card-image-wrap">
+                      <img
+                        className="case-card-image"
+                        src={`/media/cases/${c.image}`}
+                        alt={c.title}
+                        loading="lazy"
+                      />
+                    </div>
+                  </article>
+                ))}
               </div>
             </section>
 
